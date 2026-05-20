@@ -1,6 +1,6 @@
 package Model;
 /**
- * Represents a 2D point 
+ * Represents a 2D point with coordinates x and y
  */
 public class Point {
 	
@@ -34,7 +34,7 @@ public class Point {
 	/**
 	 * @return y
 	 */
-	public double geyY() {
+	public double getY() {
 		return y;
 	}
 	/**
