@@ -22,6 +22,12 @@ public class User extends Point {
 		this.isRedirected=false;
 	}
 	/**
+	 * @return true if the user is redirected to another hospital
+	 */
+	public boolean getIsRedirected(){
+		return isRedirected;
+	}
+	/**
 	 * @return the closest hospital for the user
 	 */
 	public Hospital getClosestSite() {
@@ -52,7 +58,6 @@ public class User extends Point {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		User a = new User(51,6.3,1.2);
-		System.out.println(a);
+		
 	}
 }

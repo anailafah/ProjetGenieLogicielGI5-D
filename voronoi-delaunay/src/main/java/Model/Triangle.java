@@ -51,8 +51,6 @@ public class Triangle {
         return Math.abs((bx - ax)*(cy - ay) - (cx - ax)*(by - ay)) / 2.0;
     }
     /**
-     * Computes the imbalance between the three hospitals patient counts.
-     * Useful to detect overloaded zones.
      * @return difference between max and min patient count among the three hospitals
      */
     public int getImbalance() {

@@ -27,24 +27,10 @@ public class Hospital extends Point {
 		return users;
 	}
 	/**
-	 * add an user to the list of users of the hospital
-	 * @param user
-	 */
-	public void addUsers(User u) {
-		users.add(u);
-	}
-	/**
-	 * remove an user from the list of users
-	 * @param user
-	 */
-	public void removeUsers(User user) {
-		users.remove(user);
-	}
-	/**
-	 * @return the hospital capacity
+	 * @return maxCapacity
 	 */
 	public int getCapacity() {
-		return capacity;
+		return maxCapacity;
 	}
 	@Override
 	public String toString() {
