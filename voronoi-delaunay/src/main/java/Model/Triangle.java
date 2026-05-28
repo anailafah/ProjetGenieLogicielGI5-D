@@ -54,9 +54,9 @@ public class Triangle {
      * @return difference between max and min patient count among the three hospitals
      */
     public int getImbalance() {
-        int pa = a.getPatients().size();
-        int pb = b.getPatients().size();
-        int pc = c.getPatients().size();
+        int pa = a.getUsers().size();
+        int pb = b.getUsers().size();
+        int pc = c.getUsers().size();
         return Math.max(pa, Math.max(pb, pc)) - Math.min(pa, Math.min(pb, pc));
     }
      /**
@@ -92,6 +92,6 @@ public class Triangle {
 
      @Override
     public String toString() {
-        return "Triangle[" + a.getName() + ", " + b.getName() + ", " + c.getName() + "]";
+        return "Triangle[" + a.getId() + ", " + b.getId() + ", " + c.getId() + "]";
     }
 }

@@ -5,7 +5,7 @@ import java.util.List;
 
 public class VoronoiMap {
     private List<Hospital> hospitals;
-    private List<Patient> userTot;
+    private List<User> userTot;
     private List<Triangle> triangles;
     private List<HospitalZone> zones;
     private int nextId;
@@ -24,7 +24,7 @@ public class VoronoiMap {
         this.userTot=userTot;
         this.triangles = new ArrayList<>();
         this.zones = new ArrayList<>();
-        this.nextId = hospitals.size() + patients.size();
+        this.nextId = hospitals.size() + userTot.size();
     }
     /** 
      * Generates a unique ID for a new point. 
@@ -41,8 +41,8 @@ public class VoronoiMap {
      /** 
       * @return list of users
       */
-    public List<User> getUserTot()  { r
-        eturn userTot; 
+    public List<User> getUserTot()  { 
+        return userTot; 
     }
     /**
      * @return list of triangles
@@ -105,6 +105,6 @@ public class VoronoiMap {
     @Override
     public String toString() {
         return "VoronoiMap[hospitals=" + hospitals.size()
-             + ", patients=" + patients.size() + "]";
+             + ", user=" + userTot.size() + "]";
     }
 }

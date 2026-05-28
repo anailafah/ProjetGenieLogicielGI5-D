@@ -29,7 +29,7 @@ public class Hospital extends Point {
 	/**
 	 * @return maxCapacity
 	 */
-	public int getCapacity() {
+	public int getMaxCapacity() {
 		return maxCapacity;
 	}
 	@Override

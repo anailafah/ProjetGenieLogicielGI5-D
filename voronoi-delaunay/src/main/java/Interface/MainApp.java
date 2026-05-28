@@ -1,4 +1,4 @@
-package ui;
+package Interface;
 
 public class MainApp {
 

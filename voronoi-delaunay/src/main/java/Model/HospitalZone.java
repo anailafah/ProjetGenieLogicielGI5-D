@@ -2,7 +2,7 @@ package Model;
 
 import java.util.List;
 
-public class HospitalZone {
+public class HospitalZone extends Hospital{
 	private List<Point> vertices;
     private double area;
     private double minDistance;
@@ -15,8 +15,7 @@ public class HospitalZone {
      * @param vertices
      */
     public HospitalZone(Hospital hospital, List<Point> vertices) {
-        super(hospital.getId(), hospital.getX(), hospital.getY(),
-              hospital.getName(), hospital.getMaxCapacity());
+        super(hospital.getId(), hospital.getX(), hospital.getY(),hospital.getMaxCapacity());
         for (User u : hospital.getUsers()) addUsers(u);
         this.vertices = vertices;
         computeStats();
@@ -39,7 +38,7 @@ public class HospitalZone {
                 if (d < min) min = d;
                 if (d > max) max = d;
                 sum += d;
-                if (u.isRedirected()) redirectedCount++;
+                if (u.getIsRedirected()) redirectedCount++;
             }
             minDistance = min;
             maxDistance = max;
@@ -60,7 +59,7 @@ public class HospitalZone {
     /**
      * Computes the polygon area using the shoelace formula.
      * @return the area
-    
+    */
     private double computePolygonArea() {
         if (vertices == null || vertices.size() < 3) return 0;
         double sum = 0;
@@ -72,7 +71,7 @@ public class HospitalZone {
         }
         return Math.abs(sum) / 2.0;
     }
-    */
+    
 
     /** Refreshes statistics after modifications. */
     public void refresh() { 
@@ -101,7 +100,7 @@ public class HospitalZone {
         return getUsers().size(); 
     }
     public double getDensity(){ 
-        return area > 0 ? getPatientCount() / area : 0; 
+        return area > 0 ? getUsersCount() / area : 0; 
     }
 }
 
