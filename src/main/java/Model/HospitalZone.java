@@ -62,14 +62,20 @@ public class HospitalZone extends Hospital{
     */
     private double computePolygonArea() {
         if (vertices == null || vertices.size() < 3) return 0;
-        double sum = 0;
+        double sumRight = 0;
+        double sumLeft = 0;
         int n = vertices.size();
         for (int i = 0; i < n; i++) {
             Point p1 = vertices.get(i);
             Point p2 = vertices.get((i + 1) % n);
-            sum += p1.getX() * p2.getY() - p2.getX() * p1.getY();
+            sumRight += p1.getX() * p2.getY(); 
         }
-        return Math.abs(sum) / 2.0;
+        for (int i = 0; i < n; i++) {
+            Point p1 = vertices.get(i);
+            Point p2 = vertices.get((i + 1) % n);
+            sumLeft += p2.getX() * p1.getY();
+        }
+        return Math.abs(sumRight-sumLeft) / 2.0;
     }
     
 

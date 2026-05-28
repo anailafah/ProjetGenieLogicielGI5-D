@@ -57,4 +57,20 @@ public class Point {
 		return "Point " + id + " (" + x +", "+y+ ")";
 	}
 	
+	/**
+     * Checks if point is inside the circumcircle of triangle (a, b, c).
+     * @param a first vertex
+     * @param b second vertex
+     * @param c third vertex
+     * @return true if the point is inside the circumcircle
+     */
+    public boolean isInCircumcircle(Point a, Point b, Point c) {
+        double ax = a.getX() - this.getX(), ay = a.getY() - this.getY();
+        double bx = b.getX() - this.getX(), by = b.getY() - this.getY();
+        double cx = c.getX() - this.getX(), cy = c.getY() - this.getY();
+        double d = (ax*ax + ay*ay) * (bx*cy - cx*by)
+                 - (bx*bx + by*by) * (ax*cy - cx*ay)
+                 + (cx*cx + cy*cy) * (ax*by - bx*ay);
+        return d > 0;
+	}
 }

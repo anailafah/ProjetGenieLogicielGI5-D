@@ -94,4 +94,5 @@ public class Triangle {
     public String toString() {
         return "Triangle[" + a.getId() + ", " + b.getId() + ", " + c.getId() + "]";
     }
+       
 }
