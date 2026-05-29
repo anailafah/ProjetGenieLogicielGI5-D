@@ -90,7 +90,7 @@ public class BowyerWatson implements VoronoiInterface {
         for (Hospital h : hospitals) {
             List<Triangle> badTriangles = new ArrayList<>();
             for (Triangle t : triangulation) {
-                //if (t.isInCircumcircle(hospitals.getPosition()))
+               // if t.isInCircumcircle(hospitals.getPosition());
                     badTriangles.add(t);
             }
 

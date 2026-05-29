@@ -35,7 +35,7 @@ public class Hospital extends Point {
 	}
 	@Override
 	public String toString() {
-		return "SitePoint "+getId() + " ("+getX()+" , "+getY()+") Users ="+users.size();
+		return "Hospital "+getId() + " ("+getX()+" , "+getY()+") Users ="+users.size();
 	}
 	/**
 	 * @return true if the hospital is saturated 
@@ -57,8 +57,12 @@ public class Hospital extends Point {
 	 * @return percentage of available room in the hospital
 	 */
 	public double getPercentAvailable(){
-		if (this.maxCapacity <= this.users.size() && this.maxCapacity>0){
-			return (1-this.users.size()/this.maxCapacity)*100;
+		if (this.maxCapacity>0){
+			if (this.maxCapacity < this.users.size() ){
+				return (1-(this.users.size()/this.maxCapacity))*100;
+			}else if (this.maxCapacity >= this.users.size()){
+				return 0;
+			}
 		}
 		return 0;
 	}
