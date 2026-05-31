@@ -5,11 +5,13 @@ import java.util.List;
 public class HospitalZone {
 	private List<Point> vertices;
     private double area;
+    private double density;
     private double minDistance;
     private double maxDistance;
     private double avgDistance;
     private int redirectedCount;
     private Hospital centerHospital;
+    private int nbUser;
     /**
      * construction of a hospital zone
      * @param hospital
@@ -19,7 +21,10 @@ public class HospitalZone {
         this.vertices = vertices;
         this.redirectedCount=0;
         this.centerHospital=h;
+        this.nbUser=h.getUsers().size();
         computeStats();
+        this.density=nbUser/area;
+
     }
     /**
      * computes all statistics for this zone
@@ -41,12 +46,26 @@ public class HospitalZone {
                 sum += d;
                 if (u.getIsRedirected()) redirectedCount++;
             }
-            minDistance = min;
-            maxDistance = max;
-            avgDistance = sum / users.size();
+            this.minDistance = min;
+            this.maxDistance = max;
+            this.avgDistance = sum / users.size();
         }
-        area = computePolygonArea();
+        this.area = computePolygonArea();
     }
+    /**
+     * @return nbUser
+     */
+    public int getNbUser(){
+        return nbUser;
+    }
+
+    /**
+     * @return density
+     */
+    public double getDensity(){
+        return density;
+    }
+        
     /**
      * @param u users
      * @return distance between an user and hospital
