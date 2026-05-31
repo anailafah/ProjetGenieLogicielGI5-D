@@ -123,7 +123,7 @@ public class TriangulationDelaunay implements VoronoiEngine {
 
     // ALGORITHME DE BOWYER-WATSON
     /**
-     * Recomputes the full Delaunay triangulation using Bowyer-Watson.
+     * Recomputes the full Delaunay triangulation using Bowyer-Watson and build Voronoi Zones.
      * Called every time a hospital is added, removed, or moved.
      */
     private void recompute() {
@@ -134,10 +134,8 @@ public class TriangulationDelaunay implements VoronoiEngine {
         // S'il y a moins de 3 hôpitaux, on ne peut pas faire de triangle donc on s'arrête là
         if (hospitals.size() < 3) return;
 
-        // ── ÉTAPE 1 : Créer le super-triangle ──────────────────
-        // Le super-triangle doit contenir TOUS les hôpitaux
-        // On le fait 10 fois plus grand que le canvas pour être sûr
-        // Ces hôpitaux ont des IDs négatifs pour les reconnaître plus tard
+        // ÉTAPE 1 : Créer le super-triangle 
+        // Le super-triangle doit contenir TOUS les hôpitaux donc 10* plus grande que le canva
         Hospital stA = new Hospital(-1, -width * 10, -height * 10, 0);
         Hospital stB = new Hospital(-2,  width * 10, -height * 10, 0);
         Hospital stC = new Hospital(-3,  0.0,         height * 10, 0);
@@ -149,17 +147,16 @@ public class TriangulationDelaunay implements VoronoiEngine {
         //  ÉTAPE 2 : Ajouter chaque hôpital un par un 
         for (Hospital hospital : hospitals) {
 
-            // ── ÉTAPE 3 : Trouver les mauvais triangles ─────────
+            //  ÉTAPE 3 : Trouver les mauvais triangles 
             // Un mauvais triangle = le nouvel hôpital est dans son cercle circonscrit
             List<Triangle> badTriangles = new ArrayList<>();
             for (Triangle t : triangulation) {
                 if (hospital.isInCircumcircle(t.getA(),t.getB(),t.getC()))
                     badTriangles.add(t);
-                // isInCircumcircle() vérifie si hospital est dans le cercle
-                // magique du triangle t
+                // isInCircumcircle() vérifie si hospital est dans le cercle circonscrit du triangle t
             }
 
-            // ── ÉTAPE 4 : Trouver les bords du trou ─────────────
+            //  ÉTAPE 4 : Trouver les bords du trou 
             // Un bord du trou = un bord qui appartient à UN SEUL mauvais triangle
             // Si un bord appartient à DEUX mauvais triangles → il disparaît dans le trou
             List<Hospital[]> polygon = new ArrayList<>();
@@ -189,11 +186,11 @@ public class TriangulationDelaunay implements VoronoiEngine {
                 }
             }
 
-            // ── ÉTAPE 5 : Supprimer les mauvais triangles ───────
+            //  ÉTAPE 5 : Supprimer les mauvais triangles 
             // On efface tous les mauvais triangles de la triangulation
             triangulation.removeAll(badTriangles);
 
-            // ── ÉTAPE 6 : Reboucher le trou ─────────────────────
+            //  ÉTAPE 6 : Reboucher le trou 
             // Pour chaque bord du trou, on crée un nouveau triangle
             // qui relie ce bord au nouvel hôpital
             for (Hospital[] edge : polygon)
@@ -201,7 +198,7 @@ public class TriangulationDelaunay implements VoronoiEngine {
                 // Nouveau triangle : edge[0] ─ edge[1] ─ hospital
         }
 
-        // ── ÉTAPE 7 : Supprimer le super-triangle ───────────────
+        //  ÉTAPE 7 : Supprimer le super-triangle 
         // On efface tous les triangles qui touchent un sommet du super-triangle
         // car ces triangles ne font pas partie de la vraie triangulation
         triangulation.removeIf(t ->
@@ -214,7 +211,7 @@ public class TriangulationDelaunay implements VoronoiEngine {
         // On sauvegarde les triangles calculés dans la carte
         map.setTriangles(triangulation);
 
-        // NOUVEAU : on construit les zones Voronoï depuis les triangles
+        // On construit les zones Voronoï depuis les triangles
         buildVoronoiZones();
 
         // On recalcule les liens patient → hôpital car les zones ont changé
@@ -301,38 +298,38 @@ public class TriangulationDelaunay implements VoronoiEngine {
  * For each hospital, collects the circumcenters of all triangles
  * that contain it as a vertex, then sorts them to form a polygon.
  */
-private void buildVoronoiZones() {
-    List<HospitalZone> zones = new ArrayList<>();
-    List<Triangle> triangles = map.getTriangles();
+    private void buildVoronoiZones() {
+        List<HospitalZone> zones = new ArrayList<>();
+        List<Triangle> triangles = map.getTriangles();
 
-    for (Hospital hospital : map.getHospitals()) {
+        for (Hospital hospital : map.getHospitals()) {
 
-        // Trouver tous les triangles qui ont cet hôpital comme sommet
-        List<Triangle> adjacent = new ArrayList<>();
-        for (Triangle t : triangles) {
-            if (t.getA() == hospital ||
-                t.getB() == hospital ||
-                t.getC() == hospital) {
-                adjacent.add(t);
+            // Trouver tous les triangles qui ont cet hôpital comme sommet
+            List<Triangle> adjacent = new ArrayList<>();
+            for (Triangle t : triangles) {
+                if (t.getA() == hospital ||
+                    t.getB() == hospital ||
+                    t.getC() == hospital) {
+                    adjacent.add(t);
+                }
+            }
+
+            // Récupérer les circumcenters de ces triangles
+            // ce sont les sommets du polygone Voronoï
+            List<Point> vertices = new ArrayList<>();
+            for (Triangle t : adjacent) {
+                vertices.add(t.getCircumcenter());
+            }
+
+            // Trier les sommets dans le bon ordre (sens horaire)
+            // pour former un polygone correct
+            vertices = sortPolygonVertices(vertices, hospital);
+
+            // Créer la zone Voronoï pour cet hôpital
+            if (!vertices.isEmpty()) {
+             zones.add(new HospitalZone(vertices,hospital));
             }
         }
-
-        // Récupérer les circumcenters de ces triangles
-        // ce sont les sommets du polygone Voronoï
-        List<Point> vertices = new ArrayList<>();
-        for (Triangle t : adjacent) {
-            vertices.add(t.getCircumcenter());
-        }
-
-        // Trier les sommets dans le bon ordre (sens horaire)
-        // pour former un polygone correct
-        vertices = sortPolygonVertices(vertices, hospital);
-
-        // Créer la zone Voronoï pour cet hôpital
-        if (!vertices.isEmpty()) {
-            zones.add(new HospitalZone(vertices,hospital));
-        }
-    }
 
     map.setZones(zones);
 }
