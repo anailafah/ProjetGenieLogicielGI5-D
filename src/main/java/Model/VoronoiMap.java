@@ -3,7 +3,7 @@ package Model;
 import java.util.ArrayList;
 import java.util.List;
 
-public class VoronoiMap {
+public class VoronoiMap{
     private List<Hospital> hospitals;
     private List<User> userTot;
     private List<Triangle> triangles;

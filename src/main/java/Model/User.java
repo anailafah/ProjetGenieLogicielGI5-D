@@ -10,6 +10,7 @@ public class User extends Point {
 	private Hospital closestSite;
 	private List<Hospital> nextHospitals;
 	private boolean isRedirected;
+	private int redirectionRank;
 	/**
 	 * creation of an user
 	 * @param id
@@ -21,6 +22,13 @@ public class User extends Point {
 		this.closestSite=null;
 		this.nextHospitals=new ArrayList<>();
 		this.isRedirected=false;
+		this.redirectionRank=-1;
+	}
+	public int getRedirectionRank(){
+		return redirectionRank;
+	}
+	public void setRedirectionRank(int r){
+		this.redirectionRank=r;
 	}
 	/**
 	 * @return true if the user is redirected to another hospital
@@ -53,6 +61,23 @@ public class User extends Point {
 	 */
 	public void setNextHospitals(List<Hospital> listH){
 		this.nextHospitals=listH;
+	}
+	public int setRedirection(){
+		int cpt=0;
+		if(closestSite.isSaturated()){
+			for(Hospital h: nextHospitals){
+				if(h.isSaturated()!=true){
+					this.setClosestSite(h);
+					this.setRedirectionRank(cpt);
+					h.addUsers(this);
+					return redirectionRank;
+					
+				}
+				cpt++;
+			}
+		}
+		//pas de redirection si tous les hopitaux sont saturés (closestSite reste le 1er)
+		return 0;
 	}
 	/**
 	 * test
