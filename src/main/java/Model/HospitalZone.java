@@ -2,29 +2,30 @@ package Model;
 
 import java.util.List;
 
-public class HospitalZone extends Hospital{
+public class HospitalZone {
 	private List<Point> vertices;
     private double area;
     private double minDistance;
     private double maxDistance;
     private double avgDistance;
     private int redirectedCount;
+    private Hospital centerHospital;
     /**
      * construction of a hospital zone
      * @param hospital
      * @param vertices
      */
-    public HospitalZone(Hospital hospital, List<Point> vertices) {
-        super(hospital.getId(), hospital.getX(), hospital.getY(),hospital.getMaxCapacity());
-        for (User u : hospital.getUsers()) addUsers(u);
+    public HospitalZone(List<Point> vertices,Hospital h) {
         this.vertices = vertices;
+        this.redirectedCount=0;
+        this.centerHospital=h;
         computeStats();
     }
     /**
      * computes all statistics for this zone
      */
     private void computeStats() {
-        List<User> users = getUsers();
+        List<User> users = this.centerHospital.getUsers();
         redirectedCount = 0;
 
         if (users.isEmpty()) {
@@ -51,8 +52,8 @@ public class HospitalZone extends Hospital{
      * @return distance between an user and hospital
      */
      private double dist(User u) {
-        double dx = getX() - u.getX();
-        double dy = getY() - u.getY();
+        double dx = this.centerHospital.getX() - u.getX();
+        double dy = this.centerHospital.getY() - u.getY();
         return Math.sqrt(dx * dx + dy * dy);
     }
     
@@ -77,7 +78,12 @@ public class HospitalZone extends Hospital{
         }
         return Math.abs(sumRight-sumLeft) / 2.0;
     }
-    
+    public void getCenterHospital(Hospital h){
+        this.centerHospital=h;
+    }
+    public Hospital setCenterHospital(){
+        return centerHospital;
+    }
 
     /** Refreshes statistics after modifications. */
     public void refresh() { 
@@ -101,12 +107,6 @@ public class HospitalZone extends Hospital{
     }
     public int getRedirectedCount(){ 
         return redirectedCount; 
-    }
-    public int getUsersCount(){ 
-        return getUsers().size(); 
-    }
-    public double getDensity(){ 
-        return area > 0 ? getUsersCount() / area : 0; 
     }
 }
 

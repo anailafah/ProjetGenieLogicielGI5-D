@@ -71,7 +71,6 @@ public class User extends Point {
 					this.setRedirectionRank(cpt);
 					h.addUsers(this);
 					return redirectionRank;
-					
 				}
 				cpt++;
 			}
