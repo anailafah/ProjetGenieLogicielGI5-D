@@ -26,6 +26,8 @@ public class VoronoiEngineStub implements VoronoiEngine {
         addHospital(100, 100, 50);
         addHospital(300, 150, 80);
         addHospital(200, 350, 60);
+
+        createFakeTriangles();
     }
 
     /**
@@ -138,5 +140,18 @@ public class VoronoiEngineStub implements VoronoiEngine {
     private void refreshFakeMap() {
         map.clearComputed();
     }
+    private void createFakeTriangles() {
+    List<Hospital> hospitals = map.getHospitals();
+
+    if (hospitals.size() >= 3) {
+        Triangle triangle = new Triangle(
+                hospitals.get(0),
+                hospitals.get(1),
+                hospitals.get(2)
+        );
+
+        map.getTriangles().add(triangle);
+    }
+}
 }
 
