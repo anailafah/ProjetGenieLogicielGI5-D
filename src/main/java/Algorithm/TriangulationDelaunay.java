@@ -121,7 +121,7 @@ public class TriangulationDelaunay implements VoronoiEngine {
         return nearest;
     }
 
-    // ALGORITHME DE BOWYER-WATSON
+    // ALGORITHME DE BOWYER-WATSON with voronoizone building 
     /**
      * Recomputes the full Delaunay triangulation using Bowyer-Watson and build Voronoi Zones.
      * Called every time a hospital is added, removed, or moved.
