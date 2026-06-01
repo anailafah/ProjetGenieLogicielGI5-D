@@ -13,7 +13,7 @@ import java.util.List;
  * This class provides fake data and simple behavior to unblock the UI
  * while the real Bowyer-Watson / Voronoi implementation is being developed.
  */
-public class VoronoiEngineStub implements VoronoiInterface {
+public class VoronoiEngineStub implements VoronoiEngine {
 
     private final VoronoiMap map;
 
@@ -139,4 +139,4 @@ public class VoronoiEngineStub implements VoronoiInterface {
         map.clearComputed();
     }
 }
-}
+

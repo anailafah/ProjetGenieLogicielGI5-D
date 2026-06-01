@@ -1,4 +1,4 @@
-package algorithm;
+package Algorithm;
 
 import Model.Point;
 import Model.Triangle;
