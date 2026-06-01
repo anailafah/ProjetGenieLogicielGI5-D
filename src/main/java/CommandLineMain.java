@@ -1,106 +1,147 @@
+import Algorithm.VoronoiEngineStub;
 import Model.*;
 
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+
 public class CommandLineMain {
+
+    private static VoronoiEngineStub engine = new VoronoiEngineStub();
 
     public static void main(String[] args) {
 
-        System.out.println("=== Test du modèle ===\n");
+        Scanner sc = new Scanner(System.in);
+        afficherAide();
+        System.out.println("3 hopitaux de test chargés. Tapez 'list' pour les voir.\n");
 
-        // Test Point
-        System.out.println("-- Test Point --");
-        Point p = new Point(0, 10.0, 20.0);
-        System.out.println("Point créé : " + p);
-        System.out.println("X=" + p.getX() + " Y=" + p.getY() + " ID=" + p.getId());
+        while (true) {
+            System.out.print("> ");
+            String ligne = sc.nextLine().trim();
 
-        // Test Hospital 
-        System.out.println("\n-- Test Hospital --");
-        Hospital h1 = new Hospital(1, 100.0, 150.0, 3);
-        Hospital h2 = new Hospital(2, 400.0, 300.0, 2);
-        Hospital h3 = new Hospital(3, 200.0, 400.0, 5);
-        System.out.println(h1);
-        System.out.println("Saturé ? " + h1.isSaturated());
-        System.out.println("Places libres : " + h1.getAvailableRoom());
-        System.out.println("Taux de place libre : " + h1.getPercentAvailable() + "%");
+            if (ligne.isEmpty()) continue;
 
-        // Test Patient
-        System.out.println("\n-- Test Patient --");
-        User u1 = new User(4, 120.0, 160.0);
-        User u2 = new User(5, 380.0, 290.0);
-        User u3 = new User(6, 105.0, 145.0);
-        User u4 = new User(7, 110.0, 155.0);
-        System.out.println("user créé : " + u1);
+            String[] mots = ligne.split("\\s+");
+            String cmd = mots[0];
 
-        // Test VoronoiMap 
-        System.out.println("\n-- Test VoronoiMap --");
-        VoronoiMap map = new VoronoiMap();
-        map.addHospital(h1);
-        map.addHospital(h2);
-        map.addHospital(h3);
-        map.addUsertot(u1);
-        map.addUsertot(u2);
-        map.addUsertot(u3);
-        map.addUsertot(u4);
-        System.out.println(map);
-        System.out.println("Nb hôpitaux : " + map.getHospitals().size());
-        System.out.println("Nb patients : " + map.getUserTot().size());
-        System.out.println("ID généré : " + map.generateId());
+            if (cmd.equals("add-hospital")) {
+                ajouterHopital(mots);
 
-        // Test Triangle 
-        System.out.println("\n-- Test Triangle --");
-        Triangle t = new Triangle(h1, h2, h3);
-        System.out.println(t);
-        System.out.println("Surface : " + t.getArea());
-        System.out.println("Circumcenter : " + t.getCircumcenter());
-        System.out.println("Circumradius : " + t.getCircumradius());
-        System.out.println("Point dans circumcircle ? " + u1.isInCircumcircle(t.getA(),t.getB(),t.getC()));
-        System.out.println("Déséquilibre : " + t.getImbalance());
+            } else if (cmd.equals("remove")) {
+                supprimerHopital(mots);
 
-        //  Test affectation patient → hôpital 
-        System.out.println("\n-- Test affectation patient → hôpital --");
-        List<Hospital> byDist = new ArrayList<>();
-        byDist.add(h1);
-        byDist.add(h2);
-        byDist.add(h3);
-        u1.setNextHospitals(byDist);
-        u1.setClosestSite(h1);
-        h1.addUsers(u1);
-        System.out.println("Patient 1 assigné à : " + u1.getClosestSite().getId());
-        System.out.println("Redirigé ? " + u1.getIsRedirected());
+            } else if (cmd.equals("move")) {
+                deplacerHopital(mots);
 
-        //  Test saturation et redirection 
-        System.out.println("\n-- Test saturation --");
-        u2.setNextHospitals(byDist);
-        u2.setClosestSite(h1);
-        h1.addUsers(u2);
+            } else if (cmd.equals("list")) {
+                listerHopitaux();
 
-        u3.setNextHospitals(byDist);
-        u3.setClosestSite(h1);
-        h1.addUsers(u3);
+            } else if (cmd.equals("stats")) {
+                afficherStats(mots);
 
-        System.out.println("Hôpital A saturé ? " + h1.isSaturated());
-        System.out.println("Taux place dispo A  : " + h1.getPercentAvailable() + "%");
+            } else if (cmd.equals("add-patient")) {
+                ajouterPatient(mots);
 
-        // pat4 doit être redirigé vers h2
-        u4.setNextHospitals(byDist);
-        if (h1.isSaturated()) {
-            u4.setClosestSite(h2);
-            h2.addUsers(u4);
-        } else {
-            u4.setClosestSite(h3);
-            h1.addUsers(u4);
+            } else if (cmd.equals("rm-patient")) {
+                supprimerPatient(mots);
+
+            } else if (cmd.equals("patients")) {
+                listerPatients();
+
+            } else if (cmd.equals("nearest")) {
+                hopitalLePlusProche(mots);
+
+            } else if (cmd.equals("triangles")) {
+                afficherTriangles();
+
+            } else if (cmd.equals("clear")) {
+                viderCarte();
+
+            } else if (cmd.equals("help")) {
+                afficherAide();
+
+            } else if (cmd.equals("quit") || cmd.equals("exit")) {
+                System.out.println("Au revoir !");
+                break;
+
+            } else {
+                System.out.println("Commande inconnue. Tapez 'help' pour voir les commandes disponibles.");
+            }
         }
-        System.out.println("Patient 4 assigné à : " + u4.getClosestSite().getId());
-        System.out.println("Patient 4 redirigé ? " + u4.getIsRedirected());
-        System.out.println("Rang de redirection : " + u4.getRedirectionRank());
-
-        //  Test GeometryFunc
-        System.out.println("\n-- Test GeometryFunc --");
-        double dist = Algorithm.GeometryFunc.distance(h1, h2);
-        System.out.println("Distance H1-H2 : " + dist);
-        double area = Algorithm.GeometryFunc.triangleArea(h1, h2, h3);
-        System.out.println("Surface triangle : " + area);
-
     }
-}
+
+    private static void ajouterHopital(String[] mots) {
+        if (mots.length < 5) {
+            System.out.println("Usage : add-hospital <x> <y> <nom> <capacite>");
+            return;
+        }
+        try {
+            double x = Double.parseDouble(mots[1]);
+            double y = Double.parseDouble(mots[2]);
+            // mots[3] = nom, pas encore utilisé dans le modèle
+            int capacite = Integer.parseInt(mots[4]);
+            Hospital h = engine.addHospital(x, y, capacite);
+            System.out.println("Hopital ajouté : " + h);
+        } catch (NumberFormatException e) {
+            System.out.println("Erreur : les coordonnées et la capacité doivent être des nombres.");
+        }
+    }
+
+    private static void supprimerHopital(String[] mots) {
+        if (mots.length < 2) {
+            System.out.println("Usage : remove <id>");
+            return;
+        }
+        try {
+            int id = Integer.parseInt(mots[1]);
+            Hospital h = trouverHopital(id);
+            if (h == null) {
+                System.out.println("Aucun hopital avec l'id " + id);
+                return;
+            }
+            engine.removeHospital(h);
+            System.out.println("Hopital " + id + " supprimé.");
+        } catch (NumberFormatException e) {
+            System.out.println("Erreur : l'id doit être un nombre entier.");
+        }
+    }
+
+    private static void deplacerHopital(String[] mots) {
+        if (mots.length < 4) {
+            System.out.println("Usage : move <id> <x> <y>");
+            return;
+        }
+        try {
+            int id = Integer.parseInt(mots[1]);
+            Hospital h = trouverHopital(id);
+            if (h == null) {
+                System.out.println("Aucun hopital avec l'id " + id);
+                return;
+            }
+            double x = Double.parseDouble(mots[2]);
+            double y = Double.parseDouble(mots[3]);
+            engine.moveHospital(h, x, y);
+            System.out.println("Hopital " + id + " déplacé en (" + x + ", " + y + ")");
+        } catch (NumberFormatException e) {
+            System.out.println("Erreur : les valeurs doivent être des nombres.");
+        }
+    }
+
+    private static void listerHopitaux() {
+        List<Hospital> hopitaux = engine.getMap().getHospitals();
+        if (hopitaux.isEmpty()) {
+            System.out.println("Aucun hopital enregistré.");
+            return;
+        }
+        for (Hospital h : hopitaux) {
+            String statut;
+            if (h.isSaturated()) {
+                statut = "SATURÉ";
+            } else {
+                statut = h.getAvailableRoom() + " places disponibles";
+            }
+            System.out.println("  [" + h.getId() + "] (" + (int)h.getX() + ", " + (int)h.getY() + ")  capacité:" + h.getMaxCapacity() + "  " + statut);
+        }
+    }
+
+   
