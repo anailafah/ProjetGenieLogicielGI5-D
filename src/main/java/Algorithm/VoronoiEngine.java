@@ -6,14 +6,14 @@ import java.util.List;
 /**
  * Interface defining the core operations of the Voronoi/Delaunay engine.
  */
-public interface VoronoiInterface {
+public interface VoronoiEngine {
     /**
      * Adds a hospital and recomputes the triangulation.
      * @param x x-coordinate
      * @param y y-coordinate
      * @return the created Site
      */
-    Hospital addHospital(double x, double y,int capacity);
+    Hospital addHospital(double x, double y, int maxCapacity) ;
 
     /**
      * Removes a hospital and recomputes the triangulation.
@@ -36,7 +36,7 @@ public interface VoronoiInterface {
     List<Triangle> getTriangles();
 
     /**
-     * Returns the current Voronoi cells.
+     * Returns the current Voronoi zones.
      * @return list of cells
      */
     List<HospitalZone> getZones();

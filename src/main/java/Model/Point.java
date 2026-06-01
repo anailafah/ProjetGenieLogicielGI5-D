@@ -73,4 +73,5 @@ public class Point {
                  + (cx*cx + cy*cy) * (ax*by - bx*ay);
         return d > 0;
 	}
+	
 }

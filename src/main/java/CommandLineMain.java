@@ -144,4 +144,26 @@ public class CommandLineMain {
         }
     }
 
-   
+    private static void afficherStats(String[] mots) {
+        if (mots.length < 2) {
+            System.out.println("Usage : stats <id>");
+            return;
+        }
+        try {
+            int id = Integer.parseInt(mots[1]);
+            Hospital h = trouverHopital(id);
+            if (h == null) {
+                System.out.println("Aucun hopital avec l'id " + id);
+                return;
+            }
+            System.out.println("Hopital " + h.getId() + " à (" + (int)h.getX() + ", " + (int)h.getY() + ")");
+            System.out.println("  Patients : " + h.getUsers().size() + " / " + h.getMaxCapacity());
+            if (h.isSaturated()) {
+                System.out.println("  Statut   : SATURÉ");
+            } else {
+                System.out.println("  Statut   : OK — " + h.getAvailableRoom() + " places libres");
+            }
+        } catch (NumberFormatException e) {
+            System.out.println("Erreur : l'id doit être un nombre entier.");
+        }
+    }
