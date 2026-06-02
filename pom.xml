@@ -4,31 +4,22 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
          http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
-    <!-- Version du format du fichier pom.xml, toujours 4.0.0 -->
     <modelVersion>4.0.0</modelVersion>
 
-    <!-- Identifiant de votre organisation/école -->
-    <groupId>fr.cytech</groupId>
+    <groupId>GI5.D</groupId>
 
-    <!-- Nom technique du projet -->
     <artifactId>voronoi-delaunay</artifactId>
 
-    <!-- Version de votre projet -->
     <version>0.1.0-SNAPSHOT</version>
 
-    <!-- Type de fichier produit : jar = fichier exécutable Java -->
     <packaging>jar</packaging>
 
     <properties>
-        <!-- Version Java utilisée pour compiler et exécuter -->
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
 
-        <!-- Encodage des fichiers source (évite les problèmes avec les accents) -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <!-- Version de JavaFX utilisée partout dans ce fichier -->
-        <!-- Changer ici = changer partout automatiquement -->
         <javafx.version>21</javafx.version>
     </properties>
 
