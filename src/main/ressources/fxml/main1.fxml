@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.CheckMenuItem?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.ProgressBar?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.SeparatorMenuItem?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane prefHeight="700" prefWidth="1100" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ui.MainController">
+
+    <!-- ═══ TOP : barre de menus ═══ -->
+    <top>
+        <MenuBar>
+            <Menu text="Fichier">
+                <MenuItem onAction="#onImportCSV" text="Importer hôpitaux (CSV)" />
+                <MenuItem onAction="#onImportBinary" text="Importer carte (.bin)" />
+                <MenuItem onAction="#onExportBinary" text="Exporter carte (.bin)" />
+                <SeparatorMenuItem />
+                <MenuItem onAction="#onClearAll" text="Effacer tout" />
+            </Menu>
+            <Menu text="Affichage">
+                <CheckMenuItem fx:id="menuDelaunay" onAction="#onToggleDelaunay" selected="true" text="Afficher Delaunay" />
+                <CheckMenuItem fx:id="menuZones" onAction="#onToggleZones" selected="true" text="Afficher Zones Voronoï" />
+                <CheckMenuItem fx:id="menuLinks" onAction="#onToggleLinks" selected="true" text="Afficher liens users" />
+            </Menu>
+         <Menu mnemonicParsing="false" text="Import carte">
+           <items>
+             <MenuItem mnemonicParsing="false" text="Action 1" />
+           </items>
+         </Menu>
+         <Menu mnemonicParsing="false" text="Effacer tout">
+           <items>
+             <MenuItem mnemonicParsing="false" text="Action 1" />
+           </items>
+         </Menu>
+            <Menu text="Aide">
+                <MenuItem onAction="#onAbout" text="À propos" />
+            </Menu>
+        </MenuBar>
+    </top>
+
+    <!-- ═══ CENTER : zone de dessin ═══ -->
+    <center>
+        <Pane fx:id="mapPane" onMouseClicked="#onMapClicked" onMouseDragged="#onMapDragged" onMousePressed="#onMapPressed" onScroll="#onMapScroll" style="-fx-background-color: #F5F4F0;" />
+    </center>
+
+    <!-- ═══ RIGHT : panneau latéral ═══ -->
+    <right>
+        <VBox prefWidth="220" spacing="8" style="-fx-background-color: #F0EEE8; -fx-border-color: #D3D1C7; -fx-border-width: 0 0 0 1;">
+            <padding><Insets bottom="12" left="12" right="12" top="12" /></padding>
+
+            <!-- Titre -->
+            <Label style="-fx-font-size: 14px; -fx-font-weight: bold;" text="Voronoï Hôpital" />
+            <Separator />
+
+            <!-- Affichage -->
+            <Label style="-fx-font-size: 10px; -fx-text-fill: #888780;" text="AFFICHAGE" />
+            <CheckBox fx:id="checkDelaunay" onAction="#onToggleDelaunay" selected="true" text="Triangulation Delaunay" />
+            <CheckBox fx:id="checkZones" onAction="#onToggleZones" selected="true" text="Zones Voronoï" />
+            <CheckBox fx:id="checkLinks" onAction="#onToggleLinks" selected="true" text="Liens users → hôpital" />
+            <Separator />
+
+            <!-- Infos hôpital sélectionné -->
+            <Label style="-fx-font-size: 10px; -fx-text-fill: #888780;" text="HÔPITAL SÉLECTIONNÉ" />
+            <Label fx:id="labelHospitalName" style="-fx-font-size: 12px;" text="Aucun hôpital sélectionné" wrapText="true" />
+            <ProgressBar fx:id="progressSaturation" prefWidth="196" progress="0" />
+            <Label fx:id="labelStats" style="-fx-font-size: 11px; -fx-text-fill: #5F5E5A;" text="" wrapText="true" />
+            <Separator />
+
+            <!-- Actions -->
+            <Label style="-fx-font-size: 10px; -fx-text-fill: #888780;" text="ACTIONS" />
+            <Button fx:id="btnRandomUsers" maxWidth="Infinity" onAction="#onRandomUsers" text="Ajout aléatoire users" />
+            <Button fx:id="btnImportCSV" maxWidth="Infinity" onAction="#onImportCSV" text="Importer hôpitaux CSV" />
+            <Button fx:id="btnExport" maxWidth="Infinity" onAction="#onExportBinary" text="Exporter carte (.bin)" />
+            <Button fx:id="btnImport" maxWidth="Infinity" onAction="#onImportBinary" text="Importer carte (.bin)" />
+            <Button fx:id="btnClear" maxWidth="Infinity" onAction="#onClearAll" text="Effacer tout" />
+            <Separator />
+
+            <!-- Légende -->
+            <Label style="-fx-font-size: 10px; -fx-text-fill: #888780;" text="LÉGENDE" />
+            <HBox alignment="CENTER_LEFT" spacing="6">
+                <Label style="-fx-background-color:#1D5C8A; -fx-min-width:12; -fx-min-height:12; -fx-background-radius:6;" />
+                <Label style="-fx-font-size:11px;" text="Hôpital disponible" />
+            </HBox>
+            <HBox alignment="CENTER_LEFT" spacing="6">
+                <Label style="-fx-background-color:#E07700; -fx-min-width:12; -fx-min-height:12; -fx-background-radius:6;" />
+                <Label style="-fx-font-size:11px;" text="Hôpital presque plein" />
+            </HBox>
+            <HBox alignment="CENTER_LEFT" spacing="6">
+                <Label style="-fx-background-color:#CC2200; -fx-min-width:12; -fx-min-height:12; -fx-background-radius:6;" />
+                <Label style="-fx-font-size:11px;" text="Hôpital saturé" />
+            </HBox>
+            <HBox alignment="CENTER_LEFT" spacing="6">
+                <Label style="-fx-background-color:#1D9E75; -fx-min-width:12; -fx-min-height:12; -fx-background-radius:6;" />
+                <Label style="-fx-font-size:11px;" text="User affecté" />
+            </HBox>
+            <HBox alignment="CENTER_LEFT" spacing="6">
+                <Label style="-fx-background-color:#D85A30; -fx-min-width:12; -fx-min-height:12; -fx-background-radius:6;" />
+                <Label style="-fx-font-size:11px;" text="User redirigé" />
+            </HBox>
+        </VBox>
+    </right>
+
+    <!-- ═══ BOTTOM : barre de statut ═══ -->
+    <bottom>
+        <HBox alignment="CENTER_LEFT" spacing="20" style="-fx-background-color: #E8E6E0; -fx-border-color: #D3D1C7; -fx-border-width: 1 0 0 0;">
+            <padding><Insets bottom="5" left="12" right="12" top="5" /></padding>
+            <Label fx:id="labelNbHospitals" style="-fx-font-size: 11px;" text="Hôpitaux : 0" />
+            <Label fx:id="labelNbUsers" style="-fx-font-size: 11px;" text="Users : 0" />
+            <Label fx:id="labelNbTriangles" style="-fx-font-size: 11px;" text="Triangles : 0" />
+            <Label fx:id="labelZoom" style="-fx-font-size: 11px;" text="Zoom : 100%" />
+            <Label fx:id="labelMessage" style="-fx-font-size: 11px; -fx-text-fill: #993C1D;" text="" HBox.hgrow="ALWAYS" />
+        </HBox>
+    </bottom>
+
+</BorderPane>
