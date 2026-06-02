@@ -309,7 +309,7 @@ public class ImportExportMap {
             bw.write(SECTION_HOSPITALS);
             bw.newLine();
             for (Hospital h : map.getHospitals()) {
-                bw.write(h.getId() + ","
+                bw.write("H" + h.getId() + ","
                     + h.getX() + ","
                     + h.getY() + ","
                     + h.getMaxCapacity());
