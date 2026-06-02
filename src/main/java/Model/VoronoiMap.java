@@ -1,9 +1,11 @@
 package Model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class VoronoiMap{
+public class VoronoiMap implements Serializable{
+    private static final long serialVersionUID = 6L;
     private List<Hospital> hospitals;
     private List<User> userTot;
     private List<Triangle> triangles;

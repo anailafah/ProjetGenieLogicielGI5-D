@@ -7,6 +7,7 @@ import java.util.Arrays;
  * Represent an user (patient) as a point 
  */
 public class User extends Point {
+	private static final long serialVersionUID = 3L;
 	private Hospital closestSite;
 	private List<Hospital> nextHospitals;
 	private boolean isRedirected;

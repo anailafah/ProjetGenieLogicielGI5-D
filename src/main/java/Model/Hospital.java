@@ -7,6 +7,7 @@ import java.util.ArrayList;
  * Represent a hospital point (voronoi site)
  */
 public class Hospital extends Point {
+	private static final long serialVersionUID = 2L;
 	private List<User> users;
 	private final int maxCapacity;
 	/**

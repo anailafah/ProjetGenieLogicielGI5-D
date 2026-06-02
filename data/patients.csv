@@ -1,0 +1,11 @@
+# Fichier d'import des patients
+# Format : x,y
+# Les lignes commençant par # sont des commentaires
+
+120.0,160.0
+310.0,210.0
+480.0,390.0
+260.0,440.0
+390.0,110.0
+150.0,300.0
+450.0,250.0

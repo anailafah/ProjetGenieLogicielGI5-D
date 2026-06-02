@@ -1,8 +1,10 @@
 package Model;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class HospitalZone {
+public class HospitalZone implements Serializable{
+    private static final long serialVersionUID = 5L;
 	private List<Point> vertices;
     private double area;
     private double density;

@@ -1,8 +1,12 @@
 package Model;
+
+import java.io.Serializable;
+
 /**
  * Represents a 2D point with coordinates x and y
  */
-public class Point {
+public class Point implements Serializable{
+	private static final long serialVersionUID = 1L;
 	
 	private final int id;
 	private double x;

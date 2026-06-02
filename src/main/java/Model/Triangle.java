@@ -1,8 +1,10 @@
 package Model;
+import java.io.Serializable;
 /**
  * represents a triangle in delaunay triangulation
  */
-public class Triangle {
+public class Triangle implements Serializable {
+    private static final long serialVersionUID = 4L;
     private Hospital a,b,c;
     private Point circumcenter;
     private double circumradius;
