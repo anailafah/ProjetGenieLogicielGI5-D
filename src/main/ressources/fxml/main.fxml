@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.CheckMenuItem?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.ProgressBar?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.VBox?>
+
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Interface.MainController">
+   <top>
+      <MenuBar BorderPane.alignment="CENTER">
+        <menus>
+          <Menu mnemonicParsing="false" text="File">
+               <items>
+                  <MenuItem mnemonicParsing="false" text="Import Map" />
+                  <MenuItem mnemonicParsing="false" text="Import CSV" />
+                  <MenuItem mnemonicParsing="false" text="Export Map" />
+                  <MenuItem mnemonicParsing="false" text="Delete all" />
+               </items>
+          </Menu>
+            <Menu mnemonicParsing="false" text="Display">
+              <items>
+                  <CheckMenuItem fx:id="menuDelaunay" mnemonicParsing="false" onAction="#onToggleDelaunay" text="Display Delaunay triangulation" />
+                  <CheckMenuItem fx:id="menuZones" mnemonicParsing="false" onAction="#onToggleZones" text="Display Voronoi zones" />
+                  <CheckMenuItem fx:id="menuLinks" mnemonicParsing="false" onAction="#onToggleLinks" text="Display links" />
+              </items>
+            </Menu>
+            <Menu mnemonicParsing="false" text="Help" />
+        </menus>
+      </MenuBar>
+   </top>
+   <center>
+      <Pane fx:id="mapPane" onMouseClicked="#onMapClicked" onMouseDragged="#onMapDragged" onMousePressed="#onMapPressed" onScroll="#onMapScroll" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
+   </center>
+   <right>
+      <VBox prefHeight="500.0" prefWidth="220.0" spacing="8.0" BorderPane.alignment="CENTER">
+         <children>
+            <Label text="Hospital Voronoi diagram" />
+            <Separator prefWidth="200.0" />
+            <CheckBox fx:id="checkDelaunay" mnemonicParsing="false" onAction="#onToggleDelaunay" text="Show Delaunay triangulation" />
+            <CheckBox fx:id="checkZones" mnemonicParsing="false" onAction="#onToggleZones" text="Show Voronoi Zones" />
+            <CheckBox fx:id="checkLinks" mnemonicParsing="false" onAction="#onToggleLinks" text="Show Links" />
+            <Separator prefWidth="200.0" />
+            <Label fx:id="labelHospitalName" text="hospital name" />
+            <ProgressBar fx:id="progressSaturation" prefWidth="200.0" progress="0.0" />
+            <Label fx:id="labelStats" text="Stats" />
+            <Separator prefWidth="200.0" />
+            <Button mnemonicParsing="false" onAction="#onRandomUsers" text="Add random user" />
+            <Button mnemonicParsing="false" onAction="#onImportCSV" text="Import CSV" />
+            <Button mnemonicParsing="false" onAction="#onImportBinary" text="Import Binary" />
+            <Button mnemonicParsing="false" onAction="#onExportBinary" text="Export Binary" />
+            <Button mnemonicParsing="false" onAction="#onClearAll" text="Clear all" />
+            <Separator prefWidth="200.0" />
+            <Label text="Hospital" />
+            <Label text="User" />
+            <Label text="Rediriged User" />
+         </children>
+      </VBox>
+   </right>
+   <bottom>
+      <HBox prefHeight="30.0" prefWidth="800.0" spacing="20.0" BorderPane.alignment="CENTER">
+         <children>
+            <Label fx:id="labelNbHospitals" text="Hospital : 0" />
+            <Label fx:id="labelNbUsers" text="User : 0" />
+            <Label fx:id="labelNbTriangles" text="Triangle : 0" />
+            <Label fx:id="labelZoom" text="Zoom : 100%" />
+            <Label fx:id="labelMessage" text="Message" />
+         </children>
+         <BorderPane.margin>
+            <Insets />
+         </BorderPane.margin>
+      </HBox>
+   </bottom>
+</BorderPane>

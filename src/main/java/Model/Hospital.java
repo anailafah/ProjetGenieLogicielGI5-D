@@ -10,6 +10,7 @@ public class Hospital extends Point {
 	private static final long serialVersionUID = 2L;
 	private List<User> users;
 	private final int maxCapacity;
+	private String name;
 	/**
 	 * construction of a reference point
 	 * @param id id of the hospital
@@ -21,6 +22,12 @@ public class Hospital extends Point {
 		super(id,x,y);
 		this.users=new ArrayList<>();
 		this.maxCapacity = maxCapacity;
+	}
+	public String getName(){
+		return name;
+	}
+	public void setName(String name){
+		this.name=name;
 	}
 	/**
 	 * @return list of users who are affiliated to the hospitall
