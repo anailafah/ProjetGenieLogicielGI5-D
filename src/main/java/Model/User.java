@@ -70,8 +70,13 @@ public class User extends Point {
 	 */
 	public void setNextHospitals(List<Hospital> listH){
 		this.nextHospitals=listH;
+		this.setRedirectionRank(this.setRedirection());
+		if(this.redirectionRank!=0){
+			this.setIsRedirected(true);
+		}
+
 	}
-	public int setRedirection(){
+	private int setRedirection(){
 		int cpt=0;
 		if(closestSite.isSaturated()){
 			for(Hospital h: nextHospitals){
@@ -84,7 +89,6 @@ public class User extends Point {
 				cpt++;
 			}
 		}
-		//pas de redirection si tous les hopitaux sont saturés (closestSite reste le 1er)
 		return 0;
 	}
 	/**
