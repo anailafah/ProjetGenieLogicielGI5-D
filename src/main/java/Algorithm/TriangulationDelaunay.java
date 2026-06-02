@@ -19,9 +19,7 @@ public class TriangulationDelaunay implements VoronoiEngine {
      * @param height canvas height
      */
     public TriangulationDelaunay(double width, double height) {
-        // On crée une carte vide
         this.map = new VoronoiMap();
-        // On mémorise les dimensions pour le super-triangle
         this.width = width;
         this.height = height;
     }
@@ -36,11 +34,8 @@ public class TriangulationDelaunay implements VoronoiEngine {
      */
     @Override
     public Hospital addHospital(double x, double y, int maxCapacity) {
-        // On crée un nouvel hôpital avec un ID unique généré par la carte
         Hospital h = new Hospital(map.generateId(), x, y, maxCapacity);
-        // On l'ajoute à la liste des hôpitaux
         map.addHospital(h);
-        // On recalcule toute la triangulation car un point a changé
         recompute();
         return h;
     }
@@ -51,9 +46,7 @@ public class TriangulationDelaunay implements VoronoiEngine {
      */
     @Override
     public void removeHospital(Hospital hospital) {
-        // On retire l'hôpital de la liste
         map.removeHospital(hospital);
-        // On recalcule car un point a disparu
         recompute();
     }
 
@@ -65,10 +58,8 @@ public class TriangulationDelaunay implements VoronoiEngine {
      */
     @Override
     public void moveHospital(Hospital hospital, double x, double y) {
-        // On change juste les coordonnées de l'hôpital existant
         hospital.setX(x);
         hospital.setY(y);
-        // On recalcule car un point a bougé
         recompute();
     }
 
@@ -229,7 +220,6 @@ public class TriangulationDelaunay implements VoronoiEngine {
             // setAssignedHospital calcule aussi automatiquement isRedirected :
             // si assigned != byDistance[0] → le patient a été redirigé
 
-            // On ajoute ce patient dans la liste de son hôpital assigné
             if (assigned != null)
                 assigned.addUsers(u);
         }
@@ -263,7 +253,7 @@ public class TriangulationDelaunay implements VoronoiEngine {
 
         for (Hospital hospital : map.getHospitals()) {
 
-            // Trouver tous les triangles qui ont cet hôpital comme sommet
+            // find all triangle that contains hospital
             List<Triangle> adjacent = new ArrayList<>();
             for (Triangle t : triangles) {
                 if (t.getA() == hospital ||
@@ -272,13 +262,12 @@ public class TriangulationDelaunay implements VoronoiEngine {
                     adjacent.add(t);
                 }
             }
-            // Récupérer les circumcenters de ces triangles
-            // ce sont les sommets du polygone Voronoï
+            // retrieve all circumcenters 
             List<Point> vertices = new ArrayList<>();
             for (Triangle t : adjacent) {
                 vertices.add(t.getCircumcenter());
             }
-            // Trier les sommets dans le bon ordre (sens horaire) pour former un polygone correct
+            // sort vertices in  clockwise direction in order to form a correct polygone 
             vertices = sortPolygonVertices(vertices, hospital);
 
             if (!vertices.isEmpty()) {
@@ -298,8 +287,7 @@ public class TriangulationDelaunay implements VoronoiEngine {
     private List<Point> sortPolygonVertices(List<Point> vertices, Hospital center) {
         if (vertices.size() <= 1) return vertices;
 
-        // On calcule l'angle de chaque sommet par rapport au centre
-        // et on trie dans l'ordre croissant des angles
+        // On calcule l'angle de chaque sommet par rapport au centre et on trie dans l'ordre croissant des angles
         vertices.sort((p1, p2) -> {
             double angle1 = Math.atan2(p1.getY() - center.getY(), p1.getX() - center.getX());
             double angle2 = Math.atan2(p2.getY() - center.getY(),p2.getX() - center.getX()
