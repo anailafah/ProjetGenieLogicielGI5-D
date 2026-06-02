@@ -229,8 +229,10 @@ public class TriangulationDelaunay implements VoronoiEngine {
                 .orElse(byDistance.isEmpty() ? null : byDistance.get(0));
 
             u.setClosestSite(assigned);
-            // setAssignedHospital calcule aussi automatiquement isRedirected :
-            // si assigned != byDistance[0] → le patient a été redirigé
+            boolean redirected = assigned != null
+                && !byDistance.isEmpty()
+                && assigned != byDistance.get(0);
+            u.setIsRedirected(redirected);
 
             if (assigned != null)
                 assigned.addUsers(u);
