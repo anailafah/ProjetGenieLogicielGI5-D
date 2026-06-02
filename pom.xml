@@ -69,7 +69,7 @@
                 <artifactId>javafx-maven-plugin</artifactId>
                 <version>0.0.8</version>
                 <configuration>
-                    <mainClass>ui.MainApp</mainClass>
+                    <mainClass>Interface.MainApp</mainClass>
                 </configuration>
             </plugin>
 
@@ -80,7 +80,6 @@
                 <configuration>
                     <outputDirectory>docs</outputDirectory>
                     <reportOutputDirectory>docs</reportOutputDirectory>
-                    <!-- Encodage pour éviter les problèmes avec les accents -->
                     <encoding>UTF-8</encoding>
                     <docencoding>UTF-8</docencoding>
                 </configuration>
