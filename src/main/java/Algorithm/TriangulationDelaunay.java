@@ -72,7 +72,6 @@ public class TriangulationDelaunay implements VoronoiEngine {
         recompute();
     }
 
-
     /**
      * Returns the current Delaunay triangles.
      * @return list of triangles
@@ -146,7 +145,6 @@ public class TriangulationDelaunay implements VoronoiEngine {
             for (Triangle t : triangulation) {
                 if (hospital.isInCircumcircle(t.getA(),t.getB(),t.getC()))
                     badTriangles.add(t);
-                // isInCircumcircle() vérifie si hospital est dans le cercle circonscrit du triangle t
             }
 
             //  ÉTAPE 4 : Trouver les bords du trou 
@@ -170,8 +168,7 @@ public class TriangulationDelaunay implements VoronoiEngine {
                 }
             }
 
-            //  ÉTAPE 5 : Supprimer les mauvais triangles 
-            // On efface tous les mauvais triangles de la triangulation
+            //Step 5: remove bad triangle
             triangulation.removeAll(badTriangles);
 
             //  ÉTAPE 6 : Reboucher le trou 
@@ -179,7 +176,6 @@ public class TriangulationDelaunay implements VoronoiEngine {
             // qui relie ce bord au nouvel hôpital
             for (Hospital[] edge : polygon)
                 triangulation.add(new Triangle(edge[0], edge[1], hospital));
-                // Nouveau triangle : edge[0] ─ edge[1] ─ hospital
         }
 
         //  ÉTAPE 7 : Supprimer le super-triangle 
@@ -189,7 +185,6 @@ public class TriangulationDelaunay implements VoronoiEngine {
             t.getA() == stA || t.getA() == stB || t.getA() == stC ||
             t.getB() == stA || t.getB() == stB || t.getB() == stC ||
             t.getC() == stA || t.getC() == stB || t.getC() == stC
-            // On compare avec == car c'est bien le même objet Java qu'on cherche
         );
 
         // On sauvegarde les triangles calculés dans la carte
@@ -203,20 +198,14 @@ public class TriangulationDelaunay implements VoronoiEngine {
 
         
     }
-
-    // AFFECTATION DES PATIENTS
-
     /**
      * Assigns each patient to their nearest available hospital.
      * If the nearest is saturated, redirects to the next closest one.
      */
     private void updatePatientLinks() {
-        // On remet à zéro toutes les listes de patients des hôpitaux
-        // car on va tout recalculer depuis le début
+        // remise a 0 de la liste d'utilisateurs de chaque hopital
         for (Hospital h : map.getHospitals())
             h.getUsers().clear();
-
-        // Pour chaque patient sur la carte
         for (User u : map.getUserTot()) {
 
             // On trie TOUS les hôpitaux du plus proche au plus loin
@@ -227,12 +216,7 @@ public class TriangulationDelaunay implements VoronoiEngine {
                     GeometryFunc.distance(u, b)  // distance patient → hôpital b
                 ))
                 .collect(Collectors.toList());
-            // Résultat : byDistance[0] = hôpital le plus proche
-            //            byDistance[1] = 2e plus proche
-            //            etc.
-
-            // On mémorise cette liste dans le patient
-            // (utile pour l'affichage dans le panneau latéral)
+            
             u.setNextHospitals(byDistance);
 
             // On cherche le premier hôpital NON saturé dans la liste
@@ -240,9 +224,7 @@ public class TriangulationDelaunay implements VoronoiEngine {
                 .filter(h -> !h.isSaturated()) // On ignore les hôpitaux saturés
                 .findFirst()                    // On prend le premier disponible
                 .orElse(byDistance.isEmpty() ? null : byDistance.get(0));
-                // Si TOUS sont saturés → on prend quand même le plus proche
 
-            // On affecte le patient à cet hôpital
             u.setClosestSite(assigned);
             // setAssignedHospital calcule aussi automatiquement isRedirected :
             // si assigned != byDistance[0] → le patient a été redirigé
@@ -252,8 +234,6 @@ public class TriangulationDelaunay implements VoronoiEngine {
                 assigned.addUsers(u);
         }
     }
-
-    // MÉTHODES UTILITAIRES PRIVÉES
     /**
      * Checks if a triangle contains a given edge (pair of hospitals).
      * Used to detect shared edges between bad triangles.
@@ -292,52 +272,42 @@ public class TriangulationDelaunay implements VoronoiEngine {
                     adjacent.add(t);
                 }
             }
-
             // Récupérer les circumcenters de ces triangles
             // ce sont les sommets du polygone Voronoï
             List<Point> vertices = new ArrayList<>();
             for (Triangle t : adjacent) {
                 vertices.add(t.getCircumcenter());
             }
-
-            // Trier les sommets dans le bon ordre (sens horaire)
-            // pour former un polygone correct
+            // Trier les sommets dans le bon ordre (sens horaire) pour former un polygone correct
             vertices = sortPolygonVertices(vertices, hospital);
 
-            // Créer la zone Voronoï pour cet hôpital
             if (!vertices.isEmpty()) {
              zones.add(new HospitalZone(vertices,hospital));
             }
         }
+        map.setZones(zones);
+    }
 
-    map.setZones(zones);
-}
+    /**
+    * Sorts polygon vertices in clockwise order around a center point.
+    * Necessary to draw a proper polygon from circumcenters.
+    * @param vertices the unsorted list of vertices
+    * @param center the hospital around which to sort
+    * @return the sorted list of vertices
+    */
+    private List<Point> sortPolygonVertices(List<Point> vertices, Hospital center) {
+        if (vertices.size() <= 1) return vertices;
 
-/**
- * Sorts polygon vertices in clockwise order around a center point.
- * Necessary to draw a proper polygon from circumcenters.
- * @param vertices the unsorted list of vertices
- * @param center the hospital around which to sort
- * @return the sorted list of vertices
- */
-private List<Point> sortPolygonVertices(List<Point> vertices, Hospital center) {
-    if (vertices.size() <= 1) return vertices;
-
-    // On calcule l'angle de chaque sommet par rapport au centre
-    // et on trie dans l'ordre croissant des angles
-    vertices.sort((p1, p2) -> {
-        double angle1 = Math.atan2(
-            p1.getY() - center.getY(),
-            p1.getX() - center.getX()
-        );
-        double angle2 = Math.atan2(
-            p2.getY() - center.getY(),
-            p2.getX() - center.getX()
-        );
+        // On calcule l'angle de chaque sommet par rapport au centre
+        // et on trie dans l'ordre croissant des angles
+        vertices.sort((p1, p2) -> {
+            double angle1 = Math.atan2(p1.getY() - center.getY(), p1.getX() - center.getX());
+            double angle2 = Math.atan2(p2.getY() - center.getY(),p2.getX() - center.getX()
+            );
         return Double.compare(angle1, angle2);
-    });
-
+        });
     return vertices;
-}
+    }
+ 
 }
 
