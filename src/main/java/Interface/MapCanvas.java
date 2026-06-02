@@ -1,6 +1,9 @@
 package Interface;
 
+import java.util.List;
 import Model.Hospital;
+import Model.HospitalZone;
+import Model.Point;
 import Model.Triangle;
 import Model.User;
 import Model.VoronoiMap;
@@ -49,9 +52,39 @@ public class MapCanvas extends Canvas {
         GraphicsContext gc = getGraphicsContext2D();
 
         clear(gc);
+        drawZones(gc);
         if (showDelaunay) drawTriangles(gc);
         drawHospitals(gc);
         drawUsers(gc);
+    }
+
+    private void drawZones(GraphicsContext gc) {
+        for (HospitalZone zone : map.getZones()) {
+            List<Point> vertices = zone.getVertices();
+            if (vertices.size() < 3) continue;
+
+            double[] xs = new double[vertices.size()];
+            double[] ys = new double[vertices.size()];
+            for (int i = 0; i < vertices.size(); i++) {
+                xs[i] = vertices.get(i).getX();
+                ys[i] = vertices.get(i).getY();
+            }
+
+            Hospital h = zone.getCenterHospital();
+            if (h.isSaturated()) {
+                gc.setFill(Color.color(1.0, 0.2, 0.2, 0.15));
+                gc.setStroke(Color.color(1.0, 0.2, 0.2, 0.5));
+            } else if (h.getAvailableRoom() <= h.getMaxCapacity() * 0.3) {
+                gc.setFill(Color.color(1.0, 0.65, 0.0, 0.15));
+                gc.setStroke(Color.color(1.0, 0.65, 0.0, 0.5));
+            } else {
+                gc.setFill(Color.color(0.25, 0.55, 1.0, 0.15));
+                gc.setStroke(Color.color(0.25, 0.55, 1.0, 0.5));
+            }
+
+            gc.fillPolygon(xs, ys, vertices.size());
+            gc.strokePolygon(xs, ys, vertices.size());
+        }
     }
 
     private void drawTriangles(GraphicsContext gc) {
