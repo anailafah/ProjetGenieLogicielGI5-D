@@ -33,16 +33,6 @@
                 <CheckMenuItem fx:id="menuZones" onAction="#onToggleZones" selected="true" text="Afficher Zones Voronoï" />
                 <CheckMenuItem fx:id="menuLinks" onAction="#onToggleLinks" selected="true" text="Afficher liens users" />
             </Menu>
-         <Menu mnemonicParsing="false" text="Import carte">
-           <items>
-             <MenuItem mnemonicParsing="false" text="Action 1" />
-           </items>
-         </Menu>
-         <Menu mnemonicParsing="false" text="Effacer tout">
-           <items>
-             <MenuItem mnemonicParsing="false" text="Action 1" />
-           </items>
-         </Menu>
             <Menu text="Aide">
                 <MenuItem onAction="#onAbout" text="À propos" />
             </Menu>
@@ -91,10 +81,6 @@
             <HBox alignment="CENTER_LEFT" spacing="6">
                 <Label style="-fx-background-color:#1D5C8A; -fx-min-width:12; -fx-min-height:12; -fx-background-radius:6;" />
                 <Label style="-fx-font-size:11px;" text="Hôpital disponible" />
-            </HBox>
-            <HBox alignment="CENTER_LEFT" spacing="6">
-                <Label style="-fx-background-color:#E07700; -fx-min-width:12; -fx-min-height:12; -fx-background-radius:6;" />
-                <Label style="-fx-font-size:11px;" text="Hôpital presque plein" />
             </HBox>
             <HBox alignment="CENTER_LEFT" spacing="6">
                 <Label style="-fx-background-color:#CC2200; -fx-min-width:12; -fx-min-height:12; -fx-background-radius:6;" />

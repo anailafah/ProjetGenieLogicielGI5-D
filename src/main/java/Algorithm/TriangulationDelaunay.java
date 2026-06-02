@@ -127,28 +127,21 @@ public class TriangulationDelaunay implements VoronoiEngine {
      * Called every time a hospital is added, removed, or moved.
      */
     private void recompute() {
-        // On efface tous les anciens triangles calculés
         map.clearComputed();
         List<Hospital> hospitals = map.getHospitals();
-
-        // S'il y a moins de 3 hôpitaux, on ne peut pas faire de triangle donc on s'arrête là
         if (hospitals.size() < 3) return;
 
-        // ÉTAPE 1 : Créer le super-triangle 
-        // Le super-triangle doit contenir TOUS les hôpitaux donc 10* plus grande que le canva
+        // Step 1 : create a super-triangle that contains all hospitals
         Hospital stA = new Hospital(-1, -width * 10, -height * 10, 0);
         Hospital stB = new Hospital(-2,  width * 10, -height * 10, 0);
         Hospital stC = new Hospital(-3,  0.0,         height * 10, 0);
-
-        // La triangulation commence avec juste ce super-triangle
         List<Triangle> triangulation = new ArrayList<>();
         triangulation.add(new Triangle(stA, stB, stC));
 
-        //  ÉTAPE 2 : Ajouter chaque hôpital un par un 
+        //Step 2 : add each hospital 1 by 1
         for (Hospital hospital : hospitals) {
 
-            //  ÉTAPE 3 : Trouver les mauvais triangles 
-            // Un mauvais triangle = le nouvel hôpital est dans son cercle circonscrit
+            //Step 3: find badTriangles (triangles which contains a hospital in his circumcircle)
             List<Triangle> badTriangles = new ArrayList<>();
             for (Triangle t : triangulation) {
                 if (hospital.isInCircumcircle(t.getA(),t.getB(),t.getC()))
@@ -160,18 +153,10 @@ public class TriangulationDelaunay implements VoronoiEngine {
             // Un bord du trou = un bord qui appartient à UN SEUL mauvais triangle
             // Si un bord appartient à DEUX mauvais triangles → il disparaît dans le trou
             List<Hospital[]> polygon = new ArrayList<>();
-
             for (Triangle t : badTriangles) {
-                // Chaque triangle a 3 bords (arêtes)
-                Hospital[][] edges = {
-                    {t.getA(), t.getB()}, // bord entre sommet A et sommet B
-                    {t.getB(), t.getC()}, // bord entre sommet B et sommet C
-                    {t.getC(), t.getA()}  // bord entre sommet C et sommet A
-                };
-
+                Hospital[][] edges = { {t.getA(), t.getB()}, {t.getB(), t.getC()}, {t.getC(), t.getA()} }; //liste des 
                 for (Hospital[] edge : edges) {
-                    boolean shared = false; // Ce bord est-il partagé ?
-
+                    boolean shared = false; 
                     // On vérifie si ce bord est partagé avec un AUTRE mauvais triangle
                     for (Triangle other : badTriangles) {
                         if (other == t) continue; // On ne compare pas le triangle avec lui-même
@@ -180,7 +165,6 @@ public class TriangulationDelaunay implements VoronoiEngine {
                             break;
                         }
                     }
-
                     // Si le bord n'est PAS partagé → c'est un bord du trou → on le garde
                     if (!shared) polygon.add(edge);
                 }
@@ -279,25 +263,20 @@ public class TriangulationDelaunay implements VoronoiEngine {
      * @return true if the triangle contains both h1 and h2 as vertices
      */
     private boolean triangleContainsEdge(Triangle t, Hospital h1, Hospital h2) {
-        // On récupère les 3 sommets du triangle
         Hospital[] verts = {t.getA(), t.getB(), t.getC()};
         boolean hasH1 = false, hasH2 = false;
-
-        // On vérifie si h1 et h2 sont tous les deux dans les sommets
         for (Hospital h : verts) {
-            if (h == h1) hasH1 = true; // == compare les références Java, pas les valeurs
-            if (h == h2) hasH2 = true; // C'est voulu : on veut le même objet exact
+            if (h == h1) hasH1 = true; 
+            if (h == h2) hasH2 = true; 
         }
-
-        // Le triangle contient l'arête seulement si les DEUX sommets sont présents
         return hasH1 && hasH2;
     }
 
     /**
- * Builds Voronoi zones from the Delaunay triangulation.
- * For each hospital, collects the circumcenters of all triangles
- * that contain it as a vertex, then sorts them to form a polygon.
- */
+    * Builds Voronoi zones from the Delaunay triangulation.
+    * For each hospital, collects the circumcenters of all triangles
+    * that contain it as a vertex, then sorts them to form a polygon.
+    */
     private void buildVoronoiZones() {
         List<HospitalZone> zones = new ArrayList<>();
         List<Triangle> triangles = map.getTriangles();
