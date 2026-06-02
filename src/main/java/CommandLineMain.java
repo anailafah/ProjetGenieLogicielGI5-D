@@ -447,7 +447,7 @@ public class CommandLineMain {
         }
         String path = parts[1];
         try {
-            int count = ImportExportMap.importCSV(path, engine.getMap());
+            int[] count = ImportExportMap.importFullMapCSV(path, engine.getMap());
             System.out.println("Imported " + count + " hospital(s) from: " + path);
         } catch (IllegalArgumentException e) {
             System.out.println("Error (invalid argument): " + e.getMessage());
