@@ -99,10 +99,10 @@ public class HospitalZone implements Serializable{
         }
         return Math.abs(sumRight-sumLeft) / 2.0;
     }
-    public void getCenterHospital(Hospital h){
+    public void setCenterHospital(Hospital h){
         this.centerHospital=h;
     }
-    public Hospital setCenterHospital(){
+    public Hospital getCenterHospital(){
         return centerHospital;
     }
 
