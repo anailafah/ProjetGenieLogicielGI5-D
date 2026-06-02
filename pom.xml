@@ -1,75 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+         http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
+    <!-- Version du format du fichier pom.xml, toujours 4.0.0 -->
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.gi5</groupId>
-    <artifactId>projet-genie-logiciel</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <!-- Identifiant de votre organisation/école -->
+    <groupId>fr.cytech</groupId>
 
+    <!-- Nom technique du projet -->
+    <artifactId>voronoi-delaunay</artifactId>
+
+    <!-- Version de votre projet -->
+    <version>0.1.0-SNAPSHOT</version>
+
+    <!-- Type de fichier produit : jar = fichier exécutable Java -->
+    <packaging>jar</packaging>
+
+    <!-- ═══════════════════════════════════════════════
+         PROPRIÉTÉS GLOBALES
+         Variables réutilisables dans tout le pom.xml
+    ═══════════════════════════════════════════════ -->
     <properties>
-        <maven.compiler.release>21</maven.compiler.release>
+        <!-- Version Java utilisée pour compiler et exécuter -->
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
+
+        <!-- Encodage des fichiers source (évite les problèmes avec les accents) -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <javafx.version>21.0.5</javafx.version>
-        <junit.version>5.10.2</junit.version>
+
+        <!-- Version de JavaFX utilisée partout dans ce fichier -->
+        <!-- Changer ici = changer partout automatiquement -->
+        <javafx.version>21</javafx.version>
     </properties>
 
+    <!-- ═══════════════════════════════════════════════
+         DÉPENDANCES
+         Bibliothèques externes téléchargées automatiquement
+    ═══════════════════════════════════════════════ -->
     <dependencies>
-        <!-- JavaFX -->
+
+        <!-- JavaFX Controls : Button, Label, CheckBox, ProgressBar...
+             Sans cette dépendance, aucun composant JavaFX ne fonctionne -->
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-controls</artifactId>
             <version>${javafx.version}</version>
         </dependency>
 
+        <!-- JavaFX FXML : FXMLLoader, @FXML, SceneBuilder
+             Indispensable pour charger les fichiers .fxml générés par SceneBuilder
+             Sans elle, MainApp.java ne peut pas charger main.fxml -->
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-fxml</artifactId>
             <version>${javafx.version}</version>
         </dependency>
 
-        <!-- JUnit 5 pour les tests -->
+        <!-- JUnit : framework de tests unitaires
+             scope=test = utilisé uniquement pour les tests, pas dans le JAR final -->
         <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter</artifactId>
-            <version>${junit.version}</version>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.13.2</version>
             <scope>test</scope>
         </dependency>
+
     </dependencies>
 
+    <!-- ═══════════════════════════════════════════════
+         BUILD
+         Configuration de la compilation et des plugins
+    ═══════════════════════════════════════════════ -->
     <build>
-        <!-- Le projet actuel utilise src/ directement au lieu de src/main/java -->
-        <sourceDirectory>src/main/java</sourceDirectory>
-        <testSourceDirectory>src/test/java</testSourceDirectory>
+
+        <!-- RESSOURCES : dit à Maven où trouver les fichiers non-Java
+             Sans cette section, les .fxml et .css ne sont pas copiés
+             dans le JAR et l'application plante au démarrage -->
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+            </resource>
+        </resources>
 
         <plugins>
-            <!-- Compilation Java 21 -->
+
+            <!-- Plugin Maven Compiler
+                 Force Java 21 pour la compilation
+                 Sans lui Maven utilise une vieille version par défaut -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.13.0</version>
+                <version>3.11.0</version>
                 <configuration>
-                    <release>21</release>
+                    <source>21</source>
+                    <target>21</target>
                 </configuration>
             </plugin>
 
-            <!-- Tests JUnit 5 -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.2.5</version>
-            </plugin>
-
-            <!-- Lancement JavaFX avec Maven -->
+            <!-- Plugin JavaFX
+                 Permet de lancer l'application avec : mvn javafx:run
+                 mainClass = la classe qui contient le main() de JavaFX
+                 Doit pointer vers MainApp qui étend Application -->
             <plugin>
                 <groupId>org.openjfx</groupId>
                 <artifactId>javafx-maven-plugin</artifactId>
                 <version>0.0.8</version>
                 <configuration>
-                    <mainClass>Interface.MainApp</mainClass>
+                    <mainClass>ui.MainApp</mainClass>
                 </configuration>
             </plugin>
+
+            <!-- Plugin JavaDoc
+                 Génère la documentation HTML depuis les commentaires /** */
+                 Commande : mvn javadoc:javadoc
+                 outputDirectory = dossier où la doc est générée (dossier docs/) -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.6.3</version>
+                <configuration>
+                    <outputDirectory>docs</outputDirectory>
+                    <reportOutputDirectory>docs</reportOutputDirectory>
+                    <!-- Encodage pour éviter les problèmes avec les accents -->
+                    <encoding>UTF-8</encoding>
+                    <docencoding>UTF-8</docencoding>
+                </configuration>
+            </plugin>
+
+            <!-- Plugin Exec
+                 Permet de lancer CommandLineMain sans JavaFX
+                 Commande : mvn exec:java -Dexec.mainClass="CommandLineMain"
+                 Utile pour tester le moteur sans interface graphique -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>3.1.0</version>
+                <configuration>
+                    <mainClass>CommandLineMain</mainClass>
+                </configuration>
+            </plugin>
+
         </plugins>
     </build>
 
