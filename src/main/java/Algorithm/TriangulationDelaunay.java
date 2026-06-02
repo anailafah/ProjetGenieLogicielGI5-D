@@ -123,12 +123,13 @@ public class TriangulationDelaunay implements VoronoiEngine {
         return nearest;
     }
 
-    // ALGORITHME DE BOWYER-WATSON with voronoizone building 
+    // ALGORITHME DE BOWYER-WATSON with voronoizone building
     /**
      * Recomputes the full Delaunay triangulation using Bowyer-Watson and build Voronoi Zones.
      * Called every time a hospital is added, removed, or moved.
+     * Also callable after a bulk import to refresh the full geometry.
      */
-    private void recompute() {
+    public void recompute() {
         map.clearComputed();
         List<Hospital> hospitals = map.getHospitals();
         if (hospitals.size() < 3) return;
@@ -229,8 +230,10 @@ public class TriangulationDelaunay implements VoronoiEngine {
                 .orElse(byDistance.isEmpty() ? null : byDistance.get(0));
 
             u.setClosestSite(assigned);
-            // setAssignedHospital calcule aussi automatiquement isRedirected :
-            // si assigned != byDistance[0] → le patient a été redirigé
+            boolean redirected = assigned != null
+                && !byDistance.isEmpty()
+                && assigned != byDistance.get(0);
+            u.setIsRedirected(redirected);
 
             if (assigned != null)
                 assigned.addUsers(u);

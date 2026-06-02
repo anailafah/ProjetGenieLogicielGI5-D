@@ -37,6 +37,14 @@ public class User extends Point {
 	public boolean getIsRedirected(){
 		return isRedirected;
 	}
+
+	/**
+	 * Sets whether this user has been redirected from their nearest hospital.
+	 * @param redirected true if redirected
+	 */
+	public void setIsRedirected(boolean redirected){
+		this.isRedirected = redirected;
+	}
 	/**
 	 * @return the closest hospital for the user
 	 */

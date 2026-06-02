@@ -40,8 +40,8 @@
 
     <build>
         <!-- Le projet actuel utilise src/ directement au lieu de src/main/java -->
-        <sourceDirectory>src</sourceDirectory>
-        <testSourceDirectory>test</testSourceDirectory>
+        <sourceDirectory>src/main/java</sourceDirectory>
+        <testSourceDirectory>src/test/java</testSourceDirectory>
 
         <plugins>
             <!-- Compilation Java 21 -->
