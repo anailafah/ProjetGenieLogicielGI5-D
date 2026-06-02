@@ -19,10 +19,6 @@
     <!-- Type de fichier produit : jar = fichier exécutable Java -->
     <packaging>jar</packaging>
 
-    <!-- ═══════════════════════════════════════════════
-         PROPRIÉTÉS GLOBALES
-         Variables réutilisables dans tout le pom.xml
-    ═══════════════════════════════════════════════ -->
     <properties>
         <!-- Version Java utilisée pour compiler et exécuter -->
         <maven.compiler.source>21</maven.compiler.source>
@@ -36,31 +32,20 @@
         <javafx.version>21</javafx.version>
     </properties>
 
-    <!-- ═══════════════════════════════════════════════
-         DÉPENDANCES
-         Bibliothèques externes téléchargées automatiquement
-    ═══════════════════════════════════════════════ -->
     <dependencies>
 
-        <!-- JavaFX Controls : Button, Label, CheckBox, ProgressBar...
-             Sans cette dépendance, aucun composant JavaFX ne fonctionne -->
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-controls</artifactId>
             <version>${javafx.version}</version>
         </dependency>
 
-        <!-- JavaFX FXML : FXMLLoader, @FXML, SceneBuilder
-             Indispensable pour charger les fichiers .fxml générés par SceneBuilder
-             Sans elle, MainApp.java ne peut pas charger main.fxml -->
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-fxml</artifactId>
             <version>${javafx.version}</version>
         </dependency>
 
-        <!-- JUnit : framework de tests unitaires
-             scope=test = utilisé uniquement pour les tests, pas dans le JAR final -->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
@@ -70,15 +55,7 @@
 
     </dependencies>
 
-    <!-- ═══════════════════════════════════════════════
-         BUILD
-         Configuration de la compilation et des plugins
-    ═══════════════════════════════════════════════ -->
     <build>
-
-        <!-- RESSOURCES : dit à Maven où trouver les fichiers non-Java
-             Sans cette section, les .fxml et .css ne sont pas copiés
-             dans le JAR et l'application plante au démarrage -->
         <resources>
             <resource>
                 <directory>src/main/resources</directory>
@@ -86,10 +63,6 @@
         </resources>
 
         <plugins>
-
-            <!-- Plugin Maven Compiler
-                 Force Java 21 pour la compilation
-                 Sans lui Maven utilise une vieille version par défaut -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -100,10 +73,6 @@
                 </configuration>
             </plugin>
 
-            <!-- Plugin JavaFX
-                 Permet de lancer l'application avec : mvn javafx:run
-                 mainClass = la classe qui contient le main() de JavaFX
-                 Doit pointer vers MainApp qui étend Application -->
             <plugin>
                 <groupId>org.openjfx</groupId>
                 <artifactId>javafx-maven-plugin</artifactId>
@@ -113,10 +82,6 @@
                 </configuration>
             </plugin>
 
-            <!-- Plugin JavaDoc
-                 Génère la documentation HTML depuis les commentaires /** */
-                 Commande : mvn javadoc:javadoc
-                 outputDirectory = dossier où la doc est générée (dossier docs/) -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
@@ -129,11 +94,6 @@
                     <docencoding>UTF-8</docencoding>
                 </configuration>
             </plugin>
-
-            <!-- Plugin Exec
-                 Permet de lancer CommandLineMain sans JavaFX
-                 Commande : mvn exec:java -Dexec.mainClass="CommandLineMain"
-                 Utile pour tester le moteur sans interface graphique -->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
