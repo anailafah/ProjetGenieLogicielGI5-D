@@ -14,6 +14,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Circle?>
 
 
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Interface.MainController">
@@ -39,19 +40,20 @@
         </menus>
       </MenuBar>
    </top>
-   <center>
-      <Pane fx:id="mapPane" onMouseClicked="#onMapClicked" onMouseDragged="#onMapDragged" onMousePressed="#onMapPressed" onScroll="#onMapScroll" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
-   </center>
    <right>
-      <VBox prefHeight="500.0" prefWidth="220.0" spacing="8.0" BorderPane.alignment="CENTER">
+      <VBox prefHeight="448.0" prefWidth="220.0" spacing="8.0" BorderPane.alignment="CENTER">
          <children>
-            <Label text="Hospital Voronoi diagram" />
+            <Label text="Hospital Voronoi diagram">
+               <VBox.margin>
+                  <Insets />
+               </VBox.margin>
+            </Label>
             <Separator prefWidth="200.0" />
             <CheckBox fx:id="checkDelaunay" mnemonicParsing="false" onAction="#onToggleDelaunay" text="Show Delaunay triangulation" />
             <CheckBox fx:id="checkZones" mnemonicParsing="false" onAction="#onToggleZones" text="Show Voronoi Zones" />
             <CheckBox fx:id="checkLinks" mnemonicParsing="false" onAction="#onToggleLinks" text="Show Links" />
             <Separator prefWidth="200.0" />
-            <Label fx:id="labelHospitalName" text="hospital name" />
+            <Label fx:id="labelHospitalName" prefHeight="18.0" prefWidth="98.0" text="hospital name" />
             <ProgressBar fx:id="progressSaturation" prefWidth="200.0" progress="0.0" />
             <Label fx:id="labelStats" text="Stats" />
             <Separator prefWidth="200.0" />
@@ -61,9 +63,21 @@
             <Button mnemonicParsing="false" onAction="#onExportBinary" text="Export Binary" />
             <Button mnemonicParsing="false" onAction="#onClearAll" text="Clear all" />
             <Separator prefWidth="200.0" />
-            <Label text="Hospital" />
-            <Label text="User" />
-            <Label text="Rediriged User" />
+            <Label text="Hospital">
+               <graphic>
+                  <Circle fill="#18e811" radius="8.0" stroke="BLACK" strokeType="INSIDE" />
+               </graphic>
+            </Label>
+            <Label text="User">
+               <graphic>
+                  <Circle fill="#311ce5" radius="8.0" stroke="BLACK" strokeType="INSIDE" />
+               </graphic>
+            </Label>
+            <Label text="Rediriged User">
+               <graphic>
+                  <Circle fill="#bc0d0d" radius="8.0" stroke="BLACK" strokeType="INSIDE" />
+               </graphic>
+            </Label>
          </children>
       </VBox>
    </right>
@@ -81,4 +95,7 @@
          </BorderPane.margin>
       </HBox>
    </bottom>
+   <left>
+      <Pane fx:id="mapPane" onMouseClicked="#onMapClicked" onMouseDragged="#onMapDragged" onMousePressed="#onMapPressed" onScroll="#onMapScroll" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
+   </left>
 </BorderPane>
