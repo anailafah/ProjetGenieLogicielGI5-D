@@ -12,9 +12,7 @@ import java.util.Scanner;
  */
 public class CommandLineMain {
 
-    // Le moteur de calcul
     private static VoronoiEngine engine;
-    // Le scanner pour lire les commandes de l'utilisateur
     private static Scanner scanner;
 
     /**
@@ -27,12 +25,10 @@ public class CommandLineMain {
 
         printHelp();
 
-        // Boucle principale : on lit une commande à la fois
         while (true) {
             System.out.print("\n> ");
             String line = scanner.nextLine().trim();
 
-            // Ignorer les lignes vides
             if (line.isEmpty()) continue;
 
             // Découper la ligne en mots
@@ -41,21 +37,51 @@ public class CommandLineMain {
 
             try {
                 switch (cmd) {
-                    case "help":         printHelp();                  break;
-                    case "add-hospital": cmdAddHospital(parts);        break;
-                    case "remove":       cmdRemoveHospital(parts);     break;
-                    case "move":         cmdMoveHospital(parts);       break;
-                    case "add-patient":  cmdAddPatient(parts);         break;
-                    case "rm-patient":   cmdRemovePatient(parts);      break;
-                    case "list":         cmdList();                    break;
-                    case "triangles":    cmdTriangles();               break;
-                    case "nearest":      cmdNearest(parts);            break;
-                    case "patients":     cmdPatients();                break;
-                    case "stats":        cmdStats(parts);              break;
-                    case "export":       cmdExport(parts);             break;
-                    case "import":       cmdImport(parts);             break;
-                    case "import-csv":   cmdImportCSV(parts);         break;
-                    case "clear":        cmdClear();                   break;
+                    case "help":
+                        printHelp();  
+                        break;
+                    case "add-hospital":
+                        cmdAddHospital(parts);
+                        break;
+                    case "remove":
+                        cmdRemoveHospital(parts);
+                        break;
+                    case "move":
+                        cmdMoveHospital(parts);
+                        break;
+                    case "add-patient":
+                        cmdAddPatient(parts);
+                        break;
+                    case "rm-patient":
+                        cmdRemovePatient(parts);
+                        break;
+                    case "list":
+                        cmdList();
+                        break;
+                    case "triangles":
+                        cmdTriangles();
+                        break;
+                    case "nearest":
+                        cmdNearest(parts);
+                        break;
+                    case "patients":
+                        cmdPatients();
+                        break;
+                    case "stats":
+                        cmdStats(parts);
+                        break;
+                    case "export":
+                        cmdExport(parts);
+                        break;
+                    case "import":
+                        cmdImport(parts);
+                        break;
+                    case "import-csv":
+                        cmdImportCSV(parts);
+                        break;
+                    case "clear":
+                        cmdClear();
+                        break;
                     case "quit":
                     case "exit":
                         System.out.println("Goodbye!");
@@ -65,15 +91,11 @@ public class CommandLineMain {
                         System.out.println("Unknown command: '" + cmd + "'. Type 'help' for the list of commands.");
                 }
             } catch (Exception e) {
-                // On attrape toutes les erreurs non prévues pour ne jamais crasher
                 System.err.println("Unexpected error: " + e.getMessage());
             }
         }
     }
 
-    // ═══════════════════════════════════════════════════════════
-    // COMMANDES
-    // ═══════════════════════════════════════════════════════════
 
     /**
      * Adds a hospital. Usage: add-hospital <x> <y> <capacity>
@@ -496,9 +518,9 @@ public class CommandLineMain {
         System.out.println("║       Voronoi Hospital — Command Line Interface      ║");
         System.out.println("╚══════════════════════════════════════════════════════╝");
         System.out.println();
-        System.out.println("  HOSPITALS");
+        System.out.println("  HOSPITALS:");
         System.out.println("  add-hospital <x> <y> <name> <capacity>  Add a hospital");
-        System.out.println("  remove <id>                              Remove a hospital");
+        System.out.println("  remove <id>                             Remove a hospital");
         System.out.println("  move <id> <x> <y>                       Move a hospital");
         System.out.println("  list                                     List all hospitals");
         System.out.println("  stats <id>                               Show hospital stats");

@@ -94,9 +94,9 @@ public class User extends Point {
 
     public static void main(String[] args) {
 
-        Hospital h1 = new Hospital(1, 0, 0,5);
-        Hospital h2 = new Hospital(2, 10, 10,50);
-        Hospital h3 = new Hospital(3, 5, 5,3);
+        Hospital h1 = new Hospital(1,"hop1" ,0, 0,5);
+        Hospital h2 = new Hospital(2,"hop2", 10, 10,50);
+        Hospital h3 = new Hospital(3,"hop3", 5, 5,3);
 
        
         User user = new User(100, 2, 3);
