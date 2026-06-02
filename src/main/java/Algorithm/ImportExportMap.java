@@ -3,6 +3,7 @@ package Algorithm;
 import Model.*;
 
 import java.io.*;
+import java.util.List;
 
 
 /**
@@ -400,6 +401,36 @@ public class ImportExportMap {
                 + " skipped (" + e.getMessage() + ")");
             return false;
         }
+    }
+
+    /**
+     * Imports hospitals from a CSV file into the engine, then recomputes triangulation once.
+     * Prefer this over importHospitalsCSV(filePath, map) to keep geometry up to date.
+     * @param filePath source CSV file path
+     * @param engine   the Delaunay engine to populate
+     * @return number of hospitals successfully imported
+     * @throws IOException if the file cannot be read
+     */
+    public static int importHospitalsCSV(String filePath, TriangulationDelaunay engine)
+            throws IOException {
+        int count = importHospitalsCSV(filePath, engine.getMap());
+        if (count > 0) engine.recompute();
+        return count;
+    }
+
+    /**
+     * Imports a full map (hospitals + patients) from CSV into the engine,
+     * then recomputes triangulation once.
+     * @param filePath source CSV file path
+     * @param engine   the Delaunay engine to populate
+     * @return int[]{hospitalsImported, patientsImported}
+     * @throws IOException if the file cannot be read
+     */
+    public static int[] importFullMapCSV(String filePath, TriangulationDelaunay engine)
+            throws IOException {
+        int[] counts = importFullMapCSV(filePath, engine.getMap());
+        if (counts[0] > 0 || counts[1] > 0) engine.recompute();
+        return counts;
     }
 
     /**
