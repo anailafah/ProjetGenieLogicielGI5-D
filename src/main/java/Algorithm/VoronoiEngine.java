@@ -54,4 +54,18 @@ public interface VoronoiEngine {
      * @return the VoronoiMap
      */
     VoronoiMap getMap();
+
+    /**
+     * add an user
+     * @param x
+     * @param y
+     * @return user
+     */
+    User addUser(double x,double y);
+    /**
+     * remove an user
+     * @param u
+     */
+    void removeUser(User u);
+    
 }

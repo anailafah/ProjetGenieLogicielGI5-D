@@ -23,6 +23,18 @@ public class TriangulationDelaunay implements VoronoiEngine {
         this.width = width;
         this.height = height;
     }
+    @Override
+    public User addUser(double x,double y){
+        User u = new User(map.generateId(), x, y);
+        map.addUsertot(u);
+        recompute();
+        return u;
+    }
+    @Override
+    public void removeUser(User u){
+        map.removeUsertot(u);
+        recompute();
+    }
   
     /**
      * Adds a hospital to the map and recomputes the triangulation.
