@@ -76,28 +76,21 @@ public class CommandLineMain {
     // ═══════════════════════════════════════════════════════════
 
     /**
-     * Adds a hospital. Usage: add-hospital <x> <y> <name> <capacity>
+     * Adds a hospital. Usage: add-hospital <x> <y> <capacity>
      */
     private static void cmdAddHospital(String[] parts) {
-        // Vérification du nombre d'arguments
-        if (parts.length < 5) {
-            System.out.println("Usage: add-hospital <x> <y> <name> <capacity>");
-            System.out.println("Example: add-hospital 100 200 \"Hopital-A\" 50");
+        if (parts.length < 4) {
+            System.out.println("Usage: add-hospital <x> <y> <capacity>");
+            System.out.println("Example: add-hospital 100 200 50");
             return;
         }
         try {
-            double x      = Double.parseDouble(parts[1]);
-            double y      = Double.parseDouble(parts[2]);
-            String name   = parts[3];
-            int capacity  = Integer.parseInt(parts[4]);
+            double x     = Double.parseDouble(parts[1]);
+            double y     = Double.parseDouble(parts[2]);
+            int capacity = Integer.parseInt(parts[3]);
 
-            // Vérifications sur les valeurs
             if (capacity <= 0) {
                 System.out.println("Error: capacity must be greater than 0");
-                return;
-            }
-            if (name.trim().isEmpty()) {
-                System.out.println("Error: hospital name cannot be empty");
                 return;
             }
 
@@ -105,8 +98,8 @@ public class CommandLineMain {
             System.out.println("Hospital added: " + h);
 
         } catch (NumberFormatException e) {
-            System.out.println("Error: x, y must be numbers and capacity must be an integer");
-            System.out.println("Example: add-hospital 100.5 200.0 Hopital-A 50");
+            System.out.println("Error: x and y must be numbers, capacity must be an integer");
+            System.out.println("Example: add-hospital 100.5 200.0 50");
         }
     }
 
@@ -235,13 +228,15 @@ public class CommandLineMain {
         System.out.println("─".repeat(60));
         for (Hospital h : hospitals) {
             String satStatus;
-            double rate = h.getSaturationRate();
+            double rate = h.getMaxCapacity() > 0
+                ? (double) h.getUsers().size() / h.getMaxCapacity() * 100
+                : 0;
             if (rate >= 100)       satStatus = "FULL";
             else if (rate >= 75)   satStatus = "ALMOST FULL";
             else if (rate >= 50)   satStatus = "HALF FULL";
             else                   satStatus = "AVAILABLE";
 
-            System.out.printf("  [id=%d] %-20s pos=(%.1f, %.1f)  patients=%d/%d  [%s]%n",
+            System.out.printf("  [id=%d] pos=(%.1f, %.1f)  patients=%d/%d  [%s]%n",
                 h.getId(), h.getX(), h.getY(),
                 h.getUsers().size(), h.getMaxCapacity(), satStatus);
         }
@@ -300,7 +295,7 @@ public class CommandLineMain {
             }
 
             System.out.println("Nearest hospital to (" + x + ", " + y + "):");
-            System.out.printf("  → [id=%d] %s  pos=(%.1f, %.1f)  %s%n",
+            System.out.printf("  → [id=%d] pos=(%.1f, %.1f)  %s%n",
                 nearest.getId(),
                 nearest.getX(), nearest.getY(),
                 nearest.isSaturated() ? "FULL" : "AVAILABLE");
@@ -328,9 +323,12 @@ public class CommandLineMain {
                 p.getId(), p.getX(), p.getY());
 
             if (p.getClosestSite() != null) {
+                boolean redirected = !p.getNextHospitals().isEmpty()
+                    && p.getClosestSite() != p.getNextHospitals().get(0);
+                int rank = p.getNextHospitals().indexOf(p.getClosestSite());
                 System.out.printf("    Assigned to : %s%s%n",
                     p.getClosestSite().getId(),
-                    p.getIsRedirected() ? " ⚠ REDIRECTED (rank=" + p.getRedirectionRank() + ")" : "");
+                    redirected ? " ⚠ REDIRECTED (rank=" + rank + ")" : "");
             } else {
                 System.out.println("    Not assigned (no available hospital)");
             }
@@ -447,7 +445,7 @@ public class CommandLineMain {
         }
         String path = parts[1];
         try {
-            int count = ImportExportMap.importCSV(path, engine.getMap());
+            int count = ImportExportMap.importHospitalsCSV(path, engine.getMap());
             System.out.println("Imported " + count + " hospital(s) from: " + path);
         } catch (IllegalArgumentException e) {
             System.out.println("Error (invalid argument): " + e.getMessage());

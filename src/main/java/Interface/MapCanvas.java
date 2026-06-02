@@ -1,6 +1,7 @@
 package Interface;
 
 import Model.Hospital;
+import Model.Triangle;
 import Model.User;
 import Model.VoronoiMap;
 import javafx.scene.canvas.Canvas;
@@ -8,11 +9,12 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
 /**
- * Zone de dessin JavaFX pour afficher la carte Voronoi.
+ * JavaFX drawing zone for displaying the Voronoi map.
  */
 public class MapCanvas extends Canvas {
 
     private VoronoiMap map;
+    private boolean showDelaunay = true;
 
     public MapCanvas(double width, double height) {
         super(width, height);
@@ -28,6 +30,16 @@ public class MapCanvas extends Canvas {
         return map;
     }
 
+    /** Toggles the Delaunay triangulation overlay on or off. */
+    public void setShowDelaunay(boolean show) {
+        this.showDelaunay = show;
+        redraw();
+    }
+
+    public boolean isShowDelaunay() {
+        return showDelaunay;
+    }
+
     public void redraw() {
         if (map == null) {
             drawEmptyMap();
@@ -37,8 +49,23 @@ public class MapCanvas extends Canvas {
         GraphicsContext gc = getGraphicsContext2D();
 
         clear(gc);
+        if (showDelaunay) drawTriangles(gc);
         drawHospitals(gc);
         drawUsers(gc);
+    }
+
+    private void drawTriangles(GraphicsContext gc) {
+        gc.setStroke(Color.CORNFLOWERBLUE);
+        gc.setLineWidth(1.0);
+        for (Triangle t : map.getTriangles()) {
+            double ax = t.getA().getX(), ay = t.getA().getY();
+            double bx = t.getB().getX(), by = t.getB().getY();
+            double cx = t.getC().getX(), cy = t.getC().getY();
+            gc.strokeLine(ax, ay, bx, by);
+            gc.strokeLine(bx, by, cx, cy);
+            gc.strokeLine(cx, cy, ax, ay);
+        }
+        gc.setLineWidth(1.0);
     }
 
     private void drawEmptyMap() {
