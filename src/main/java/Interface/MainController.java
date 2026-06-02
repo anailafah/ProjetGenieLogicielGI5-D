@@ -24,8 +24,8 @@ public class MainController {
 
     /** Adds n patients at random positions within the canvas bounds, then redraws. */
     public void addRandomPatients(int n) {
-        double width  = canvas.getWidth();
-        double height = canvas.getHeight();
+        double width  = canvas.getWidth()  > 0 ? canvas.getWidth()  : 800;
+        double height = canvas.getHeight() > 0 ? canvas.getHeight() : 600;
         for (int i = 0; i < n; i++) {
             double x = random.nextDouble() * width;
             double y = random.nextDouble() * height;
