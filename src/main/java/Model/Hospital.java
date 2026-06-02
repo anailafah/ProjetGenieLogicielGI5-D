@@ -71,13 +71,12 @@ public class Hospital extends Point {
 	 * 
 	 * @param u
 	 */
+	/**
+	 * @return saturation rate as a percentage (0-100+)
+	 */
 	public double getSaturationRate(){
-		if (this.maxCapacity < this.users.size() && this.maxCapacity>0 ){
-			return (this.users.size()/this.maxCapacity)/100;
-		}
-		else{
-			return 100;
-		}
+		if (maxCapacity <= 0) return 0;
+		return ((double) users.size() / maxCapacity) * 100;
 	}
 	/**
 	 * add an user in the list of users
