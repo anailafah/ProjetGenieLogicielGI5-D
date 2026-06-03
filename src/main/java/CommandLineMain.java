@@ -31,7 +31,6 @@ public class CommandLineMain {
 
             if (line.isEmpty()) continue;
 
-            // Découper la ligne en mots
             String[] parts = line.split("\\s+");
             String cmd = parts[0].toLowerCase();
 
