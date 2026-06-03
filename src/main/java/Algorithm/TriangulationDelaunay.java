@@ -45,8 +45,8 @@ public class TriangulationDelaunay implements VoronoiEngine {
      * @return the created Hospital
      */
     @Override
-    public Hospital addHospital(double x, double y, int maxCapacity) {
-        Hospital h = new Hospital(map.generateId(), x, y, maxCapacity);
+    public Hospital addHospital(double x, double y,String name, int maxCapacity) {
+        Hospital h = new Hospital(map.generateId(),name ,x, y, maxCapacity);
         map.addHospital(h);
         recompute();
         return h;
@@ -135,9 +135,9 @@ public class TriangulationDelaunay implements VoronoiEngine {
         if (hospitals.size() < 3) return;
 
         // Step 1 : create a super-triangle that contains all hospitals
-        Hospital stA = new Hospital(-1, -width * 10, -height * 10, 0);
-        Hospital stB = new Hospital(-2,  width * 10, -height * 10, 0);
-        Hospital stC = new Hospital(-3,  0.0,         height * 10, 0);
+        Hospital stA = new Hospital(-1,"stA", -width * 10, -height * 10, 0);
+        Hospital stB = new Hospital(-2,"stB" , width * 10, -height * 10, 0);
+        Hospital stC = new Hospital(-3, "stC" ,0.0,         height * 10, 0);
         List<Triangle> triangulation = new ArrayList<>();
         triangulation.add(new Triangle(stA, stB, stC));
 

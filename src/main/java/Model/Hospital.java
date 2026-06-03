@@ -18,10 +18,11 @@ public class Hospital extends Point {
 	 * @param y y-coordinate
 	 * @param maxCapacity max number of patient
 	 */
-	public Hospital(int id,double x,double y,int maxCapacity) {
+	public Hospital(int id,String name,double x,double y,int maxCapacity) {
 		super(id,x,y);
 		this.users=new ArrayList<>();
 		this.maxCapacity = maxCapacity;
+		this.name=name;
 	}
 	public String getName(){
 		return name;

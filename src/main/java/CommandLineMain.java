@@ -12,9 +12,7 @@ import java.util.Scanner;
  */
 public class CommandLineMain {
 
-    // Le moteur de calcul
     private static VoronoiEngine engine;
-    // Le scanner pour lire les commandes de l'utilisateur
     private static Scanner scanner;
 
     /**
@@ -27,35 +25,32 @@ public class CommandLineMain {
 
         printHelp();
 
-        // Boucle principale : on lit une commande à la fois
         while (true) {
             System.out.print("\n> ");
             String line = scanner.nextLine().trim();
 
-            // Ignorer les lignes vides
             if (line.isEmpty()) continue;
 
-            // Découper la ligne en mots
             String[] parts = line.split("\\s+");
             String cmd = parts[0].toLowerCase();
 
             try {
                 switch (cmd) {
-                    case "help":         printHelp();                  break;
-                    case "add-hospital": cmdAddHospital(parts);        break;
-                    case "remove":       cmdRemoveHospital(parts);     break;
-                    case "move":         cmdMoveHospital(parts);       break;
-                    case "add-patient":  cmdAddPatient(parts);         break;
-                    case "rm-patient":   cmdRemovePatient(parts);      break;
-                    case "list":         cmdList();                    break;
-                    case "triangles":    cmdTriangles();               break;
-                    case "nearest":      cmdNearest(parts);            break;
-                    case "patients":     cmdPatients();                break;
-                    case "stats":        cmdStats(parts);              break;
-                    case "export":       cmdExport(parts);             break;
-                    case "import":       cmdImport(parts);             break;
-                    case "import-csv":   cmdImportCSV(parts);         break;
-                    case "clear":        cmdClear();                   break;
+                    case "help": printHelp();  break;
+                    case "add-hospital": cmdAddHospital(parts); break;
+                    case "remove": cmdRemoveHospital(parts); break;
+                    case "move": cmdMoveHospital(parts); break;
+                    case "add-patient": cmdAddPatient(parts); break;
+                    case "rm-patient": cmdRemovePatient(parts); break;
+                    case "list": cmdList(); break;
+                    case "triangles": cmdTriangles();break;
+                    case "nearest": cmdNearest(parts);break;
+                    case "patients":cmdPatients(); break;
+                    case "stats": cmdStats(parts); break;
+                    case "export": cmdExport(parts); break;
+                    case "import": cmdImport(parts); break;
+                    case "import-csv": cmdImportCSV(parts); break;
+                    case "clear": cmdClear(); break;
                     case "quit":
                     case "exit":
                         System.out.println("Goodbye!");
@@ -65,36 +60,33 @@ public class CommandLineMain {
                         System.out.println("Unknown command: '" + cmd + "'. Type 'help' for the list of commands.");
                 }
             } catch (Exception e) {
-                // On attrape toutes les erreurs non prévues pour ne jamais crasher
                 System.err.println("Unexpected error: " + e.getMessage());
             }
         }
     }
 
-    // ═══════════════════════════════════════════════════════════
-    // COMMANDES
-    // ═══════════════════════════════════════════════════════════
 
     /**
      * Adds a hospital. Usage: add-hospital <x> <y> <capacity>
      */
     private static void cmdAddHospital(String[] parts) {
-        if (parts.length < 4) {
-            System.out.println("Usage: add-hospital <x> <y> <capacity>");
-            System.out.println("Example: add-hospital 100 200 50");
+        if (parts.length < 5) {
+            System.out.println("Usage: add-hospital <x> <y> <name> <capacity>");
+            System.out.println("Example: add-hospital 100 200 Hopital-A 50");
             return;
         }
         try {
             double x     = Double.parseDouble(parts[1]);
             double y     = Double.parseDouble(parts[2]);
-            int capacity = Integer.parseInt(parts[3]);
+            String name  = parts[3];
+            int capacity = Integer.parseInt(parts[4]);
 
             if (capacity <= 0) {
                 System.out.println("Error: capacity must be greater than 0");
                 return;
             }
 
-            Hospital h = engine.addHospital(x, y, capacity);
+            Hospital h = engine.addHospital(x, y, name, capacity);
             System.out.println("Hospital added: " + h);
 
         } catch (NumberFormatException e) {
@@ -444,10 +436,10 @@ public class CommandLineMain {
             System.out.println("Example: import-csv data/hospitals.csv");
             return;
         }
-        String path = parts[1];
+        String file = parts[1];
         try {
-            int[] count = ImportExportMap.importFullMapCSV(path, engine.getMap());
-            System.out.println("Imported " + count + " hospital(s) from: " + path);
+            int count = ImportExportMap.importHospitalsCSV(file,engine.getMap());
+            System.out.println("Imported " + count + " hospital(s) from: " + file);
         } catch (IllegalArgumentException e) {
             System.out.println("Error (invalid argument): " + e.getMessage());
         } catch (IOException e) {
@@ -497,9 +489,9 @@ public class CommandLineMain {
         System.out.println("║       Voronoi Hospital — Command Line Interface      ║");
         System.out.println("╚══════════════════════════════════════════════════════╝");
         System.out.println();
-        System.out.println("  HOSPITALS");
+        System.out.println("  HOSPITALS:");
         System.out.println("  add-hospital <x> <y> <name> <capacity>  Add a hospital");
-        System.out.println("  remove <id>                              Remove a hospital");
+        System.out.println("  remove <id>                             Remove a hospital");
         System.out.println("  move <id> <x> <y>                       Move a hospital");
         System.out.println("  list                                     List all hospitals");
         System.out.println("  stats <id>                               Show hospital stats");

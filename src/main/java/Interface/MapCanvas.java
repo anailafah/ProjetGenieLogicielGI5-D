@@ -3,6 +3,7 @@ package Interface;
 import java.util.List;
 import Model.Hospital;
 import Model.HospitalZone;
+
 import Model.Point;
 import Model.Triangle;
 import Model.User;
@@ -18,11 +19,28 @@ public class MapCanvas extends Canvas {
 
     private VoronoiMap map;
     private boolean showDelaunay = true;
+    private Hospital selectedHospital = null;
+
+    public void setSelectedHospital(Hospital h) {
+        this.selectedHospital = h;
+        redraw();
+    }
 
     public MapCanvas(double width, double height) {
         super(width, height);
+        widthProperty().addListener(e -> redraw());
+        heightProperty().addListener(e -> redraw());
         drawEmptyMap();
     }
+
+    @Override
+    public boolean isResizable() { return true; }
+
+    @Override
+    public double prefWidth(double height) { return getWidth(); }
+
+    @Override
+    public double prefHeight(double width) { return getHeight(); }
 
     public void setMap(VoronoiMap map) {
         this.map = map;
@@ -131,6 +149,13 @@ public class MapCanvas extends Canvas {
             }
 
             gc.fillOval(x - 6, y - 6, 12, 12);
+
+            if (hospital == selectedHospital) {
+                gc.setStroke(Color.WHITE);
+                gc.setLineWidth(2);
+                gc.strokeOval(x - 9, y - 9, 18, 18);
+            }
+
             gc.setFill(Color.BLACK);
             gc.fillText("H" + hospital.getId(), x + 8, y - 8);
         }
@@ -140,6 +165,12 @@ public class MapCanvas extends Canvas {
         for (User user : map.getUserTot()) {
             double x = user.getX();
             double y = user.getY();
+
+            if (user.getClosestSite() != null) {
+                gc.setStroke(Color.GRAY);
+                gc.setLineWidth(0.5);
+                gc.strokeLine(x, y, user.getClosestSite().getX(), user.getClosestSite().getY());
+            }
 
             gc.setFill(user.getIsRedirected() ? Color.RED : Color.GREEN);
             gc.fillOval(x - 4, y - 4, 8, 8);
