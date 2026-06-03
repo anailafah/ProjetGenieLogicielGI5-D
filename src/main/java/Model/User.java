@@ -78,7 +78,7 @@ public class User extends Point {
 	}
 	private int setRedirection(){
 		int cpt=0;
-		if(closestSite != null && closestSite.isSaturated()){
+		if(closestSite.isSaturated()){
 			for(Hospital h: nextHospitals){
 				if(h.isSaturated()!=true){
 					this.setClosestSite(h);
@@ -98,32 +98,6 @@ public class User extends Point {
 
     public static void main(String[] args) {
 
-        Hospital h1 = new Hospital(1,"hop1" ,0, 0,5);
-        Hospital h2 = new Hospital(2,"hop2", 10, 10,50);
-        Hospital h3 = new Hospital(3,"hop3", 5, 5,3);
-
-       
-        User user = new User(100, 2, 3);
-
-        System.out.println("User initial:");
-        System.out.println("Closest hospital: " + user.getClosestSite());
-        System.out.println("Is redirected: " + user.getIsRedirected());
-        System.out.println("Next hospitals: " + user.getNextHospitals());
-
         
-        user.setClosestSite(h1);
-        System.out.println("\nAfter setting closest hospital:");
-        System.out.println("Closest hospital: " + user.getClosestSite());
-
-        user.setNextHospitals(Arrays.asList(h1, h3, h2));
-
-        System.out.println("\nNext hospitals list:");
-        for (Hospital h : user.getNextHospitals()) {
-            System.out.println("Hospital id: " + h.getId() + " (" + h.getX() + ", " + h.getY() + ")");
-        }
-
-        System.out.println("\nRedirect flag (before): " + user.getIsRedirected());
-
-        System.out.println("Redirect flag (after manual change if implemented): " + user.getIsRedirected());
     }
 }
