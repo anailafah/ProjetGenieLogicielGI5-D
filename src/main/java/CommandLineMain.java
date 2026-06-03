@@ -36,27 +36,13 @@ public class CommandLineMain {
 
             try {
                 switch (cmd) {
-                    case "help":
-                        printHelp();  
-                        break;
-                    case "add-hospital":
-                        cmdAddHospital(parts);
-                        break;
-                    case "remove":
-                        cmdRemoveHospital(parts);
-                        break;
-                    case "move":
-                        cmdMoveHospital(parts);
-                        break;
-                    case "add-patient":
-                        cmdAddPatient(parts);
-                        break;
-                    case "rm-patient":
-                        cmdRemovePatient(parts);
-                        break;
-                    case "list":
-                        cmdList();
-                        break;
+                    case "help": printHelp();  break;
+                    case "add-hospital": cmdAddHospital(parts); break;
+                    case "remove": cmdRemoveHospital(parts); break;
+                    case "move": cmdMoveHospital(parts); break;
+                    case "add-patient": cmdAddPatient(parts); break;
+                    case "rm-patient": cmdRemovePatient(parts); break;
+                    case "list": cmdList(); break;
                     case "triangles":
                         cmdTriangles();
                         break;
@@ -465,10 +451,10 @@ public class CommandLineMain {
             System.out.println("Example: import-csv data/hospitals.csv");
             return;
         }
-        String path = parts[1];
+        String file = parts[1];
         try {
-            int[] count = ImportExportMap.importFullMapCSV(path, engine.getMap());
-            System.out.println("Imported " + count + " hospital(s) from: " + path);
+            int count = ImportExportMap.importHospitalsCSV(file,engine.getMap());
+            System.out.println("Imported " + count + " hospital(s) from: " + file);
         } catch (IllegalArgumentException e) {
             System.out.println("Error (invalid argument): " + e.getMessage());
         } catch (IOException e) {

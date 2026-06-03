@@ -78,7 +78,7 @@ public class User extends Point {
 	}
 	private int setRedirection(){
 		int cpt=0;
-		if(closestSite.isSaturated()){
+		if(closestSite.isSaturated()&& closestSite!=null){
 			for(Hospital h: nextHospitals){
 				if(h.isSaturated()!=true){
 					this.setClosestSite(h);
