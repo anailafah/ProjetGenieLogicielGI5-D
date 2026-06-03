@@ -46,7 +46,8 @@ public class MainApp extends Application {
             File file = fileChooser.showOpenDialog(primaryStage);
             if (file != null) {
                 try {
-                    ImportExportMap.importHospitalsCSV(file.getAbsolutePath(), engine);
+                    ImportExportMap.importHospitalsCSV(file.getAbsolutePath(), engine.getMap());
+                    engine.recompute();
                     canvas.redraw();
                 } catch (Exception ex) {
                     System.err.println("Erreur import CSV : " + ex.getMessage());
