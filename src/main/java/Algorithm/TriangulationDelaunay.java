@@ -7,10 +7,10 @@ import java.util.stream.Collectors;
 
 /**
  * Implements the Bowyer-Watson algorithm for Delaunay triangulation.
+ * And build voronoiZones
  */
 public class TriangulationDelaunay implements VoronoiEngine {
     private VoronoiMap map;
-    // Les dimensions du canvas 
     private double width, height;
 
     /**
@@ -123,7 +123,6 @@ public class TriangulationDelaunay implements VoronoiEngine {
         return nearest;
     }
 
-    // ALGORITHME DE BOWYER-WATSON with voronoizone building
     /**
      * Recomputes the full Delaunay triangulation using Bowyer-Watson and build Voronoi Zones.
      * Called every time a hospital is added, removed, or moved.
@@ -134,99 +133,68 @@ public class TriangulationDelaunay implements VoronoiEngine {
         List<Hospital> hospitals = map.getHospitals();
         if (hospitals.size() < 3) return;
 
-        // Step 1 : create a super-triangle that contains all hospitals
         Hospital stA = new Hospital(-1,"stA", -width * 10, -height * 10, 0);
         Hospital stB = new Hospital(-2,"stB" , width * 10, -height * 10, 0);
         Hospital stC = new Hospital(-3, "stC" ,0.0,         height * 10, 0);
         List<Triangle> triangulation = new ArrayList<>();
         triangulation.add(new Triangle(stA, stB, stC));
 
-        //Step 2 : add each hospital 1 by 1
         for (Hospital hospital : hospitals) {
 
-            //Step 3: find badTriangles (triangles which contains a hospital in his circumcircle)
             List<Triangle> badTriangles = new ArrayList<>();
             for (Triangle t : triangulation) {
                 if (hospital.isInCircumcircle(t.getA(),t.getB(),t.getC()))
                     badTriangles.add(t);
             }
 
-            //  ÉTAPE 4 : Trouver les bords du trou 
-            // Un bord du trou = un bord qui appartient à UN SEUL mauvais triangle
-            // Si un bord appartient à DEUX mauvais triangles → il disparaît dans le trou
             List<Hospital[]> polygon = new ArrayList<>();
             for (Triangle t : badTriangles) {
                 Hospital[][] edges = { {t.getA(), t.getB()}, {t.getB(), t.getC()}, {t.getC(), t.getA()} }; //liste des 
                 for (Hospital[] edge : edges) {
                     boolean shared = false; 
-                    // On vérifie si ce bord est partagé avec un AUTRE mauvais triangle
                     for (Triangle other : badTriangles) {
-                        if (other == t) continue; // On ne compare pas le triangle avec lui-même
+                        if (other == t) continue; 
                         if (triangleContainsEdge(other, edge[0], edge[1])) {
-                            shared = true; // Le bord est partagé → il disparaît dans le trou
+                            shared = true; 
                             break;
                         }
                     }
-                    // Si le bord n'est PAS partagé → c'est un bord du trou → on le garde
                     if (!shared) polygon.add(edge);
                 }
             }
 
-            //Step 5: remove bad triangle
             triangulation.removeAll(badTriangles);
-
-            //  ÉTAPE 6 : Reboucher le trou 
-            // Pour chaque bord du trou, on crée un nouveau triangle
-            // qui relie ce bord au nouvel hôpital
             for (Hospital[] edge : polygon)
                 triangulation.add(new Triangle(edge[0], edge[1], hospital));
         }
-
-        //  ÉTAPE 7 : Supprimer le super-triangle 
-        // On efface tous les triangles qui touchent un sommet du super-triangle
-        // car ces triangles ne font pas partie de la vraie triangulation
         triangulation.removeIf(t ->
             t.getA() == stA || t.getA() == stB || t.getA() == stC ||
             t.getB() == stA || t.getB() == stB || t.getB() == stC ||
             t.getC() == stA || t.getC() == stB || t.getC() == stC
         );
-
-        // On sauvegarde les triangles calculés dans la carte
         map.setTriangles(triangulation);
-
-        // On construit les zones Voronoï depuis les triangles
         buildVoronoiZones();
-
-        // On recalcule les liens patient → hôpital car les zones ont changé
-        updatePatientLinks();
-
-        
+        updatePatientLinks();   
     }
+
     /**
      * Assigns each patient to their nearest available hospital.
      * If the nearest is saturated, redirects to the next closest one.
      */
     private void updatePatientLinks() {
-        // remise a 0 de la liste d'utilisateurs de chaque hopital
         for (Hospital h : map.getHospitals())
             h.getUsers().clear();
         for (User u : map.getUserTot()) {
-
-            // On trie TOUS les hôpitaux du plus proche au plus loin
-            // par rapport à ce patient
-            List<Hospital> byDistance = map.getHospitals().stream()
-                .sorted((a, b) -> Double.compare(
-                    GeometryFunc.distance(u, a), // distance patient → hôpital a
-                    GeometryFunc.distance(u, b)  // distance patient → hôpital b
+            List<Hospital> byDistance = map.getHospitals().stream().sorted((a, b) -> Double.compare(
+                    GeometryFunc.distance(u, a), 
+                    GeometryFunc.distance(u, b) 
                 ))
                 .collect(Collectors.toList());
             
             u.setNextHospitals(byDistance);
-
-            // On cherche le premier hôpital NON saturé dans la liste
             Hospital assigned = byDistance.stream()
-                .filter(h -> !h.isSaturated()) // On ignore les hôpitaux saturés
-                .findFirst()                    // On prend le premier disponible
+                .filter(h -> !h.isSaturated()) 
+                .findFirst()                    
                 .orElse(byDistance.isEmpty() ? null : byDistance.get(0));
 
             u.setClosestSite(assigned);
@@ -267,8 +235,6 @@ public class TriangulationDelaunay implements VoronoiEngine {
         List<Triangle> triangles = map.getTriangles();
 
         for (Hospital hospital : map.getHospitals()) {
-
-            // find all triangle that contains hospital
             List<Triangle> adjacent = new ArrayList<>();
             for (Triangle t : triangles) {
                 if (t.getA() == hospital ||
@@ -277,12 +243,10 @@ public class TriangulationDelaunay implements VoronoiEngine {
                     adjacent.add(t);
                 }
             }
-            // retrieve all circumcenters 
             List<Point> vertices = new ArrayList<>();
             for (Triangle t : adjacent) {
                 vertices.add(t.getCircumcenter());
             }
-            // sort vertices in  clockwise direction in order to form a correct polygone 
             vertices = sortPolygonVertices(vertices, hospital);
 
             if (!vertices.isEmpty()) {
@@ -301,8 +265,6 @@ public class TriangulationDelaunay implements VoronoiEngine {
     */
     private List<Point> sortPolygonVertices(List<Point> vertices, Hospital center) {
         if (vertices.size() <= 1) return vertices;
-
-        // On calcule l'angle de chaque sommet par rapport au centre et on trie dans l'ordre croissant des angles
         vertices.sort((p1, p2) -> {
             double angle1 = Math.atan2(p1.getY() - center.getY(), p1.getX() - center.getX());
             double angle2 = Math.atan2(p2.getY() - center.getY(),p2.getX() - center.getX()
@@ -310,7 +272,6 @@ public class TriangulationDelaunay implements VoronoiEngine {
         return Double.compare(angle1, angle2);
         });
     return vertices;
-    }
- 
+    } 
 }
 
