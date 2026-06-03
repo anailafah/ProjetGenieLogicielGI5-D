@@ -52,7 +52,37 @@ public class MainApp extends Application {
             }
         });
 
-        ToolBar toolbar = new ToolBar(toggleDelaunay, addPatients, importCSV);
+        Button exportBin = new Button("Exporter carte");
+        exportBin.setOnAction(e -> {
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("Enregistrer la carte");
+            fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Binaire", "*.bin"));
+            File file = fileChooser.showSaveDialog(primaryStage);
+            if (file != null) {
+                try {
+                    ImportExportMap.exportBinary(engine.getMap(), file.getAbsolutePath());
+                } catch (Exception ex) {
+                    System.err.println("Erreur export : " + ex.getMessage());
+                }
+            }
+        });
+
+        Button importBin = new Button("Importer carte");
+        importBin.setOnAction(e -> {
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("Charger une carte");
+            fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Binaire", "*.bin"));
+            File file = fileChooser.showOpenDialog(primaryStage);
+            if (file != null) {
+                try {
+                    canvas.setMap(ImportExportMap.importBinary(file.getAbsolutePath()));
+                } catch (Exception ex) {
+                    System.err.println("Erreur import : " + ex.getMessage());
+                }
+            }
+        });
+
+        ToolBar toolbar = new ToolBar(toggleDelaunay, addPatients, importCSV, exportBin, importBin);
 
         BorderPane root = new BorderPane();
         root.setTop(toolbar);
