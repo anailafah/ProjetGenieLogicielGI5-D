@@ -62,16 +62,6 @@ public class Hospital extends Point {
 		return this.maxCapacity-this.users.size();
 
 	}
-	/**
-	 * @return percentage of available room in the hospital
-	 */
-	/**
-	 * @return percentage of available rooms (0 = full, 100 = empty)
-	 */
-	public double getPercentAvailable(){
-		if (maxCapacity <= 0) return 0;
-		return ((double) getAvailableRoom() / maxCapacity) * 100;
-	}
 	
 	/**
 	 * @return saturation rate as a percentage (0-100+)
