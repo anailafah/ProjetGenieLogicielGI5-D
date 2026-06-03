@@ -73,11 +73,6 @@ public class MainController {
 
         updateStatusBar();
     }
-
-    // ═══════════════════════════════════════════════
-    // INTERACTIONS SOURIS SUR LE CANVAS
-    // ═══════════════════════════════════════════════
-
     /**
      * Handles mouse press — prepares drag detection.
      * @param e mouse event
@@ -205,10 +200,6 @@ public class MainController {
         labelZoom.setText("Zoom : " + (int)(scale * 100) + "%");
     }
 
-    // ═══════════════════════════════════════════════
-    // BOUTONS SIDEBAR
-    // ═══════════════════════════════════════════════
-
     /**
      * Adds a random number of users to the map.
      */
@@ -270,7 +261,7 @@ public class MainController {
         if (file == null) return;
 
         try {
-            int count = ImportExportManager.importHospitalsCSV(
+            int count = ImportExportMap.importHospitalsCSV(
                 file.getAbsolutePath(), engine.getMap());
             canvas.redraw();
             updateStatusBar();
@@ -302,7 +293,7 @@ public class MainController {
         if (file == null) return;
 
         try {
-            ImportExportManager.exportBinary(
+            ImportExportMap.exportBinary(
                 engine.getMap(), file.getAbsolutePath());
             showMessage("Carte exportée : " + file.getName());
         } catch (IllegalArgumentException e) {
@@ -326,10 +317,10 @@ public class MainController {
         if (file == null) return;
 
         try {
-            VoronoiMap loaded = ImportExportManager.importBinary(
+            VoronoiMap loaded = ImportExportMap.importBinary(
                 file.getAbsolutePath());
 
-            engine = new BowyerWatson(canvas.getWidth(), canvas.getHeight());
+            engine = new TriangulationDelaunay(canvas.getWidth(), canvas.getHeight());
             for (Hospital h : loaded.getHospitals())
                 engine.getMap().addHospital(h);
             for (User u : loaded.getUserTot())
@@ -362,8 +353,7 @@ public class MainController {
 
         confirm.showAndWait().ifPresent(response -> {
             if (response == ButtonType.OK) {
-                engine = new BowyerWatson(
-                    canvas.getWidth(), canvas.getHeight());
+                engine = new TriangulationDelaunay(canvas.getWidth(), canvas.getHeight());
                 canvas.setEngine(engine);
                 clearSelection();
                 canvas.redraw();
@@ -372,10 +362,6 @@ public class MainController {
             }
         });
     }
-
-    // ═══════════════════════════════════════════════
-    // TOGGLES AFFICHAGE
-    // ═══════════════════════════════════════════════
 
     /**
      * Toggles Delaunay triangulation display.
@@ -427,10 +413,6 @@ public class MainController {
             "Algorithme de Bowyer-Watson");
         alert.showAndWait();
     }
-
-    // ═══════════════════════════════════════════════
-    // MÉTHODES UTILITAIRES PRIVÉES
-    // ═══════════════════════════════════════════════
 
     /**
      * Selects a hospital and updates the side panel.

@@ -1,7 +1,5 @@
 package Interface;
 
-import javax.imageio.plugins.tiff.TIFFDirectory;
-
 import Algorithm.*;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
