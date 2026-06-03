@@ -43,30 +43,14 @@ public class CommandLineMain {
                     case "add-patient": cmdAddPatient(parts); break;
                     case "rm-patient": cmdRemovePatient(parts); break;
                     case "list": cmdList(); break;
-                    case "triangles":
-                        cmdTriangles();
-                        break;
-                    case "nearest":
-                        cmdNearest(parts);
-                        break;
-                    case "patients":
-                        cmdPatients();
-                        break;
-                    case "stats":
-                        cmdStats(parts);
-                        break;
-                    case "export":
-                        cmdExport(parts);
-                        break;
-                    case "import":
-                        cmdImport(parts);
-                        break;
-                    case "import-csv":
-                        cmdImportCSV(parts);
-                        break;
-                    case "clear":
-                        cmdClear();
-                        break;
+                    case "triangles": cmdTriangles();break;
+                    case "nearest": cmdNearest(parts);break;
+                    case "patients":cmdPatients(); break;
+                    case "stats": cmdStats(parts); break;
+                    case "export": cmdExport(parts); break;
+                    case "import": cmdImport(parts); break;
+                    case "import-csv": cmdImportCSV(parts); break;
+                    case "clear": cmdClear(); break;
                     case "quit":
                     case "exit":
                         System.out.println("Goodbye!");
