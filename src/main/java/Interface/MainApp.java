@@ -8,6 +8,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ToolBar;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
@@ -85,15 +86,19 @@ public class MainApp extends Application {
 
         ToolBar toolbar = new ToolBar(toggleDelaunay, addPatients, importCSV, exportBin, importBin);
 
+        StackPane center = new StackPane(canvas);
+
         BorderPane root = new BorderPane();
         root.setTop(toolbar);
-        root.setCenter(canvas);
+        root.setCenter(center);
 
-        Scene scene = new Scene(root, 820, 660);
+        Scene scene = new Scene(root, 1000, 700);
+        canvas.widthProperty().bind(center.widthProperty());
+        canvas.heightProperty().bind(center.heightProperty());
 
         canvas.setOnMouseClicked(e -> {
             if (e.getButton() == MouseButton.PRIMARY)
-                controller.selectNearestHospital(e.getX(), e.getY());
+                controller.handleLeftClick(e.getX(), e.getY());
             else if (e.getButton() == MouseButton.SECONDARY)
                 controller.deleteNearestHospital(e.getX(), e.getY());
         });

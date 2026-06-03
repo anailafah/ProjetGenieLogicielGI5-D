@@ -24,8 +24,10 @@ public class MainController {
         canvas.setShowDelaunay(show);
     }
 
-    /** Selects the hospital closest to the click if within 15 pixels. */
-    public void selectNearestHospital(double x, double y) {
+    /**
+     * Left click : selects hospital if within 15px, otherwise adds a new one.
+     */
+    public void handleLeftClick(double x, double y) {
         Hospital nearest = null;
         double minDist = 15;
         for (Hospital h : engine.getMap().getHospitals()) {
@@ -35,8 +37,13 @@ public class MainController {
                 nearest = h;
             }
         }
-        selectedHospital = nearest;
-        canvas.setSelectedHospital(selectedHospital);
+        if (nearest != null) {
+            selectedHospital = nearest;
+            canvas.setSelectedHospital(selectedHospital);
+        } else {
+            engine.addHospital(x, y, "Hopital", 10);
+            canvas.redraw();
+        }
     }
 
     /** Deletes the hospital closest to the click if within 15 pixels. */
@@ -77,8 +84,8 @@ public class MainController {
         double width  = canvas.getWidth()  > 0 ? canvas.getWidth()  : 800;
         double height = canvas.getHeight() > 0 ? canvas.getHeight() : 600;
         for (int i = 0; i < n; i++) {
-            double x = random.nextDouble() * width;
-            double y = random.nextDouble() * height;
+            double x = 20 + random.nextDouble() * (width - 40);
+            double y = 20 + random.nextDouble() * (height - 40);
             engine.addUser(x, y);
         }
         canvas.redraw();

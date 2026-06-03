@@ -28,8 +28,19 @@ public class MapCanvas extends Canvas {
 
     public MapCanvas(double width, double height) {
         super(width, height);
+        widthProperty().addListener(e -> redraw());
+        heightProperty().addListener(e -> redraw());
         drawEmptyMap();
     }
+
+    @Override
+    public boolean isResizable() { return true; }
+
+    @Override
+    public double prefWidth(double height) { return getWidth(); }
+
+    @Override
+    public double prefHeight(double width) { return getHeight(); }
 
     public void setMap(VoronoiMap map) {
         this.map = map;
