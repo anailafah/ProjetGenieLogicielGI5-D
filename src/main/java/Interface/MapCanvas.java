@@ -6,6 +6,7 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -171,28 +172,42 @@ public class MapCanvas extends Canvas {
      * @param hospitals list of hospitals
      */
     private void drawZones(GraphicsContext gc,
-            List<Triangle> triangles, List<Hospital> hospitals) {
-        int colorIdx = 0;
-        for (Hospital h : hospitals) {
-            gc.setFill(ZONE_COLORS[colorIdx % ZONE_COLORS.length]);
-            colorIdx++;
-            for (Triangle t : triangles) {
-                if (t.getA() == h || t.getB() == h || t.getC() == h) {
-                    double[] xs = {
-                        toScreenX(t.getA().getX()),
-                        toScreenX(t.getB().getX()),
-                        toScreenX(t.getC().getX())
-                    };
-                    double[] ys = {
-                        toScreenY(t.getA().getY()),
-                        toScreenY(t.getB().getY()),
-                        toScreenY(t.getC().getY())
-                    };
-                    gc.fillPolygon(xs, ys, 3);
-                }
-            }
+        List<Triangle> triangles, List<Hospital> hospitals) {
+    int colorIdx = 0;
+    for (Hospital h : hospitals) {
+        gc.setFill(ZONE_COLORS[colorIdx % ZONE_COLORS.length]);
+        colorIdx++;
+
+        List<Triangle> adjacent = new ArrayList<>();
+        for (Triangle t : triangles) {
+            if (t.getA() == h || t.getB() == h || t.getC() == h)
+                adjacent.add(t);
         }
+
+        if (adjacent.size() < 2) continue;
+        List<double[]> pts = new ArrayList<>();
+        for (Triangle t : adjacent) {
+            Point cc = t.getCircumcenter();
+            if (cc != null && Double.isFinite(cc.getX()) && Double.isFinite(cc.getY()))
+                pts.add(new double[]{cc.getX(), cc.getY()});
+        }
+
+        if (pts.size() < 2) continue;
+        double cx = h.getX(), cy = h.getY();
+        pts.sort((a, b) -> Double.compare(
+            Math.atan2(a[1] - cy, a[0] - cx),
+            Math.atan2(b[1] - cy, b[0] - cx)
+        ));
+
+        double[] xs = pts.stream().mapToDouble(p -> toScreenX(p[0])).toArray();
+        double[] ys = pts.stream().mapToDouble(p -> toScreenY(p[1])).toArray();
+        gc.fillPolygon(xs, ys, pts.size());
+
+        gc.setStroke(Color.web("#FFFFFF", 0.6));
+        gc.setLineWidth(1.0);
+        gc.strokePolygon(xs, ys, pts.size());
     }
+}
 
     /**
      * Draws the Delaunay triangulation edges.
