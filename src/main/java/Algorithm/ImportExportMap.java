@@ -19,6 +19,8 @@ public class ImportExportMap {
     private static String buildPath(String fileName) {
         if (fileName == null || fileName.trim().isEmpty())
             throw new IllegalArgumentException("File name cannot be null or empty");
+        File f = new File(fileName.trim());
+        if (f.isAbsolute()) return fileName.trim();
         return DATA_FOLDER + fileName.trim();
     }
 
