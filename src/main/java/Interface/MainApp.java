@@ -36,7 +36,7 @@ public class MainApp extends Application {
         toggleDelaunay.setOnAction(e -> controller.setShowDelaunay(toggleDelaunay.isSelected()));
 
         Button addPatients = new Button("+ Patients aleatoires");
-        addPatients.setOnAction(e -> controller.addRandomPatients(3));
+        addPatients.setOnAction(e -> controller.addRandomPatients(5));
 
         Button importCSV = new Button("Importer hopitaux CSV");
         importCSV.setOnAction(e -> {
