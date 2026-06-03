@@ -101,22 +101,23 @@ public class CommandLineMain {
      * Adds a hospital. Usage: add-hospital <x> <y> <capacity>
      */
     private static void cmdAddHospital(String[] parts) {
-        if (parts.length < 4) {
-            System.out.println("Usage: add-hospital <x> <y> <capacity>");
-            System.out.println("Example: add-hospital 100 200 50");
+        if (parts.length < 5) {
+            System.out.println("Usage: add-hospital <x> <y> <name> <capacity>");
+            System.out.println("Example: add-hospital 100 200 Hopital-A 50");
             return;
         }
         try {
             double x     = Double.parseDouble(parts[1]);
             double y     = Double.parseDouble(parts[2]);
-            int capacity = Integer.parseInt(parts[3]);
+            String name  = parts[3];
+            int capacity = Integer.parseInt(parts[4]);
 
             if (capacity <= 0) {
                 System.out.println("Error: capacity must be greater than 0");
                 return;
             }
 
-            Hospital h = engine.addHospital(x, y, capacity);
+            Hospital h = engine.addHospital(x, y, name, capacity);
             System.out.println("Hospital added: " + h);
 
         } catch (NumberFormatException e) {

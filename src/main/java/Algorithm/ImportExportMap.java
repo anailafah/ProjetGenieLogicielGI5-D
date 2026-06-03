@@ -180,6 +180,56 @@ public class ImportExportMap {
         System.out.println("Map exported to: " + filePath);
     }
 
+    /**
+     * Imports a full map (hospitals + patients) from a CSV file.
+     * The file must contain [HOSPITALS] and [PATIENTS] section markers.
+     * @param filePath source CSV file path
+     * @param map      the map to populate
+     * @return int[]{hospitalsImported, patientsImported}
+     * @throws IOException if the file cannot be read
+     */
+    public static int[] importFullMapCSV(String filePath, VoronoiMap map)
+            throws IOException {
+        validateFileAndMap(filePath, map);
+
+        int hospitals = 0;
+        int patients  = 0;
+        String section = null;
+
+        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                line = line.trim();
+                if (line.isEmpty() || line.startsWith("#")) continue;
+
+                if (line.equals("[HOSPITALS]")) { section = "H"; continue; }
+                if (line.equals("[PATIENTS]"))  { section = "P"; continue; }
+
+                String[] parts = line.split(",");
+                if ("H".equals(section) && parts.length >= 4) {
+                    try {
+                        String name  = parts[0].trim();
+                        double x     = Double.parseDouble(parts[1].trim());
+                        double y     = Double.parseDouble(parts[2].trim());
+                        int capacity = Integer.parseInt(parts[3].trim());
+                        map.addHospital(new Hospital(map.generateId(), name, x, y, capacity));
+                        hospitals++;
+                    } catch (NumberFormatException e) { /* ligne ignorée */ }
+                } else if ("P".equals(section) && parts.length >= 2) {
+                    try {
+                        double x = Double.parseDouble(parts[0].trim());
+                        double y = Double.parseDouble(parts[1].trim());
+                        map.addUsertot(new User(map.generateId(), x, y));
+                        patients++;
+                    } catch (NumberFormatException e) { /* ligne ignorée */ }
+                }
+            }
+        }
+
+        System.out.println("Imported " + hospitals + " hospital(s) and " + patients + " patient(s)");
+        return new int[]{hospitals, patients};
+    }
+
     private static void validateFileAndMap(String filePath, VoronoiMap map)
             throws IOException {
         if (filePath == null || filePath.trim().isEmpty())
