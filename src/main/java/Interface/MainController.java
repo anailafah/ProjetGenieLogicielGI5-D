@@ -39,6 +39,24 @@ public class MainController {
         canvas.setSelectedHospital(selectedHospital);
     }
 
+    /** Deletes the hospital closest to the click if within 15 pixels. */
+    public void deleteNearestHospital(double x, double y) {
+        Hospital nearest = null;
+        double minDist = 15;
+        for (Hospital h : engine.getMap().getHospitals()) {
+            double dist = Math.sqrt(Math.pow(h.getX() - x, 2) + Math.pow(h.getY() - y, 2));
+            if (dist < minDist) {
+                minDist = dist;
+                nearest = h;
+            }
+        }
+        if (nearest != null) {
+            if (nearest == selectedHospital) selectedHospital = null;
+            engine.removeHospital(nearest);
+            canvas.setSelectedHospital(null);
+        }
+    }
+
     /** Deletes the currently selected hospital. */
     public void deleteSelected() {
         if (selectedHospital != null) {

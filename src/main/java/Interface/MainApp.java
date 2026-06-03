@@ -10,6 +10,7 @@ import javafx.scene.control.ToolBar;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.MouseButton;
 import javafx.stage.FileChooser;
 import java.io.File;
 
@@ -90,7 +91,12 @@ public class MainApp extends Application {
 
         Scene scene = new Scene(root, 820, 660);
 
-        canvas.setOnMouseClicked(e -> controller.selectNearestHospital(e.getX(), e.getY()));
+        canvas.setOnMouseClicked(e -> {
+            if (e.getButton() == MouseButton.PRIMARY)
+                controller.selectNearestHospital(e.getX(), e.getY());
+            else if (e.getButton() == MouseButton.SECONDARY)
+                controller.deleteNearestHospital(e.getX(), e.getY());
+        });
 
         scene.setOnKeyPressed(e -> {
             if (e.getCode() == KeyCode.DELETE) controller.deleteSelected();
