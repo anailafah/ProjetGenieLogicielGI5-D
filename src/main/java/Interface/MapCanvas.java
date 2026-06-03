@@ -141,6 +141,12 @@ public class MapCanvas extends Canvas {
             double x = user.getX();
             double y = user.getY();
 
+            if (user.getClosestSite() != null) {
+                gc.setStroke(Color.GRAY);
+                gc.setLineWidth(0.5);
+                gc.strokeLine(x, y, user.getClosestSite().getX(), user.getClosestSite().getY());
+            }
+
             gc.setFill(user.getIsRedirected() ? Color.RED : Color.GREEN);
             gc.fillOval(x - 4, y - 4, 8, 8);
             gc.setFill(Color.BLACK);
