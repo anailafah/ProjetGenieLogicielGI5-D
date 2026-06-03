@@ -208,6 +208,7 @@ public class CommandLineMain {
             engine.removeUser(found);
             System.out.println("Patient removed: id=" + id);
 
+            
         } catch (NumberFormatException e) {
             System.out.println("Error: id must be an integer");
         }
