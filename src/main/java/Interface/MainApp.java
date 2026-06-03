@@ -9,6 +9,7 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.ToolBar;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
+import javafx.scene.input.KeyCode;
 import javafx.stage.FileChooser;
 import java.io.File;
 
@@ -57,8 +58,17 @@ public class MainApp extends Application {
         root.setTop(toolbar);
         root.setCenter(canvas);
 
+        Scene scene = new Scene(root, 820, 660);
+
+        canvas.setOnMouseClicked(e -> controller.selectNearestHospital(e.getX(), e.getY()));
+
+        scene.setOnKeyPressed(e -> {
+            if (e.getCode() == KeyCode.DELETE) controller.deleteSelected();
+            if (e.getCode() == KeyCode.ESCAPE)  controller.deselect();
+        });
+
         primaryStage.setTitle("Voronoi Hospital Map");
-        primaryStage.setScene(new Scene(root, 820, 660));
+        primaryStage.setScene(scene);
         primaryStage.show();
     }
 

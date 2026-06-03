@@ -3,6 +3,7 @@ package Interface;
 import java.util.List;
 import Model.Hospital;
 import Model.HospitalZone;
+
 import Model.Point;
 import Model.Triangle;
 import Model.User;
@@ -18,6 +19,12 @@ public class MapCanvas extends Canvas {
 
     private VoronoiMap map;
     private boolean showDelaunay = true;
+    private Hospital selectedHospital = null;
+
+    public void setSelectedHospital(Hospital h) {
+        this.selectedHospital = h;
+        redraw();
+    }
 
     public MapCanvas(double width, double height) {
         super(width, height);
@@ -131,6 +138,13 @@ public class MapCanvas extends Canvas {
             }
 
             gc.fillOval(x - 6, y - 6, 12, 12);
+
+            if (hospital == selectedHospital) {
+                gc.setStroke(Color.WHITE);
+                gc.setLineWidth(2);
+                gc.strokeOval(x - 9, y - 9, 18, 18);
+            }
+
             gc.setFill(Color.BLACK);
             gc.fillText("H" + hospital.getId(), x + 8, y - 8);
         }
