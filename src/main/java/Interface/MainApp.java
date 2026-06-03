@@ -39,7 +39,7 @@ public class MainApp extends Application {
                 System.err.println("CSS not found, continuing without styles");
             }
 
-            stage.setTitle("Voronoï Hôpital — ING1-GI CYTech");
+            stage.setTitle("Voronoï Hospital ING1-GI group D");
             stage.setScene(scene);
             stage.setMinWidth(700);
             stage.setMinHeight(500);

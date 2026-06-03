@@ -149,7 +149,7 @@ public class MapCanvas extends Canvas {
         double h = getHeight();
 
         gc.clearRect(0, 0, w, h);
-        gc.setFill(Color.web("#F5F4F0"));
+        gc.setFill(Color.web("#e3d4d4"));
         gc.fillRect(0, 0, w, h);
 
         if (engine == null) return;
@@ -203,7 +203,7 @@ public class MapCanvas extends Canvas {
         double[] ys = pts.stream().mapToDouble(p -> toScreenY(p[1])).toArray();
         gc.fillPolygon(xs, ys, pts.size());
 
-        gc.setStroke(Color.web("#FFFFFF", 0.6));
+        gc.setStroke(Color.web("#19a09b", 0.6));
         gc.setLineWidth(1.0);
         gc.strokePolygon(xs, ys, pts.size());
     }
