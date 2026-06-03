@@ -77,31 +77,34 @@ public class MapCanvas extends Canvas {
     }
 
     private void drawZones(GraphicsContext gc) {
-        for (HospitalZone zone : map.getZones()) {
-            List<Point> vertices = zone.getVertices();
-            if (vertices.size() < 3) continue;
+        List<Hospital> hospitals = map.getHospitals();
+        if (hospitals.isEmpty()) return;
 
-            double[] xs = new double[vertices.size()];
-            double[] ys = new double[vertices.size()];
-            for (int i = 0; i < vertices.size(); i++) {
-                xs[i] = vertices.get(i).getX();
-                ys[i] = vertices.get(i).getY();
+        int step = 5;
+        for (int x = 0; x < (int) getWidth(); x += step) {
+            for (int y = 0; y < (int) getHeight(); y += step) {
+
+                Hospital nearest = hospitals.get(0);
+                double minDist = Double.MAX_VALUE;
+                for (Hospital h : hospitals) {
+                    double dist = Math.pow(h.getX() - x, 2) + Math.pow(h.getY() - y, 2);
+                    if (dist < minDist) {
+                        minDist = dist;
+                        nearest = h;
+                    }
+                }
+
+                if (nearest.isSaturated()) {
+                    gc.setFill(Color.color(1.0, 0.2, 0.2, 0.3));
+                } else if (nearest.getAvailableRoom() <= nearest.getMaxCapacity() * 0.3) {
+                    gc.setFill(Color.color(1.0, 0.65, 0.0, 0.3));
+                } else {
+                    double hue = (nearest.getId() * 60) % 360;
+                    gc.setFill(Color.hsb(hue, 0.5, 0.9, 0.3));
+                }
+
+                gc.fillRect(x, y, step, step);
             }
-
-            Hospital h = zone.getCenterHospital();
-            if (h.isSaturated()) {
-                gc.setFill(Color.color(1.0, 0.2, 0.2, 0.15));
-                gc.setStroke(Color.color(1.0, 0.2, 0.2, 0.5));
-            } else if (h.getAvailableRoom() <= h.getMaxCapacity() * 0.3) {
-                gc.setFill(Color.color(1.0, 0.65, 0.0, 0.15));
-                gc.setStroke(Color.color(1.0, 0.65, 0.0, 0.5));
-            } else {
-                gc.setFill(Color.color(0.25, 0.55, 1.0, 0.15));
-                gc.setStroke(Color.color(0.25, 0.55, 1.0, 0.5));
-            }
-
-            gc.fillPolygon(xs, ys, vertices.size());
-            gc.strokePolygon(xs, ys, vertices.size());
         }
     }
 
