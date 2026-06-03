@@ -104,52 +104,49 @@ public class MainController {
         try {
             if (e.getButton() == MouseButton.PRIMARY) {
                 if (e.isControlDown()) {
-                    // Ctrl + clic gauche = ajouter un user
                     if (engine.getMap().getHospitals().isEmpty()) {
-                        showMessage("Ajoutez d'abord un hôpital !");
+                        showMessage("First add a hospital !");
                         return;
                     }
                     engine.addUser(wx, wy);
-                    showMessage("User ajouté");
+                    showMessage("User added");
 
                 } else {
-                    // Clic gauche = sélectionner ou ajouter hôpital
                     Hospital clicked = getHospitalAt(wx, wy);
                     if (clicked != null) {
                         selectHospital(clicked);
                     } else {
                         String name = showInputDialog(
-                            "Nom de l'hôpital :",
-                            "Hopital-" + (engine.getMap().getHospitals().size() + 1));
+                            "Hospital name:",
+                            "Hospital-" + (engine.getMap().getHospitals().size() + 1));
                         if (name == null || name.trim().isEmpty()) return;
 
-                        String capStr = showInputDialog("Capacité maximale :", "50");
+                        String capStr = showInputDialog("Max capacity :", "20");
                         if (capStr == null) return;
 
                         int capacity = Integer.parseInt(capStr.trim());
                         if (capacity <= 0) {
-                            showMessage("La capacité doit être > 0");
+                            showMessage("Capacity must be >0");
                             return;
                         }
 
                         Hospital h = engine.addHospital(wx, wy, name.trim(), capacity);
                         selectHospital(h);
-                        showMessage("Hôpital ajouté : " + name);
+                        showMessage("Hospital added : " + name);
                     }
                 }
 
             } else if (e.getButton() == MouseButton.SECONDARY) {
-                // Clic droit = supprimer hôpital
                 Hospital clicked = getHospitalAt(wx, wy);
                 if (clicked != null) {
                     engine.removeHospital(clicked);
                     if (selectedHospital == clicked) clearSelection();
-                    showMessage("Hôpital supprimé");
+                    showMessage("deleted hospital");
                 }
             }
 
         } catch (NumberFormatException ex) {
-            showMessage("Erreur : capacité invalide");
+            showMessage("Error : Invalid Capacity ");
         } catch (IllegalArgumentException ex) {
             showMessage("Erreur : " + ex.getMessage());
         }
@@ -180,7 +177,7 @@ public class MainController {
                 dragStartY = e.getY();
             }
         } catch (IllegalArgumentException ex) {
-            showMessage("Erreur déplacement : " + ex.getMessage());
+            showMessage("Displace Error : " + ex.getMessage());
         }
 
         canvas.redraw();
@@ -206,20 +203,20 @@ public class MainController {
     @FXML
     private void onRandomUsers() {
         if (engine.getMap().getHospitals().isEmpty()) {
-            showMessage("Ajoutez d'abord des hôpitaux !");
+            showMessage("First add hospital!");
             return;
         }
         try {
-            String input = showInputDialog("Nombre de users à ajouter :", "20");
+            String input = showInputDialog("Number of user :", "20");
             if (input == null) return;
 
             int count = Integer.parseInt(input.trim());
             if (count <= 0) {
-                showMessage("Le nombre doit être > 0");
+                showMessage("number must be > 0");
                 return;
             }
             if (count > 10000) {
-                showMessage("Maximum 10 000 users à la fois");
+                showMessage("Max 10 000 users");
                 return;
             }
 
@@ -235,12 +232,12 @@ public class MainController {
 
             canvas.redraw();
             updateStatusBar();
-            showMessage(count + " users ajoutés aléatoirement");
+            showMessage(count + " users added randomly");
 
         } catch (NumberFormatException e) {
-            showMessage("Erreur : entrez un entier");
+            showMessage("Error : enter an int");
         } catch (IllegalArgumentException e) {
-            showMessage("Erreur : " + e.getMessage());
+            showMessage("Error : " + e.getMessage());
         }
     }
 
@@ -250,9 +247,9 @@ public class MainController {
     @FXML
     private void onImportCSV() {
         FileChooser fc = new FileChooser();
-        fc.setTitle("Importer des hôpitaux");
+        fc.setTitle("Import hospitals");
         fc.getExtensionFilters().add(
-            new FileChooser.ExtensionFilter("Fichiers CSV", "*.csv"));
+            new FileChooser.ExtensionFilter("CSV files", "*.csv"));
 
         File dataDir = new File("data");
         if (dataDir.exists()) fc.setInitialDirectory(dataDir);
@@ -265,11 +262,11 @@ public class MainController {
                 file.getAbsolutePath(), engine.getMap());
             canvas.redraw();
             updateStatusBar();
-            showMessage(count + " hôpitaux importés depuis " + file.getName());
+            showMessage(count + " Hospital imported from " + file.getName());
         } catch (IllegalArgumentException e) {
-            showMessage("Erreur (argument) : " + e.getMessage());
+            showMessage("Error (argument) : " + e.getMessage());
         } catch (Exception e) {
-            showMessage("Erreur import CSV : " + e.getMessage());
+            showMessage("Error import CSV : " + e.getMessage());
         }
     }
 
@@ -279,14 +276,14 @@ public class MainController {
     @FXML
     private void onExportBinary() {
         if (engine.getMap().getHospitals().isEmpty()) {
-            showMessage("La carte est vide, rien à exporter");
+            showMessage("Map is empty, nothing to export");
             return;
         }
 
         FileChooser fc = new FileChooser();
         fc.setTitle("Exporter la carte");
         fc.getExtensionFilters().add(
-            new FileChooser.ExtensionFilter("Carte binaire", "*.bin"));
+            new FileChooser.ExtensionFilter("Binary map", "*.bin"));
         fc.setInitialFileName("map.bin");
 
         File file = fc.showSaveDialog(mapPane.getScene().getWindow());
@@ -295,11 +292,11 @@ public class MainController {
         try {
             ImportExportMap.exportBinary(
                 engine.getMap(), file.getAbsolutePath());
-            showMessage("Carte exportée : " + file.getName());
+            showMessage("Exported map : " + file.getName());
         } catch (IllegalArgumentException e) {
-            showMessage("Erreur (argument) : " + e.getMessage());
+            showMessage("Error (argument) : " + e.getMessage());
         } catch (Exception e) {
-            showMessage("Erreur export : " + e.getMessage());
+            showMessage("Error export : " + e.getMessage());
         }
     }
 
@@ -309,9 +306,9 @@ public class MainController {
     @FXML
     private void onImportBinary() {
         FileChooser fc = new FileChooser();
-        fc.setTitle("Importer une carte");
+        fc.setTitle("Import map");
         fc.getExtensionFilters().add(
-            new FileChooser.ExtensionFilter("Carte binaire", "*.bin"));
+            new FileChooser.ExtensionFilter("Binary map", "*.bin"));
 
         File file = fc.showOpenDialog(mapPane.getScene().getWindow());
         if (file == null) return;
@@ -333,11 +330,11 @@ public class MainController {
             showMessage("Carte importée : " + file.getName());
 
         } catch (ClassNotFoundException e) {
-            showMessage("Erreur : fichier incompatible avec cette version");
+            showMessage("Error : version incompatible with this file");
         } catch (IllegalArgumentException e) {
-            showMessage("Erreur (argument) : " + e.getMessage());
+            showMessage("Error (argument) : " + e.getMessage());
         } catch (Exception e) {
-            showMessage("Erreur import : " + e.getMessage());
+            showMessage("Error import : " + e.getMessage());
         }
     }
 
@@ -347,9 +344,9 @@ public class MainController {
     @FXML
     private void onClearAll() {
         Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
-        confirm.setTitle("Effacer tout");
-        confirm.setHeaderText("Voulez-vous vraiment effacer toute la carte ?");
-        confirm.setContentText("Cette action est irréversible.");
+        confirm.setTitle("Clear all");
+        confirm.setHeaderText("Do you really want to clear this map ?");
+        confirm.setContentText("This action is irreversible.");
 
         confirm.showAndWait().ifPresent(response -> {
             if (response == ButtonType.OK) {
@@ -358,7 +355,7 @@ public class MainController {
                 clearSelection();
                 canvas.redraw();
                 updateStatusBar();
-                showMessage("Carte effacée");
+                showMessage("Cleared map");
             }
         });
     }
@@ -406,11 +403,11 @@ public class MainController {
     private void onAbout() {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("À propos");
-        alert.setHeaderText("Voronoï Hôpital");
+        alert.setHeaderText("Voronoï Hospital");
         alert.setContentText(
-            "Projet PGL — ING1-GI CYTech 2025-2026\n" +
-            "Répartition des patients vers les hôpitaux\n" +
-            "Algorithme de Bowyer-Watson");
+            "PGL ING1-GI5 group D\n" +
+            "Users distribution to hospitals\n" +
+            "Bowyer-Watson Algorithm");
         alert.showAndWait();
     }
 
@@ -429,7 +426,7 @@ public class MainController {
     private void clearSelection() {
         selectedHospital = null;
         canvas.setSelectedHospital(null);
-        labelHospitalName.setText("Aucun hôpital sélectionné");
+        labelHospitalName.setText("No hospital selectionned");
         progressSaturation.setProgress(0);
         progressSaturation.setStyle("");
         labelStats.setText("");
@@ -455,19 +452,19 @@ public class MainController {
             .filter(User::getIsRedirected).count();
 
         labelStats.setText(
-            "Patients : " + selectedHospital.getUsers().size()
+            "Users : " + selectedHospital.getUsers().size()
                 + " / " + selectedHospital.getMaxCapacity() + "\n" +
             "Saturation : "
                 + String.format("%.1f", selectedHospital.getSaturationRate()) + "%\n" +
-            "Places libres : " + selectedHospital.getAvailableRoom() + "\n" +
-            "Redirigés : " + redirected
+            "AvailableRoom : " + selectedHospital.getAvailableRoom() + "\n" +
+            "Redirected : " + redirected
         );
     }
 
     /** Updates the status bar labels at the bottom. */
     private void updateStatusBar() {
         labelNbHospitals.setText(
-            "Hôpitaux : " + engine.getMap().getHospitals().size());
+            "Hospital : " + engine.getMap().getHospitals().size());
         labelNbUsers.setText(
             "Users : " + engine.getMap().getUserTot().size());
         labelNbTriangles.setText(
@@ -491,7 +488,7 @@ public class MainController {
      */
     private String showInputDialog(String prompt, String defaultValue) {
         TextInputDialog dialog = new TextInputDialog(defaultValue);
-        dialog.setTitle("Saisie");
+        dialog.setTitle("Input");
         dialog.setHeaderText(null);
         dialog.setContentText(prompt);
         return dialog.showAndWait().orElse(null);
