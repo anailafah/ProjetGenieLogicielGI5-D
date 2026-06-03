@@ -1,184 +1,296 @@
 package Interface;
 
-import java.util.List;
-import Model.Hospital;
-import Model.HospitalZone;
-
-import Model.Point;
-import Model.Triangle;
-import Model.User;
-import Model.VoronoiMap;
+import Algorithm.VoronoiEngine;
+import Model.*;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
+import java.util.List;
+
 /**
- * JavaFX drawing zone for displaying the Voronoi map.
+ * JavaFX Canvas responsible for rendering the Voronoi diagram,
+ * Delaunay triangulation, hospitals and users.
  */
 public class MapCanvas extends Canvas {
 
-    private VoronoiMap map;
-    private boolean showDelaunay = true;
-    private Hospital selectedHospital = null;
+    private VoronoiEngine engine;
+    private Hospital      selectedHospital;
 
+    private boolean showDelaunay = true;
+    private boolean showZones    = true;
+    private boolean showLinks    = true;
+
+    private double offsetX = 0;
+    private double offsetY = 0;
+    private double scale   = 1.0;
+
+    private static final Color[] ZONE_COLORS = {
+        Color.web("#AEE8D0", 0.4),
+        Color.web("#AEC8E8", 0.4),
+        Color.web("#E8D0AE", 0.4),
+        Color.web("#D0AEE8", 0.4),
+        Color.web("#E8AEB0", 0.4),
+        Color.web("#D0E8AE", 0.4)
+    };
+
+    /**
+     * Constructs the MapCanvas.
+     * @param width  initial canvas width
+     * @param height initial canvas height
+     * @param engine the Voronoi engine
+     */
+    public MapCanvas(double width, double height, VoronoiEngine engine) {
+        super(width, height);
+        this.engine = engine;
+    }
+
+    /**
+     * Sets the engine (used when importing a map).
+     * @param engine the new engine
+     */
+    public void setEngine(VoronoiEngine engine) {
+        this.engine = engine;
+    }
+
+    /**
+     * Sets the currently selected hospital (highlighted with halo).
+     * @param h the selected hospital, or null to clear
+     */
     public void setSelectedHospital(Hospital h) {
         this.selectedHospital = h;
-        redraw();
     }
 
-    public MapCanvas(double width, double height) {
-        super(width, height);
-        widthProperty().addListener(e -> redraw());
-        heightProperty().addListener(e -> redraw());
-        drawEmptyMap();
-    }
-
-    @Override
-    public boolean isResizable() { return true; }
-
-    @Override
-    public double prefWidth(double height) { return getWidth(); }
-
-    @Override
-    public double prefHeight(double width) { return getHeight(); }
-
-    public void setMap(VoronoiMap map) {
-        this.map = map;
-        redraw();
-    }
-
-    public VoronoiMap getMap() {
-        return map;
-    }
-
-    /** Toggles the Delaunay triangulation overlay on or off. */
+    /**
+     * Sets whether the Delaunay triangulation is shown.
+     * @param show true to show
+     */
     public void setShowDelaunay(boolean show) {
         this.showDelaunay = show;
-        redraw();
     }
 
-    public boolean isShowDelaunay() {
-        return showDelaunay;
+    /**
+     * Sets whether the Voronoi zones are shown.
+     * @param show true to show
+     */
+    public void setShowZones(boolean show) {
+        this.showZones = show;
     }
 
+    /**
+     * Sets whether the user-to-hospital links are shown.
+     * @param show true to show
+     */
+    public void setShowLinks(boolean show) {
+        this.showLinks = show;
+    }
+
+    /**
+     * Sets the zoom scale.
+     * @param scale the new scale
+     */
+    public void setScale(double scale) {
+        this.scale = scale;
+    }
+
+    /**
+     * Adds an offset to the view (pan).
+     * @param dx horizontal offset
+     * @param dy vertical offset
+     */
+    public void addOffset(double dx, double dy) {
+        this.offsetX += dx;
+        this.offsetY += dy;
+    }
+
+    /**
+     * Converts world X coordinate to screen X.
+     * @param wx world x
+     * @return screen x
+     */
+    public double toScreenX(double wx) {
+        return wx * scale + offsetX;
+    }
+
+    /**
+     * Converts world Y coordinate to screen Y.
+     * @param wy world y
+     * @return screen y
+     */
+    public double toScreenY(double wy) {
+        return wy * scale + offsetY;
+    }
+
+    /**
+     * Converts screen X coordinate to world X.
+     * @param sx screen x
+     * @return world x
+     */
+    public double toWorldX(double sx) {
+        return (sx - offsetX) / scale;
+    }
+
+    /**
+     * Converts screen Y coordinate to world Y.
+     * @param sy screen y
+     * @return world y
+     */
+    public double toWorldY(double sy) {
+        return (sy - offsetY) / scale;
+    }
+    /**
+     * Redraws the entire canvas.
+     * Called every time the map changes.
+     */
     public void redraw() {
-        if (map == null) {
-            drawEmptyMap();
-            return;
-        }
-
         GraphicsContext gc = getGraphicsContext2D();
+        double w = getWidth();
+        double h = getHeight();
 
-        clear(gc);
-        drawZones(gc);
-        if (showDelaunay) drawTriangles(gc);
-        drawHospitals(gc);
-        drawUsers(gc);
+        gc.clearRect(0, 0, w, h);
+        gc.setFill(Color.web("#F5F4F0"));
+        gc.fillRect(0, 0, w, h);
+
+        if (engine == null) return;
+
+        List<Triangle>  triangles = engine.getTriangles();
+        List<Hospital>  hospitals = engine.getMap().getHospitals();
+        List<User>      users     = engine.getMap().getUserTot();
+
+        if (showZones)    drawZones(gc, triangles, hospitals);
+        if (showDelaunay) drawDelaunay(gc, triangles);
+        if (showLinks)    drawLinks(gc, users);
+        drawHospitals(gc, hospitals);
+        drawUsers(gc, users);
     }
 
-    private void drawZones(GraphicsContext gc) {
-        List<Hospital> hospitals = map.getHospitals();
-        if (hospitals.isEmpty()) return;
-
-        int step = 5;
-        for (int x = 0; x < (int) getWidth(); x += step) {
-            for (int y = 0; y < (int) getHeight(); y += step) {
-
-                Hospital nearest = hospitals.get(0);
-                double minDist = Double.MAX_VALUE;
-                for (Hospital h : hospitals) {
-                    double dist = Math.pow(h.getX() - x, 2) + Math.pow(h.getY() - y, 2);
-                    if (dist < minDist) {
-                        minDist = dist;
-                        nearest = h;
-                    }
+    /**
+     * Draws Voronoi zones as colored triangles from circumcenters.
+     * @param gc        graphics context
+     * @param triangles list of Delaunay triangles
+     * @param hospitals list of hospitals
+     */
+    private void drawZones(GraphicsContext gc,
+            List<Triangle> triangles, List<Hospital> hospitals) {
+        int colorIdx = 0;
+        for (Hospital h : hospitals) {
+            gc.setFill(ZONE_COLORS[colorIdx % ZONE_COLORS.length]);
+            colorIdx++;
+            for (Triangle t : triangles) {
+                if (t.getA() == h || t.getB() == h || t.getC() == h) {
+                    double[] xs = {
+                        toScreenX(t.getA().getX()),
+                        toScreenX(t.getB().getX()),
+                        toScreenX(t.getC().getX())
+                    };
+                    double[] ys = {
+                        toScreenY(t.getA().getY()),
+                        toScreenY(t.getB().getY()),
+                        toScreenY(t.getC().getY())
+                    };
+                    gc.fillPolygon(xs, ys, 3);
                 }
-
-                if (nearest.isSaturated()) {
-                    gc.setFill(Color.color(1.0, 0.2, 0.2, 0.3));
-                } else if (nearest.getAvailableRoom() <= nearest.getMaxCapacity() * 0.3) {
-                    gc.setFill(Color.color(1.0, 0.65, 0.0, 0.3));
-                } else {
-                    double hue = (nearest.getId() * 60) % 360;
-                    gc.setFill(Color.hsb(hue, 0.5, 0.9, 0.3));
-                }
-
-                gc.fillRect(x, y, step, step);
             }
         }
     }
 
-    private void drawTriangles(GraphicsContext gc) {
-        gc.setStroke(Color.CORNFLOWERBLUE);
-        gc.setLineWidth(1.0);
-        for (Triangle t : map.getTriangles()) {
-            double ax = t.getA().getX(), ay = t.getA().getY();
-            double bx = t.getB().getX(), by = t.getB().getY();
-            double cx = t.getC().getX(), cy = t.getC().getY();
-            gc.strokeLine(ax, ay, bx, by);
-            gc.strokeLine(bx, by, cx, cy);
-            gc.strokeLine(cx, cy, ax, ay);
-        }
-        gc.setLineWidth(1.0);
-    }
-
-    private void drawEmptyMap() {
-        GraphicsContext gc = getGraphicsContext2D();
-        clear(gc);
-
-        gc.setFill(Color.GRAY);
-        gc.fillText("Aucune carte à afficher", 20, 30);
-    }
-
-    private void clear(GraphicsContext gc) {
-        gc.setFill(Color.WHITE);
-        gc.fillRect(0, 0, getWidth(), getHeight());
-
-        gc.setStroke(Color.LIGHTGRAY);
-        gc.strokeRect(0, 0, getWidth(), getHeight());
-    }
-
-    private void drawHospitals(GraphicsContext gc) {
-        for (Hospital hospital : map.getHospitals()) {
-            double x = hospital.getX();
-            double y = hospital.getY();
-
-            if (hospital.isSaturated()) {
-                gc.setFill(Color.RED);
-            } else if (hospital.getAvailableRoom() <= hospital.getMaxCapacity() * 0.3) {
-                gc.setFill(Color.ORANGE);
-            } else {
-                gc.setFill(Color.BLUE);
-            }
-
-            gc.fillOval(x - 6, y - 6, 12, 12);
-
-            if (hospital == selectedHospital) {
-                gc.setStroke(Color.WHITE);
-                gc.setLineWidth(2);
-                gc.strokeOval(x - 9, y - 9, 18, 18);
-            }
-
-            gc.setFill(Color.BLACK);
-            gc.fillText("H" + hospital.getId(), x + 8, y - 8);
+    /**
+     * Draws the Delaunay triangulation edges.
+     * @param gc        graphics context
+     * @param triangles list of triangles
+     */
+    private void drawDelaunay(GraphicsContext gc, List<Triangle> triangles) {
+        gc.setStroke(Color.web("#5588AA", 0.6));
+        gc.setLineWidth(1.0 / scale);
+        for (Triangle t : triangles) {
+            double[] xs = {
+                toScreenX(t.getA().getX()),
+                toScreenX(t.getB().getX()),
+                toScreenX(t.getC().getX())
+            };
+            double[] ys = {
+                toScreenY(t.getA().getY()),
+                toScreenY(t.getB().getY()),
+                toScreenY(t.getC().getY())
+            };
+            gc.strokePolygon(xs, ys, 3);
         }
     }
 
-    private void drawUsers(GraphicsContext gc) {
-        for (User user : map.getUserTot()) {
-            double x = user.getX();
-            double y = user.getY();
+    /**
+     * Draws lines between users and their assigned hospital.
+     * Green = normal, Red = redirected.
+     * @param gc    graphics context
+     * @param users list of users
+     */
+    private void drawLinks(GraphicsContext gc, List<User> users) {
+        gc.setLineWidth(0.8 / scale);
+        for (User u : users) {
+            if (u.getClosestSite() == null) continue;
+            double ux = toScreenX(u.getX());
+            double uy = toScreenY(u.getY());
+            double hx = toScreenX(u.getClosestSite().getX());
+            double hy = toScreenY(u.getClosestSite().getY());
+            gc.setStroke(u.getIsRedirected()
+                ? Color.web("#D85A30", 0.4)
+                : Color.web("#1D9E75", 0.3));
+            gc.strokeLine(ux, uy, hx, hy);
+        }
+    }
 
-            if (user.getClosestSite() != null) {
-                gc.setStroke(Color.GRAY);
-                gc.setLineWidth(0.5);
-                gc.strokeLine(x, y, user.getClosestSite().getX(), user.getClosestSite().getY());
+    /**
+     * Draws hospitals with color based on saturation level.
+     * Blue = available, Orange = almost full, Red = saturated.
+     * Highlighted with a halo if selected.
+     * @param gc        graphics context
+     * @param hospitals list of hospitals
+     */
+    private void drawHospitals(GraphicsContext gc, List<Hospital> hospitals) {
+        for (Hospital h : hospitals) {
+            double sx = toScreenX(h.getX());
+            double sy = toScreenY(h.getY());
+            double r  = 8 * Math.max(0.5, Math.min(scale, 2.0));
+
+            double rate = h.getSaturationRate();
+            Color color;
+            if (rate >= 100)     color = Color.web("#CC2200");
+            else if (rate >= 75) color = Color.web("#E07700");
+            else                 color = Color.web("#1D5C8A");
+
+            if (h == selectedHospital) {
+                gc.setFill(Color.web("#EF9F27", 0.3));
+                gc.fillOval(sx - r*2, sy - r*2, r*4, r*4);
             }
 
-            gc.setFill(user.getIsRedirected() ? Color.RED : Color.GREEN);
-            gc.fillOval(x - 4, y - 4, 8, 8);
-            gc.setFill(Color.BLACK);
-            gc.fillText("U" + user.getId(), x + 6, y - 6);
+            gc.setFill(color);
+            gc.fillOval(sx - r, sy - r, r*2, r*2);
+
+            gc.setFill(Color.WHITE);
+            gc.fillOval(sx - r*0.4, sy - r*0.4, r*0.8, r*0.8);
+
+            if (scale > 0.5) {
+                gc.setFill(Color.web("#222222"));
+                gc.fillText(h.getName(), sx + r + 3, sy + 4);
+            }
+        }
+    }
+
+    /**
+     * Draws users with color based on redirection status.
+     * Green = assigned to nearest, Red = redirected.
+     * @param gc    graphics context
+     * @param users list of users
+     */
+    private void drawUsers(GraphicsContext gc, List<User> users) {
+        for (User u : users) {
+            double ux = toScreenX(u.getX());
+            double uy = toScreenY(u.getY());
+            double r  = 4 * Math.max(0.5, Math.min(scale, 2.0));
+
+            gc.setFill(u.getIsRedirected()
+                ? Color.web("#D85A30")
+                : Color.web("#1D9E75"));
+            gc.fillOval(ux - r, uy - r, r*2, r*2);
         }
     }
 }
