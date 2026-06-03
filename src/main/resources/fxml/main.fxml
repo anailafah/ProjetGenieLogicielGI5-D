@@ -35,7 +35,10 @@
                   <CheckMenuItem fx:id="menuLinks" mnemonicParsing="false" onAction="#onToggleLinks" text="Display links" />
               </items>
             </Menu>
-            <Menu mnemonicParsing="false" text="Help" />
+            <Menu mnemonicParsing="false" text="Help">
+               <items>
+                  <CheckMenuItem mnemonicParsing="false" text="About us" />
+               </items></Menu>
         </menus>
       </MenuBar>
    </top>
@@ -62,19 +65,29 @@
             <Button mnemonicParsing="false" onAction="#onExportBinary" text="Export Binary" />
             <Button mnemonicParsing="false" onAction="#onClearAll" text="Clear all" />
             <Separator prefWidth="200.0" />
-            <Label text="Hospital">
+            <Label text=" Hospital">
                <graphic>
-                  <Circle fill="#18e811" radius="8.0" stroke="BLACK" strokeType="INSIDE" />
+                  <Circle fill="#1d5c8a" radius="8.0" stroke="BLACK" strokeType="INSIDE" />
+               </graphic>
+            </Label>
+            <Label text="Almost saturated Hospital">
+               <graphic>
+                  <Circle fill="#e07700" radius="8.0" stroke="BLACK" strokeType="INSIDE" />
+               </graphic>
+            </Label>
+            <Label text=" Saturated hospital">
+               <graphic>
+                  <Circle fill="#cc2200" radius="8.0" stroke="BLACK" strokeType="INSIDE" />
                </graphic>
             </Label>
             <Label text="User">
                <graphic>
-                  <Circle fill="#311ce5" radius="8.0" stroke="BLACK" strokeType="INSIDE" />
+                  <Circle fill="#1d9e75" radius="8.0" stroke="BLACK" strokeType="INSIDE" />
                </graphic>
             </Label>
-            <Label text="Rediriged User">
+            <Label text="Redirected User">
                <graphic>
-                  <Circle fill="#bc0d0d" radius="8.0" stroke="BLACK" strokeType="INSIDE" />
+                  <Circle fill="#d85a30" radius="8.0" stroke="BLACK" strokeType="INSIDE" />
                </graphic>
             </Label>
          </children>
