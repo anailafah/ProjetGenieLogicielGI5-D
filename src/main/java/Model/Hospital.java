@@ -72,10 +72,7 @@ public class Hospital extends Point {
 		if (maxCapacity <= 0) return 0;
 		return ((double) getAvailableRoom() / maxCapacity) * 100;
 	}
-	/**
-	 * 
-	 * @param u
-	 */
+	
 	/**
 	 * @return saturation rate as a percentage (0-100+)
 	 */
