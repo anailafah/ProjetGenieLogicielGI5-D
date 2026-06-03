@@ -1,96 +1,143 @@
 package Algorithm;
-
 import Model.*;
 
 import java.io.*;
-import java.util.List;
-
 
 /**
  * Handles all import and export operations for the map.
- * Supports CSV import of hospitals, patients, and full maps.
- * Supports binary export/import of the full map.
+ * All files are stored in the data/ folder automatically.
  */
 public class ImportExportMap {
-
-    private static final String SECTION_HOSPITALS = "[HOSPITALS]";
-    private static final String SECTION_PATIENTS  = "[PATIENTS]";
+    /** Default folder for all files. */
+    private static final String DATA_FOLDER = "data/";
 
     /**
-     * Exports the full VoronoiMap to a binary file.
-     * @param map      the map to export
-     * @param filePath destination file path
-     * @throws IOException if writing fails
+     * Builds the full file path from a filename.
+     * @param fileName the file name 
+     * @return the full path 
      */
-    public static void exportBinary(VoronoiMap map, String filePath)
-            throws IOException {
-        if (map == null)
-            throw new IllegalArgumentException("Map cannot be null");
-        if (filePath == null || filePath.trim().isEmpty())
-            throw new IllegalArgumentException("File path cannot be null or empty");
-
-        File file = new File(filePath);
-        File parent = file.getParentFile();
-        if (parent != null && !parent.exists()) {
-            if (!parent.mkdirs())
-                throw new IOException("Cannot create directory: " + parent.getAbsolutePath());
-        }
-
-        try (ObjectOutputStream oos = new ObjectOutputStream(
-                new BufferedOutputStream(new FileOutputStream(file)))) {
-            oos.writeObject(map);
-        }
+    private static String buildPath(String fileName) {
+        if (fileName == null || fileName.trim().isEmpty())
+            throw new IllegalArgumentException("File name cannot be null or empty");
+        return DATA_FOLDER + fileName.trim();
     }
 
     /**
-     * Imports a full VoronoiMap from a binary file.
-     * @param filePath source file path
+     * Exports the full VoronoiMap to a binary file in the data/ folder.
+     * @param map the map to export
+     * @param fileName the file name 
+     * @throws IllegalArgumentException if map or fileName is invalid
+     * @throws IOException if writing fails
+     */
+    public static void exportBinary(VoronoiMap map, String fileName)
+            throws IOException {
+
+        if (map == null)
+            throw new IllegalArgumentException("Map cannot be null");
+
+        String filePath = buildPath(fileName);
+        File file = new File(filePath);
+
+        File dataDir = new File(DATA_FOLDER);
+        if (!dataDir.exists()) {
+            if (!dataDir.mkdirs())
+                throw new IOException("Cannot create data/ folder");
+        }
+
+        try (ObjectOutputStream oos = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(file)))) {
+            oos.writeObject(map);
+            oos.flush();
+        } 
+        catch (NotSerializableException e) {
+            throw new IOException( "A class is not Serializable: " + e.getMessage(), e);
+        }
+
+        System.out.println("Map exported to: " + filePath);
+    }
+
+    /**
+     * Imports the full VoronoiMap from a binary file in the data/ folder.
+     * @param fileName the file name
      * @return the loaded VoronoiMap
-     * @throws IOException if reading fails
+     * @throws IllegalArgumentException if fileName is invalid
+     * @throws IOException if reading fails or file is corrupted
      * @throws ClassNotFoundException if the class is not found
      */
-    public static VoronoiMap importBinary(String filePath)
+    public static VoronoiMap importBinary(String fileName)
             throws IOException, ClassNotFoundException {
-        if (filePath == null || filePath.trim().isEmpty())
-            throw new IllegalArgumentException("File path cannot be null or empty");
 
+        String filePath = buildPath(fileName);
         File file = new File(filePath);
-        if (!file.exists()) throw new IOException("File not found: " + filePath);
+
+        if (!file.exists())
+            throw new IOException("File not found: " + filePath);
+        if (!file.isFile())
+            throw new IOException("Path is not a file: " + filePath);
+        if (!file.canRead())
+            throw new IOException("File is not readable: " + filePath);
 
         try (ObjectInputStream ois = new ObjectInputStream(
                 new BufferedInputStream(new FileInputStream(file)))) {
+
             Object obj = ois.readObject();
+
             if (!(obj instanceof VoronoiMap))
                 throw new IOException("File does not contain a valid VoronoiMap");
+
+            System.out.println("Map imported from: " + filePath);
             return (VoronoiMap) obj;
+
+        } catch (StreamCorruptedException e) {
+            throw new IOException(
+                "File is corrupted or not a binary map: " + filePath, e);
+        } catch (InvalidClassException e) {
+            throw new IOException(
+                "File was created with an older version. Please export again.", e);
         }
     }
 
     /**
-     * Imports hospitals from a CSV file into an existing map.
+     * Imports hospitals from a CSV file in the data/ folder.
      * Expected format per line: name,x,y,maxCapacity
-     * @param filePath source CSV file path
-     * @param map      the map to populate
+     * Lines starting with # are treated as comments and skipped.
+     * @param fileName the file name (e.g. "hospitals.csv")
+     * @param map      the map to populate (must not be null)
      * @return number of hospitals successfully imported
+     * @throws IllegalArgumentException if fileName or map is invalid
      * @throws IOException if the file cannot be read
      */
-    public static int importHospitalsCSV(String filePath, VoronoiMap map)
+    public static int importHospitalsCSV(String fileName, VoronoiMap map)
             throws IOException {
-        validateFileAndMap(filePath, map);
+
+        if (map == null)
+            throw new IllegalArgumentException("Map cannot be null");
+
+        String filePath = buildPath(fileName);
+        File file = new File(filePath);
+
+        if (!file.exists())
+            throw new IOException("CSV file not found: " + filePath);
+        if (!file.isFile())
+            throw new IOException("Path is not a file: " + filePath);
+        if (!file.canRead())
+            throw new IOException("CSV file is not readable: " + filePath);
 
         int imported = 0;
         int lineNum  = 0;
 
-        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
             String line;
             while ((line = br.readLine()) != null) {
                 lineNum++;
                 line = line.trim();
+
                 if (line.isEmpty() || line.startsWith("#")) continue;
 
                 String[] parts = line.split(",");
+
                 if (parts.length < 4) {
-                    System.err.println("Line " + lineNum + " skipped: " + line);
+                    System.err.println("Line " + lineNum
+                        + " skipped (expected name,x,y,capacity): " + line);
                     continue;
                 }
 
@@ -100,145 +147,37 @@ public class ImportExportMap {
                     double y     = Double.parseDouble(parts[2].trim());
                     int capacity = Integer.parseInt(parts[3].trim());
 
-                    if (name.isEmpty() || capacity <= 0) continue;
+                    if (name.isEmpty()) {
+                        System.err.println("Line " + lineNum
+                            + " skipped (empty name)");
+                        continue;
+                    }
+                    if (capacity <= 0) {
+                        System.err.println("Line " + lineNum
+                            + " skipped (capacity must be > 0)");
+                        continue;
+                    }
+                    if (!Double.isFinite(x) || !Double.isFinite(y)) {
+                        System.err.println("Line " + lineNum
+                            + " skipped (invalid coordinates)");
+                        continue;
+                    }
 
-                    map.addHospital(new Hospital(map.generateId(), name, x, y, capacity));
+                    map.addHospital(new Hospital(map.generateId(), name,x, y, capacity));
                     imported++;
+
                 } catch (NumberFormatException e) {
-                    System.err.println("Line " + lineNum + " skipped (invalid number): " + line);
+                    System.err.println("Line " + lineNum
+                        + " skipped (invalid number): " + line);
+                } catch (IllegalArgumentException e) {
+                    System.err.println("Line " + lineNum
+                        + " skipped (" + e.getMessage() + ")");
                 }
             }
         }
 
-        System.out.println("Imported " + imported + " hospital(s) from: " + filePath);
+        System.out.println("Imported " + imported
+            + " hospital(s) from: " + filePath);
         return imported;
-    }
-
-    /**
-     * Imports hospitals from a CSV file into the engine, then recomputes triangulation.
-     * @param filePath source CSV file path
-     * @param engine   the Delaunay engine to populate
-     * @return number of hospitals successfully imported
-     * @throws IOException if the file cannot be read
-     */
-    public static int importHospitalsCSV(String filePath, TriangulationDelaunay engine)
-            throws IOException {
-        int count = importHospitalsCSV(filePath, engine.getMap());
-        if (count > 0) engine.recompute();
-        return count;
-    }
-
-    /**
-     * Exports the full map (hospitals + patients) to a CSV file.
-     * @param map      the map to export
-     * @param filePath destination file path
-     * @throws IOException if writing fails
-     */
-    public static void exportFullMapCSV(VoronoiMap map, String filePath)
-            throws IOException {
-        if (map == null)
-            throw new IllegalArgumentException("Map cannot be null");
-        if (filePath == null || filePath.trim().isEmpty())
-            throw new IllegalArgumentException("File path cannot be null or empty");
-
-        File file = new File(filePath);
-        File parent = file.getParentFile();
-        if (parent != null && !parent.exists()) {
-            if (!parent.mkdirs())
-                throw new IOException("Cannot create directory: " + parent.getAbsolutePath());
-        }
-
-        try (BufferedWriter bw = new BufferedWriter(new FileWriter(file))) {
-            bw.write("# Voronoi Hospital Map Export");
-            bw.newLine();
-            bw.write("# Format : [HOSPITALS] name,x,y,maxCapacity");
-            bw.newLine();
-            bw.write("#          [PATIENTS]  x,y");
-            bw.newLine();
-            bw.newLine();
-
-            bw.write(SECTION_HOSPITALS);
-            bw.newLine();
-            for (Hospital h : map.getHospitals()) {
-                bw.write(h.getName() + ","
-                    + h.getX() + ","
-                    + h.getY() + ","
-                    + h.getMaxCapacity());
-                bw.newLine();
-            }
-
-            bw.newLine();
-
-            bw.write(SECTION_PATIENTS);
-            bw.newLine();
-            for (User p : map.getUserTot()) {
-                bw.write(p.getX() + "," + p.getY());
-                bw.newLine();
-            }
-        }
-
-        System.out.println("Map exported to: " + filePath);
-    }
-
-    /**
-     * Imports a full map (hospitals + patients) from a CSV file.
-     * The file must contain [HOSPITALS] and [PATIENTS] section markers.
-     * @param filePath source CSV file path
-     * @param map      the map to populate
-     * @return int[]{hospitalsImported, patientsImported}
-     * @throws IOException if the file cannot be read
-     */
-    public static int[] importFullMapCSV(String filePath, VoronoiMap map)
-            throws IOException {
-        validateFileAndMap(filePath, map);
-
-        int hospitals = 0;
-        int patients  = 0;
-        String section = null;
-
-        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
-            String line;
-            while ((line = br.readLine()) != null) {
-                line = line.trim();
-                if (line.isEmpty() || line.startsWith("#")) continue;
-
-                if (line.equals("[HOSPITALS]")) { section = "H"; continue; }
-                if (line.equals("[PATIENTS]"))  { section = "P"; continue; }
-
-                String[] parts = line.split(",");
-                if ("H".equals(section) && parts.length >= 4) {
-                    try {
-                        String name  = parts[0].trim();
-                        double x     = Double.parseDouble(parts[1].trim());
-                        double y     = Double.parseDouble(parts[2].trim());
-                        int capacity = Integer.parseInt(parts[3].trim());
-                        map.addHospital(new Hospital(map.generateId(), name, x, y, capacity));
-                        hospitals++;
-                    } catch (NumberFormatException e) { /* ligne ignorée */ }
-                } else if ("P".equals(section) && parts.length >= 2) {
-                    try {
-                        double x = Double.parseDouble(parts[0].trim());
-                        double y = Double.parseDouble(parts[1].trim());
-                        map.addUsertot(new User(map.generateId(), x, y));
-                        patients++;
-                    } catch (NumberFormatException e) { /* ligne ignorée */ }
-                }
-            }
-        }
-
-        System.out.println("Imported " + hospitals + " hospital(s) and " + patients + " patient(s)");
-        return new int[]{hospitals, patients};
-    }
-
-    private static void validateFileAndMap(String filePath, VoronoiMap map)
-            throws IOException {
-        if (filePath == null || filePath.trim().isEmpty())
-            throw new IllegalArgumentException("File path cannot be null or empty");
-        if (map == null)
-            throw new IllegalArgumentException("Map cannot be null");
-
-        File file = new File(filePath);
-        if (!file.exists()) throw new IOException("File not found: " + filePath);
-        if (!file.canRead()) throw new IOException("File is not readable: " + filePath);
     }
 }
