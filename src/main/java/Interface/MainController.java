@@ -402,7 +402,7 @@ public class MainController {
     @FXML
     private void onAbout() {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("À propos");
+        alert.setTitle("About us");
         alert.setHeaderText("Voronoï Hospital");
         alert.setContentText(
             "PGL ING1-GI5 group D\n" +

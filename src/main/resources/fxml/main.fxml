@@ -22,10 +22,10 @@
         <menus>
           <Menu mnemonicParsing="false" text="File">
                <items>
-                  <MenuItem mnemonicParsing="false" text="Import Map" />
-                  <MenuItem mnemonicParsing="false" text="Import CSV" />
-                  <MenuItem mnemonicParsing="false" text="Export Map" />
-                  <MenuItem mnemonicParsing="false" text="Delete all" />
+                  <MenuItem mnemonicParsing="false" onAction="#onImportBinary" text="Import Map" />
+                  <MenuItem mnemonicParsing="false" onAction="#onExportBinary" text="Export Map" />
+                  <MenuItem mnemonicParsing="false" onAction="#onImportCSV" text="Import CSV" />
+                  <MenuItem mnemonicParsing="false" onAction="#onClearAll" text="Clear all" />
                </items>
           </Menu>
             <Menu mnemonicParsing="false" text="Display">
@@ -37,7 +37,7 @@
             </Menu>
             <Menu mnemonicParsing="false" text="Help">
                <items>
-                  <CheckMenuItem mnemonicParsing="false" text="About us" />
+                  <CheckMenuItem mnemonicParsing="false" onAction="#onAbout" text="About us" />
                </items></Menu>
         </menus>
       </MenuBar>
