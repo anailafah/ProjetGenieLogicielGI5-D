@@ -11,8 +11,6 @@ public class ImportExportMap {
     /** Default folder for all files. */
     private static final String DATA_FOLDER = "data/";
 
-
-    
     /**
      * Builds the full file path from a filename.
      * @param fileName the file name 
@@ -21,6 +19,8 @@ public class ImportExportMap {
     private static String buildPath(String fileName) {
         if (fileName == null || fileName.trim().isEmpty())
             throw new IllegalArgumentException("File name cannot be null or empty");
+        File f = new File(fileName.trim());
+        if (f.isAbsolute()) return fileName.trim();
         return DATA_FOLDER + fileName.trim();
     }
 
