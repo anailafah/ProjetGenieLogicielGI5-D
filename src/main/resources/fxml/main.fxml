@@ -16,85 +16,181 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.Circle?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Interface.MainController">
+<BorderPane maxHeight="-Infinity"
+            maxWidth="-Infinity"
+            minHeight="-Infinity"
+            minWidth="-Infinity"
+            prefHeight="500.0"
+            prefWidth="800.0"
+            stylesheets="@../css/style.css"
+            xmlns="http://javafx.com/javafx/26"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="Interface.MainController">
+
    <top>
       <MenuBar BorderPane.alignment="CENTER">
-        <menus>
-          <Menu mnemonicParsing="false" text="File">
+         <menus>
+            <Menu mnemonicParsing="false" text="File">
                <items>
                   <MenuItem mnemonicParsing="false" onAction="#onImportBinary" text="Import Map" />
                   <MenuItem mnemonicParsing="false" onAction="#onExportBinary" text="Export Map" />
                   <MenuItem mnemonicParsing="false" onAction="#onImportCSV" text="Import CSV" />
                   <MenuItem mnemonicParsing="false" onAction="#onClearAll" text="Clear all" />
                </items>
-          </Menu>
-            <Menu mnemonicParsing="false" text="Display">
-              <items>
-                  <CheckMenuItem fx:id="menuDelaunay" mnemonicParsing="false" onAction="#onToggleDelaunay" text="Display Delaunay triangulation" />
-                  <CheckMenuItem fx:id="menuZones" mnemonicParsing="false" onAction="#onToggleZones" text="Display Voronoi zones" />
-                  <CheckMenuItem fx:id="menuLinks" mnemonicParsing="false" onAction="#onToggleLinks" text="Display links" />
-              </items>
             </Menu>
+
+            <Menu mnemonicParsing="false" text="Display">
+               <items>
+                  <CheckMenuItem fx:id="menuDelaunay"
+                                 mnemonicParsing="false"
+                                 onAction="#onToggleDelaunay"
+                                 text="Display Delaunay triangulation" />
+
+                  <CheckMenuItem fx:id="menuZones"
+                                 mnemonicParsing="false"
+                                 onAction="#onToggleZones"
+                                 text="Display Voronoi zones" />
+
+                  <CheckMenuItem fx:id="menuLinks"
+                                 mnemonicParsing="false"
+                                 onAction="#onToggleLinks"
+                                 text="Display links" />
+               </items>
+            </Menu>
+
             <Menu mnemonicParsing="false" text="Help">
                <items>
-                  <CheckMenuItem mnemonicParsing="false" onAction="#onAbout" text="About us" />
-               </items></Menu>
-        </menus>
+                  <MenuItem mnemonicParsing="false" onAction="#onAbout" text="About us" />
+               </items>
+            </Menu>
+         </menus>
       </MenuBar>
    </top>
+
    <right>
-      <VBox prefHeight="448.0" prefWidth="220.0" spacing="8.0" BorderPane.alignment="CENTER">
+      <VBox prefHeight="448.0"
+            prefWidth="220.0"
+            spacing="8.0"
+            styleClass="side-panel"
+            BorderPane.alignment="CENTER">
+
          <children>
-            <Label text="Hospital Voronoi diagram">
+            <Label styleClass="title-label" text="Hospital Voronoi diagram">
                <VBox.margin>
                   <Insets />
                </VBox.margin>
             </Label>
+
             <Separator prefWidth="200.0" />
-            <CheckBox fx:id="checkDelaunay" mnemonicParsing="false" onAction="#onToggleDelaunay" text="Show Delaunay triangulation" />
-            <CheckBox fx:id="checkZones" mnemonicParsing="false" onAction="#onToggleZones" text="Show Voronoi Zones" />
-            <CheckBox fx:id="checkLinks" mnemonicParsing="false" onAction="#onToggleLinks" text="Show Links" />
+
+            <CheckBox fx:id="checkDelaunay"
+                      mnemonicParsing="false"
+                      onAction="#onToggleDelaunay"
+                      text="Show Delaunay triangulation" />
+
+            <CheckBox fx:id="checkZones"
+                      mnemonicParsing="false"
+                      onAction="#onToggleZones"
+                      text="Show Voronoi Zones" />
+
+            <CheckBox fx:id="checkLinks"
+                      mnemonicParsing="false"
+                      onAction="#onToggleLinks"
+                      text="Show Links" />
+
             <Separator prefWidth="200.0" />
-            <Label fx:id="labelHospitalName" prefHeight="18.0" prefWidth="98.0" text="hospital name" />
-            <ProgressBar fx:id="progressSaturation" prefWidth="200.0" progress="0.0" />
+
+            <Label fx:id="labelHospitalName"
+                   prefHeight="18.0"
+                   prefWidth="98.0"
+                   styleClass="section-label"
+                   text="Hospital name" />
+
+            <ProgressBar fx:id="progressSaturation"
+                         prefWidth="200.0"
+                         progress="0.0" />
+
             <Label fx:id="labelStats" text="Stats" />
+
             <Separator prefWidth="200.0" />
-            <Button mnemonicParsing="false" onAction="#onRandomUsers" text="Add random user" />
-            <Button mnemonicParsing="false" onAction="#onImportCSV" text="Import CSV" />
-            <Button mnemonicParsing="false" onAction="#onImportBinary" text="Import Binary" />
-            <Button mnemonicParsing="false" onAction="#onExportBinary" text="Export Binary" />
-            <Button mnemonicParsing="false" onAction="#onClearAll" text="Clear all" />
+
+            <Button mnemonicParsing="false"
+                    onAction="#onRandomUsers"
+                    text="Add random user" />
+
+            <Button mnemonicParsing="false"
+                    onAction="#onImportCSV"
+                    text="Import CSV" />
+
+            <Button mnemonicParsing="false"
+                    onAction="#onImportBinary"
+                    text="Import Binary" />
+
+            <Button mnemonicParsing="false"
+                    onAction="#onExportBinary"
+                    text="Export Binary" />
+
+            <Button mnemonicParsing="false"
+                    onAction="#onClearAll"
+                    text="Clear all" />
+
             <Separator prefWidth="200.0" />
-            <Label text=" Hospital">
+
+            <Label text="Hospital">
                <graphic>
-                  <Circle fill="#1d5c8a" radius="8.0" stroke="BLACK" strokeType="INSIDE" />
+                  <Circle fill="#1d5c8a"
+                          radius="8.0"
+                          stroke="BLACK"
+                          strokeType="INSIDE" />
                </graphic>
             </Label>
+
             <Label text="Almost saturated Hospital">
                <graphic>
-                  <Circle fill="#e07700" radius="8.0" stroke="BLACK" strokeType="INSIDE" />
+                  <Circle fill="#e07700"
+                          radius="8.0"
+                          stroke="BLACK"
+                          strokeType="INSIDE" />
                </graphic>
             </Label>
-            <Label text=" Saturated hospital">
+
+            <Label text="Saturated hospital">
                <graphic>
-                  <Circle fill="#cc2200" radius="8.0" stroke="BLACK" strokeType="INSIDE" />
+                  <Circle fill="#cc2200"
+                          radius="8.0"
+                          stroke="BLACK"
+                          strokeType="INSIDE" />
                </graphic>
             </Label>
+
             <Label text="User">
                <graphic>
-                  <Circle fill="#1d9e75" radius="8.0" stroke="BLACK" strokeType="INSIDE" />
+                  <Circle fill="#1d9e75"
+                          radius="8.0"
+                          stroke="BLACK"
+                          strokeType="INSIDE" />
                </graphic>
             </Label>
+
             <Label text="Redirected User">
                <graphic>
-                  <Circle fill="#d85a30" radius="8.0" stroke="BLACK" strokeType="INSIDE" />
+                  <Circle fill="#d85a30"
+                          radius="8.0"
+                          stroke="BLACK"
+                          strokeType="INSIDE" />
                </graphic>
             </Label>
          </children>
       </VBox>
    </right>
+
    <bottom>
-      <HBox prefHeight="30.0" prefWidth="800.0" spacing="20.0" BorderPane.alignment="CENTER">
+      <HBox prefHeight="30.0"
+            prefWidth="800.0"
+            spacing="20.0"
+            styleClass="status-bar"
+            BorderPane.alignment="CENTER">
+
          <children>
             <Label fx:id="labelNbHospitals" text="Hospital : 0" />
             <Label fx:id="labelNbUsers" text="User : 0" />
@@ -102,12 +198,22 @@
             <Label fx:id="labelZoom" text="Zoom : 100%" />
             <Label fx:id="labelMessage" text="Message" />
          </children>
+
          <BorderPane.margin>
             <Insets />
          </BorderPane.margin>
       </HBox>
    </bottom>
+
    <center>
-      <Pane fx:id="mapPane" onMouseClicked="#onMapClicked" onMouseDragged="#onMapDragged" onMousePressed="#onMapPressed" onScroll="#onMapScroll" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
+      <Pane fx:id="mapPane"
+            onMouseClicked="#onMapClicked"
+            onMouseDragged="#onMapDragged"
+            onMousePressed="#onMapPressed"
+            onScroll="#onMapScroll"
+            prefHeight="200.0"
+            prefWidth="200.0"
+            BorderPane.alignment="CENTER" />
    </center>
+
 </BorderPane>
