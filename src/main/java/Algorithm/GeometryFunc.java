@@ -16,20 +16,4 @@ public class GeometryFunc {
         double dy = p1.getY() - p2.getY();
         return Math.sqrt(dx*dx + dy*dy);
     }
-
-    /**
-     * Computes the area of a triangle given three points.
-     * @param a first point
-     * @param b second point
-     * @param c third point
-     * @return the area
-     
-    public static double triangleArea(Point a, Point b, Point c) {
-        return Math.abs(
-            (b.getX() - a.getX()) * (c.getY() - a.getY()) -
-            (c.getX() - a.getX()) * (b.getY() - a.getY())
-        ) / 2.0;
-    
-    }
-    */
 }
