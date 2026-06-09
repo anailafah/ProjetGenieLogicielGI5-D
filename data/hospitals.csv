@@ -1,1 +1,11 @@
-
+#name,x,y,maxCapacity
+Hospital-1,100,80,5
+Hospital-2,300,60,3
+Hospital-3,500,90,8
+Hospital-4,80,200,4
+Hospital-5,220,170,6
+Hospital-6,380,150,3
+Hospital-7,560,180,7
+Hospital-8,160,310,5
+Hospital-9,330,270,4
+Hospital-10,490,300,6
