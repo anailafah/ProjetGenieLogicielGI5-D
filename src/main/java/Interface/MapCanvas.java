@@ -155,10 +155,11 @@ public class MapCanvas extends Canvas {
         if (engine == null) return;
 
         List<Triangle>  triangles = engine.getTriangles();
+        List<HospitalZone> zones  = engine.getZones();
         List<Hospital>  hospitals = engine.getMap().getHospitals();
         List<User>      users     = engine.getMap().getUserTot();
 
-        if (showZones)    drawZones(gc, triangles, hospitals);
+        if (showZones)    drawZones(gc, zones);
         if (showDelaunay) drawDelaunay(gc, triangles);
         if (showLinks)    drawLinks(gc, users);
         drawHospitals(gc, hospitals);
@@ -166,46 +167,27 @@ public class MapCanvas extends Canvas {
     }
 
     /**
-     * Draws Voronoi zones as colored triangles from circumcenters.
+     * Draws pre-computed Voronoi zones.
      * @param gc        graphics context
-     * @param triangles list of Delaunay triangles
-     * @param hospitals list of hospitals
+     * @param zones     list of hospital zones
      */
-    private void drawZones(GraphicsContext gc,
-        List<Triangle> triangles, List<Hospital> hospitals) {
+    private void drawZones(GraphicsContext gc, List<HospitalZone> zones) {
     int colorIdx = 0;
-    for (Hospital h : hospitals) {
+    for (HospitalZone zone : zones) {
         gc.setFill(ZONE_COLORS[colorIdx % ZONE_COLORS.length]);
         colorIdx++;
 
-        List<Triangle> adjacent = new ArrayList<>();
-        for (Triangle t : triangles) {
-            if (t.getA() == h || t.getB() == h || t.getC() == h)
-                adjacent.add(t);
-        }
+        List<Point> vertices = zone.getVertices();
+        if (vertices == null || vertices.isEmpty()) continue;
 
-        if (adjacent.size() < 2) continue;
-        List<double[]> pts = new ArrayList<>();
-        for (Triangle t : adjacent) {
-            Point cc = t.getCircumcenter();
-            if (cc != null && Double.isFinite(cc.getX()) && Double.isFinite(cc.getY()))
-                pts.add(new double[]{cc.getX(), cc.getY()});
-        }
+        double[] xs = vertices.stream().mapToDouble(v -> toScreenX(v.getX())).toArray();
+        double[] ys = vertices.stream().mapToDouble(v -> toScreenY(v.getY())).toArray();
 
-        if (pts.size() < 2) continue;
-        double cx = h.getX(), cy = h.getY();
-        pts.sort((a, b) -> Double.compare(
-            Math.atan2(a[1] - cy, a[0] - cx),
-            Math.atan2(b[1] - cy, b[0] - cx)
-        ));
-
-        double[] xs = pts.stream().mapToDouble(p -> toScreenX(p[0])).toArray();
-        double[] ys = pts.stream().mapToDouble(p -> toScreenY(p[1])).toArray();
-        gc.fillPolygon(xs, ys, pts.size());
+        gc.fillPolygon(xs, ys, vertices.size());
 
         gc.setStroke(Color.web("#19a09b", 0.6));
         gc.setLineWidth(1.0);
-        gc.strokePolygon(xs, ys, pts.size());
+        gc.strokePolygon(xs, ys, vertices.size());
     }
 }
 
