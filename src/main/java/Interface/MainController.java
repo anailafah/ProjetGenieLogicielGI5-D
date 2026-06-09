@@ -260,6 +260,7 @@ public class MainController {
         try {
             int count = ImportExportMap.importHospitalsCSV(
                 file.getAbsolutePath(), engine.getMap());
+            ((TriangulationDelaunay) engine).recompute();
             canvas.redraw();
             updateStatusBar();
             showMessage(count + " Hospital imported from " + file.getName());
@@ -317,11 +318,12 @@ public class MainController {
             VoronoiMap loaded = ImportExportMap.importBinary(
                 file.getAbsolutePath());
 
-            engine = new TriangulationDelaunay(canvas.getWidth(), canvas.getHeight());
+            TriangulationDelaunay engine = new TriangulationDelaunay(canvas.getWidth(), canvas.getHeight());
             for (Hospital h : loaded.getHospitals())
                 engine.getMap().addHospital(h);
             for (User u : loaded.getUserTot())
                 engine.getMap().addUsertot(u);
+            engine.recompute();
 
             canvas.setEngine(engine);
             clearSelection();
@@ -362,37 +364,31 @@ public class MainController {
 
     /**
      * Toggles Delaunay triangulation display.
-     * Synchronizes CheckBox and CheckMenuItem.
      */
     @FXML
     private void onToggleDelaunay() {
         boolean show = checkDelaunay.isSelected();
         canvas.setShowDelaunay(show);
-        if (menuDelaunay != null) menuDelaunay.setSelected(show);
         canvas.redraw();
     }
 
     /**
      * Toggles Voronoi zones display.
-     * Synchronizes CheckBox and CheckMenuItem.
      */
     @FXML
     private void onToggleZones() {
         boolean show = checkZones.isSelected();
         canvas.setShowZones(show);
-        if (menuZones != null) menuZones.setSelected(show);
         canvas.redraw();
     }
 
     /**
      * Toggles user-to-hospital links display.
-     * Synchronizes CheckBox and CheckMenuItem.
      */
     @FXML
     private void onToggleLinks() {
         boolean show = checkLinks.isSelected();
         canvas.setShowLinks(show);
-        if (menuLinks != null) menuLinks.setSelected(show);
         canvas.redraw();
     }
 
