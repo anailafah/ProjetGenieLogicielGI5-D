@@ -151,7 +151,7 @@ public class TriangulationDelaunay implements VoronoiEngine {
         List<Hospital> hospitals = map.getHospitals();
         if (hospitals.isEmpty()) return;
 
-        // Création de 4 hôpitaux fantômes aux coins de la vue actuelle
+        // 1. Création de 4 hôpitaux fantômes aux coins de la vue actuelle
         List<Hospital> ghosts = new ArrayList<>();
         ghosts.add(new Hospital(-10, "G1", vX1, vY1, 0));
         ghosts.add(new Hospital(-11, "G2", vX2, vY1, 0));
@@ -161,7 +161,7 @@ public class TriangulationDelaunay implements VoronoiEngine {
         List<Hospital> allPoints = new ArrayList<>(hospitals);
         allPoints.addAll(ghosts);
 
-        // Super-triangle très large pour englober la vue
+        // 2. Super-triangle très large pour englober la vue
         Hospital stA = new Hospital(-1,"stA", -width * 100, -height * 100, 0);
         Hospital stB = new Hospital(-2,"stB" , width * 100, -height * 100, 0);
         Hospital stC = new Hospital(-3, "stC" ,0.0,           height * 100, 0);
@@ -198,80 +198,19 @@ public class TriangulationDelaunay implements VoronoiEngine {
                 triangulation.add(new Triangle(edge[0], edge[1], hospital));
             }
         }
-        List<Triangle> toRemoveSt = new ArrayList<>();
-        for(Triangle t : triangulation){
-            if( t.getA() == stA || t.getA() == stB || t.getA() == stC ||
-                t.getB() == stA || t.getB() == stB || t.getB() == stC ||
-                t.getC() == stA || t.getC() == stB || t.getC() == stC){
-                    
-                toRemoveSt.add(t);
+
+        // 3. Filtrage pour l'affichage Delaunay : on ne garde que les triangles "réels"
+        List<Triangle> realTriangles = new ArrayList<>();
+        for (Triangle t : triangulation) {
+            if (t.getA().getId() >= 0 && t.getB().getId() >= 0 && t.getC().getId() >= 0) {
+                realTriangles.add(t);
             }
         }
-        triangulation.removeAll(toRemoveSt);
-        map.setTriangles(triangulation);
-        buildVoronoiZones();
+        map.setTriangles(realTriangles);
+
+        // 4. Construction des zones de Voronoi (utilise tous les triangles incluant les ghosts)
+        buildVoronoiZones(triangulation, hospitals);
         updatePatientLinks();   
-    }
-
-    /**
-     * Manually builds a single Voronoi zone covering the whole map.
-     */
-    private void buildZonesForOneHospital(Hospital h) {
-        List<Point> vertices = new ArrayList<>();
-        vertices.add(new Point(-1, 0, 0));
-        vertices.add(new Point(-1, width, 0));
-        vertices.add(new Point(-1, width, height));
-        vertices.add(new Point(-1, 0, height));
-        
-        List<HospitalZone> zones = new ArrayList<>();
-        zones.add(new HospitalZone(vertices, h));
-        map.setZones(zones);
-    }
-
-    /**
-     * Builds two Voronoi zones by splitting the map with the perpendicular bisector.
-     */
-    private void buildZonesForTwoHospitals(Hospital h1, Hospital h2) {
-        double x1 = h1.getX(), y1 = h1.getY();
-        double x2 = h2.getX(), y2 = h2.getY();
-
-        // Perpendicular bisector equation: Ax + By + C = 0
-        double A = x2 - x1;
-        double B = y2 - y1;
-        double xm = (x1 + x2) / 2.0;
-        double ym = (y1 + y2) / 2.0;
-        double C = -(A * xm + B * ym);
-
-        List<Point> intersections = new ArrayList<>();
-        // Intersect with canvas boundaries
-        if (Math.abs(B) > 1e-9) {
-            double x_at_y0 = -C / A; // Logic for vertical edges
-            double y_at_x0 = -C / B;
-            if (y_at_x0 >= 0 && y_at_x0 <= height) intersections.add(new Point(-1, 0, y_at_x0));
-            double y_at_xW = -(A * width + C) / B;
-            if (y_at_xW >= 0 && y_at_xW <= height) intersections.add(new Point(-1, width, y_at_xW));
-        }
-        if (Math.abs(A) > 1e-9) {
-            double x_at_y0 = -C / A;
-            if (x_at_y0 >= 0 && x_at_y0 <= width) intersections.add(new Point(-1, x_at_y0, 0));
-            double x_at_yH = -(B * height + C) / A;
-            if (x_at_yH >= 0 && x_at_yH <= width) intersections.add(new Point(-1, x_at_yH, height));
-        }
-
-        Point[] corners = { new Point(-1,0,0), new Point(-1,width,0), new Point(-1,width,height), new Point(-1,0,height) };
-        List<HospitalZone> zones = new ArrayList<>();
-        Hospital[] duo = {h1, h2};
-
-        for (Hospital h : duo) {
-            List<Point> pts = new ArrayList<>(intersections);
-            for (Point p : corners) {
-                double d1 = GeometryFunc.distance(p, h);
-                double d2 = GeometryFunc.distance(p, h == h1 ? h2 : h1);
-                if (d1 <= d2) pts.add(p);
-            }
-            zones.add(new HospitalZone(sortPolygonVertices(pts, h), h));
-        }
-        map.setZones(zones);
     }
 
     /**
@@ -338,8 +277,12 @@ public class TriangulationDelaunay implements VoronoiEngine {
                 if (t.getA() == hospital ||
                     t.getB() == hospital ||
                     t.getC() == hospital) {
-                    // On ignore les triangles connectés au super-triangle pour éviter les zones infinies
-                    if (t.getA().getId() >= -5 && t.getB().getId() >= -5 && t.getC().getId() >= -5) {
+                    
+                    // Condition : On exclut le super-triangle (ID -1,-2,-3) 
+                    // mais on GARDE les ghosts (ID -10,-11,-12,-13)
+                    if ((t.getA().getId() < -5 || t.getA().getId() >= 0) &&
+                        (t.getB().getId() < -5 || t.getB().getId() >= 0) &&
+                        (t.getC().getId() < -5 || t.getC().getId() >= 0)) {
                         adjacent.add(t);
                     }
                 }
