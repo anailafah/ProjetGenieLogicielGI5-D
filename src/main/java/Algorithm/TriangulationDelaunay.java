@@ -151,12 +151,16 @@ public class TriangulationDelaunay implements VoronoiEngine {
         List<Hospital> hospitals = map.getHospitals();
         if (hospitals.isEmpty()) return;
 
-        // 1. Création de 4 hôpitaux fantômes aux coins de la vue actuelle
+        // 1. Création de 4 hôpitaux fantômes placés loin autour de la vue actuelle
+        // On utilise une marge (padding) pour que leurs zones n'empiètent pas sur le canvas
+        double paddingX = (vX2 - vX1);
+        double paddingY = (vY2 - vY1);
+
         List<Hospital> ghosts = new ArrayList<>();
-        ghosts.add(new Hospital(-10, "G1", vX1, vY1, 0));
-        ghosts.add(new Hospital(-11, "G2", vX2, vY1, 0));
-        ghosts.add(new Hospital(-12, "G3", vX2, vY2, 0));
-        ghosts.add(new Hospital(-13, "G4", vX1, vY2, 0));
+        ghosts.add(new Hospital(-10, "G1", vX1 - paddingX, vY1 - paddingY, 0));
+        ghosts.add(new Hospital(-11, "G2", vX2 + paddingX, vY1 - paddingY, 0));
+        ghosts.add(new Hospital(-12, "G3", vX2 + paddingX, vY2 + paddingY, 0));
+        ghosts.add(new Hospital(-13, "G4", vX1 - paddingX, vY2 + paddingY, 0));
 
         List<Hospital> allPoints = new ArrayList<>(hospitals);
         allPoints.addAll(ghosts);
@@ -277,14 +281,9 @@ public class TriangulationDelaunay implements VoronoiEngine {
                 if (t.getA() == hospital ||
                     t.getB() == hospital ||
                     t.getC() == hospital) {
-                    
-                    // Condition : On exclut le super-triangle (ID -1,-2,-3) 
-                    // mais on GARDE les ghosts (ID -10,-11,-12,-13)
-                    if ((t.getA().getId() < -5 || t.getA().getId() >= 0) &&
-                        (t.getB().getId() < -5 || t.getB().getId() >= 0) &&
-                        (t.getC().getId() < -5 || t.getC().getId() >= 0)) {
-                        adjacent.add(t);
-                    }
+                    // On prend tous les triangles adjacents pour garantir une zone fermée
+                    // qui s'étend jusqu'au Super-Triangle au delà des bords.
+                    adjacent.add(t);
                 }
             }
             List<Point> vertices = new ArrayList<>();
