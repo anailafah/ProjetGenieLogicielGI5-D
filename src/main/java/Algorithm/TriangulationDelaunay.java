@@ -3,7 +3,6 @@ package Algorithm;
 import Model.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Implements the Bowyer-Watson algorithm for Delaunay triangulation.
@@ -143,8 +142,7 @@ public class TriangulationDelaunay implements VoronoiEngine {
 
             List<Triangle> badTriangles = new ArrayList<>();
             for (Triangle t : triangulation) {
-                if (hospital.isInCircumcircle(t.getA(),t.getB(),t.getC()))
-                    badTriangles.add(t);
+                if (hospital.isInCircumcircle(t.getA(),t.getB(),t.getC())) badTriangles.add(t);
             }
 
             List<Hospital[]> polygon = new ArrayList<>();
@@ -159,27 +157,25 @@ public class TriangulationDelaunay implements VoronoiEngine {
                             break;
                         }
                     }
-                    if (!shared){
-                        polygon.add(edge);
-                    }
+                    if (!shared) polygon.add(edge);
                 }
             }
 
             triangulation.removeAll(badTriangles);
 
-            for (Hospital[] edge : polygon)
+            for (Hospital[] edge : polygon){
                 triangulation.add(new Triangle(edge[0], edge[1], hospital));
             }
-            List<Triangle> toRemoveSt = new ArrayList<>();
-            for(Triangle t : triangulation){
-                if( t.getA() == stA || t.getA() == stB || t.getA() == stC ||
-                    t.getB() == stA || t.getB() == stB || t.getB() == stC ||
-                    t.getC() == stA || t.getC() == stB || t.getC() == stC){
+        }
+        List<Triangle> toRemoveSt = new ArrayList<>();
+        for(Triangle t : triangulation){
+            if( t.getA() == stA || t.getA() == stB || t.getA() == stC ||
+                t.getB() == stA || t.getB() == stB || t.getB() == stC ||
+                t.getC() == stA || t.getC() == stB || t.getC() == stC){
                     
-                    toRemoveSt.add(t);
-                }
+                toRemoveSt.add(t);
             }
-           
+        }
         triangulation.removeAll(toRemoveSt);
         map.setTriangles(triangulation);
         buildVoronoiZones();
@@ -187,33 +183,35 @@ public class TriangulationDelaunay implements VoronoiEngine {
     }
 
     /**
-     * Assigns each patient to their nearest available hospital.
+     * sort hospital by dist with a bubble sort
+     * Assigns each patient to their nearest available hospital. 
      * If the nearest is saturated, redirects to the next closest one.
      */
     private void updatePatientLinks() {
-        for (Hospital h : map.getHospitals())
-            h.getUsers().clear();
+        for (Hospital h : map.getHospitals()) h.getUsers().clear();
+
         for (User u : map.getUserTot()) {
-            List<Hospital> byDistance = map.getHospitals().stream().sorted((a, b) -> Double.compare(
-                    GeometryFunc.distance(u, a), 
-                    GeometryFunc.distance(u, b) 
-                ))
-                .collect(Collectors.toList());
+
+            List<Hospital> byDistance = new ArrayList<Hospital>(map.getHospitals());
             
+            for(int i=0;i<byDistance.size()-1;i++){
+                for(int j=0;j<byDistance.size()-1-i;j++){
+                    double distA = GeometryFunc.distance(u, byDistance.get(j)); 
+                    double distB = GeometryFunc.distance(u, byDistance.get(j+1)); 
+                    if (Double.compare(distA, distB)>0){
+                        Hospital temp = byDistance.get(j);
+                        byDistance.set(j,byDistance.get(j+1));
+                        byDistance.set(j+1,temp);
+                    }
+                }
+            }
             u.setNextHospitals(byDistance);
-            Hospital assigned = byDistance.stream()
-                .filter(h -> !h.isSaturated()) 
-                .findFirst()                    
-                .orElse(byDistance.isEmpty() ? null : byDistance.get(0));
 
-            u.setClosestSite(assigned);
-            boolean redirected = assigned != null
-                && !byDistance.isEmpty()
-                && assigned != byDistance.get(0);
-            u.setIsRedirected(redirected);
+            u.setRedirection();
 
-            if (assigned != null)
-                assigned.addUsers(u);
+            if (u.getClosestSite() != null) {
+                u.getClosestSite().addUsers(u);
+            }
         }
     }
     /**

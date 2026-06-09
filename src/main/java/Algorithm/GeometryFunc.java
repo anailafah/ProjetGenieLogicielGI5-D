@@ -23,7 +23,7 @@ public class GeometryFunc {
      * @param b second point
      * @param c third point
      * @return the area
-     */
+     
     public static double triangleArea(Point a, Point b, Point c) {
         return Math.abs(
             (b.getX() - a.getX()) * (c.getY() - a.getY()) -
@@ -31,4 +31,5 @@ public class GeometryFunc {
         ) / 2.0;
     
     }
+    */
 }

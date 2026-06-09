@@ -69,25 +69,30 @@ public class User extends Point {
 	 * @param listH
 	 */
 	public void setNextHospitals(List<Hospital> listH){
-		this.nextHospitals=listH;
-		this.setRedirectionRank(this.setRedirection());
-		if(this.redirectionRank!=0){
-			this.setIsRedirected(true);
-		}
+		if (listH == null) throw new IllegalArgumentException("Hospital list can't be empty");
+		this.nextHospitals=new ArrayList<>(listH);
+		
+
 	}
-	private int setRedirection(){
-		int cpt=0;
-		if(closestSite != null && closestSite.isSaturated()){
-			for(Hospital h: nextHospitals){
-				if(h.isSaturated()!=true){
-					this.setClosestSite(h);
-					this.setRedirectionRank(cpt);
-					h.addUsers(this);
-					return redirectionRank;
-				}
-				cpt++;
-			}
+	public int setRedirection(){
+		int rank=0;
+		if(nextHospitals.isEmpty()){
+			this.isRedirected = false;
+			this.redirectionRank=0;
+			return 0;
 		}
-		return 0;
+		for(Hospital h: nextHospitals){
+			if(h.isSaturated()!=true){
+				this.setClosestSite(h);
+				this.setRedirectionRank(rank);
+				h.addUsers(this);
+				return rank;
+			}
+			rank++;
+		}
+		this.closestSite     = nextHospitals.get(0);
+    	this.redirectionRank = 0;
+    	this.isRedirected    = false;
+    	return 0;
 	}
 }
