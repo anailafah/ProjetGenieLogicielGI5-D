@@ -11,19 +11,19 @@ import java.util.List;
 public class HospitalCommands {
 
     /**
-     * Adds a hospital. Usage: add-h <x> <y> <name> <capacity>
+     * Adds a hospital. Usage: add-h <name> <x> <y> <capacity>
      * @param parts command parts
      * @param engine the Voronoi engine
      */
     public static void add(String[] parts, VoronoiEngine engine) {
         if (parts.length < 5) {
-            System.out.println("Usage: add-h <x> <y> <name> <capacity>");
+            System.out.println("Usage: add-h <name> <x> <y> <capacity>");
             return;
         }
         try {
-            double x     = Double.parseDouble(parts[1]);
-            double y     = Double.parseDouble(parts[2]);
-            String name  = parts[3];
+            String name  = parts[1];
+            double x     = Double.parseDouble(parts[2]);
+            double y     = Double.parseDouble(parts[3]);
             int capacity = Integer.parseInt(parts[4]);
 
             if (capacity <= 0) {

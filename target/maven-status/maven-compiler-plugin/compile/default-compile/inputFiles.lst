@@ -1,9 +1,11 @@
+/home/cytech/ProjetGL-GI5D/src/main/java/Cli/CLIUtils.java
 /home/cytech/ProjetGL-GI5D/src/main/java/Algorithm/TriangulationDelaunay.java
 /home/cytech/ProjetGL-GI5D/src/main/java/CommandLineMain.java
 /home/cytech/ProjetGL-GI5D/src/main/java/Interface/MainApp.java
 /home/cytech/ProjetGL-GI5D/src/main/java/Interface/MapCanvas.java
 /home/cytech/ProjetGL-GI5D/src/main/java/Model/HospitalZone.java
 /home/cytech/ProjetGL-GI5D/src/main/java/Model/Triangle.java
+/home/cytech/ProjetGL-GI5D/src/main/java/Cli/HospitalCommands.java
 /home/cytech/ProjetGL-GI5D/src/main/java/Interface/MainController.java
 /home/cytech/ProjetGL-GI5D/src/main/java/Algorithm/VoronoiEngine.java
 /home/cytech/ProjetGL-GI5D/src/main/java/Algorithm/GeometryFunc.java
@@ -12,4 +14,6 @@
 /home/cytech/ProjetGL-GI5D/src/main/java/Algorithm/VoronoiEngineStub.java
 /home/cytech/ProjetGL-GI5D/src/main/java/Model/VoronoiMap.java
 /home/cytech/ProjetGL-GI5D/src/main/java/Model/Hospital.java
+/home/cytech/ProjetGL-GI5D/src/main/java/Cli/UserCommands.java
 /home/cytech/ProjetGL-GI5D/src/main/java/Model/User.java
+/home/cytech/ProjetGL-GI5D/src/main/java/Cli/FileCommands.java
