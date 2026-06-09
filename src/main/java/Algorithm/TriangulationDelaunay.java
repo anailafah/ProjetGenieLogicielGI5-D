@@ -34,6 +34,11 @@ public class TriangulationDelaunay implements VoronoiEngine {
         map.removeUsertot(u);
         recompute();
     }
+    public void moveUser(User u,double newX,double newY){
+        u.setX(newX);
+        u.setY(newY);
+        recompute();
+    }
   
     /**
      * Adds a hospital to the map and recomputes the triangulation.
@@ -44,7 +49,7 @@ public class TriangulationDelaunay implements VoronoiEngine {
      * @return the created Hospital
      */
     @Override
-    public Hospital addHospital(double x, double y,String name, int maxCapacity) {
+    public Hospital addHospital(String name,double x, double y, int maxCapacity) {
         Hospital h = new Hospital(map.generateId(),name ,x, y, maxCapacity);
         map.addHospital(h);
         recompute();

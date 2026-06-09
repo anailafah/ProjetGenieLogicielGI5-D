@@ -13,7 +13,7 @@ public interface VoronoiEngine {
      * @param y y-coordinate
      * @return the created Site
      */
-    Hospital addHospital(double x, double y,String name, int maxCapacity) ;
+    Hospital addHospital(String name, double x, double y, int maxCapacity) ;
 
     /**
      * Removes a hospital and recomputes the triangulation.
@@ -67,5 +67,12 @@ public interface VoronoiEngine {
      * @param u
      */
     void removeUser(User u);
+    /**
+     * move an user
+     * @param u
+     * @param newX
+     * @param newY
+     */
+    void moveUser(User u, double newX,double newY);
     
 }

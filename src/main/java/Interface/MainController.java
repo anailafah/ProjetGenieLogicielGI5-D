@@ -130,7 +130,7 @@ public class MainController {
                             return;
                         }
 
-                        Hospital h = engine.addHospital(wx, wy, name.trim(), capacity);
+                        Hospital h = engine.addHospital( name.trim(),wx, wy, capacity);
                         selectHospital(h);
                         showMessage("Hospital added : " + name);
                     }

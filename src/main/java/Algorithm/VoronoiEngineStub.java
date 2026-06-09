@@ -17,14 +17,14 @@ public class VoronoiEngineStub implements VoronoiEngine {
 
     public VoronoiEngineStub() {
         this.map = new VoronoiMap();
-        addHospital(100, 100, "Hopital A", 50);
-        addHospital(300, 150, "Hopital B", 80);
-        addHospital(200, 350, "Hopital C", 60);
+        addHospital("Hopital A",100, 100, 50);
+        addHospital( "Hopital B",300, 150, 80);
+        addHospital( "Hopital B",200, 350, 60);
         createFakeTriangles();
     }
 
     @Override
-    public Hospital addHospital(double x, double y, String name, int capacity) {
+    public Hospital addHospital(String name,double x, double y, int capacity) {
         int id = map.generateId();
         Hospital hospital = new Hospital(id, name, x, y, capacity);
         map.addHospital(hospital);
