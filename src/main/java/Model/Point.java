@@ -62,7 +62,7 @@ public class Point implements Serializable{
 	}
 	
 	/**
-     * Checks if point is inside the circumcircle of triangle (a, b, c).
+     * Checks if point is inside the circumcircle of a triangle (a, b, c).
      * @param a first vertex
      * @param b second vertex
      * @param c third vertex

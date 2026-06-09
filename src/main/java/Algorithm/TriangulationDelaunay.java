@@ -159,19 +159,28 @@ public class TriangulationDelaunay implements VoronoiEngine {
                             break;
                         }
                     }
-                    if (!shared) polygon.add(edge);
+                    if (!shared){
+                        polygon.add(edge);
+                    }
                 }
             }
 
             triangulation.removeAll(badTriangles);
+
             for (Hospital[] edge : polygon)
                 triangulation.add(new Triangle(edge[0], edge[1], hospital));
-        }
-        triangulation.removeIf(t ->
-            t.getA() == stA || t.getA() == stB || t.getA() == stC ||
-            t.getB() == stA || t.getB() == stB || t.getB() == stC ||
-            t.getC() == stA || t.getC() == stB || t.getC() == stC
-        );
+            }
+            List<Triangle> toRemoveSt = new ArrayList<>();
+            for(Triangle t : triangulation){
+                if( t.getA() == stA || t.getA() == stB || t.getA() == stC ||
+                    t.getB() == stA || t.getB() == stB || t.getB() == stC ||
+                    t.getC() == stA || t.getC() == stB || t.getC() == stC){
+                    
+                    toRemoveSt.add(t);
+                }
+            }
+           
+        triangulation.removeAll(toRemoveSt);
         map.setTriangles(triangulation);
         buildVoronoiZones();
         updatePatientLinks();   

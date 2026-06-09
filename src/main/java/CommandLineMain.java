@@ -255,8 +255,7 @@ public class CommandLineMain {
                 t.getA().getId(),
                 t.getB().getId(),
                 t.getC().getId());
-            System.out.printf("    Area=%.1f  Imbalance=%d patients%n",
-                t.getArea(), t.getImbalance());
+            System.out.printf("    Area=%.1f  Imbalance=%d patients%n");
             System.out.printf("    Circumcenter=(%.1f, %.1f)  Radius=%.1f%n",
                 t.getCircumcenter().getX(),
                 t.getCircumcenter().getY(),

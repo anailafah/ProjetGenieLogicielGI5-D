@@ -42,25 +42,6 @@ public class Triangle implements Serializable {
         circumcenter = new Point(-1, ux, uy);
         circumradius = Math.sqrt((ax - ux)*(ax - ux) + (ay - uy)*(ay - uy));
     }
-    /**
-     * Computes the area of this triangle.
-     * @return the area
-     */
-    public double getArea() {
-        double ax = a.getX(), ay = a.getY();
-        double bx = b.getX(), by = b.getY();
-        double cx = c.getX(), cy = c.getY();
-        return Math.abs((bx - ax)*(cy - ay) - (cx - ax)*(by - ay)) / 2.0;
-    }
-    /**
-     * @return difference between max and min patient count among the three hospitals
-     */
-    public int getImbalance() {
-        int pa = a.getUsers().size();
-        int pb = b.getUsers().size();
-        int pc = c.getUsers().size();
-        return Math.max(pa, Math.max(pb, pc)) - Math.min(pa, Math.min(pb, pc));
-    }
      /**
      * Checks if this triangle shares an edge with another triangle.
      * @param other the other triangle
@@ -71,8 +52,8 @@ public class Triangle implements Serializable {
         Hospital[] thisHospitals = {a, b, c};
         Hospital[] otherHospitals = {other.a, other.b, other.c};
         for (Hospital h : thisHospitals)
-            for (Hospital t : otherHospitals)
-                if (h == t) shared++;
+            for (Hospital o : otherHospitals)
+                if (h == o) shared++;
         return shared == 2;
     }
 

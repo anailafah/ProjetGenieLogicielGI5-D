@@ -52,17 +52,17 @@ public class User extends Point {
 		return closestSite;
 	}
 	/**
-	 * @return a list of the closest hospitals ordered by distance
-	 */
-	public List<Hospital> getNextHospitals(){
-		return nextHospitals;
-	}
-	/**
 	 * set the closest hospital to the user
 	 * @param site
 	 */
 	public void setClosestSite(Hospital site) {
 		this.closestSite=site;
+	}
+	/**
+	 * @return a list of the closest hospitals ordered by distance
+	 */
+	public List<Hospital> getNextHospitals(){
+		return nextHospitals;
 	}
 	/**
 	 * set the list of the closest hospitals 
@@ -74,7 +74,6 @@ public class User extends Point {
 		if(this.redirectionRank!=0){
 			this.setIsRedirected(true);
 		}
-
 	}
 	private int setRedirection(){
 		int cpt=0;
@@ -91,13 +90,4 @@ public class User extends Point {
 		}
 		return 0;
 	}
-	/**
-	 * test
-	 * @param args
-	 */
-
-    public static void main(String[] args) {
-
-        
-    }
 }
