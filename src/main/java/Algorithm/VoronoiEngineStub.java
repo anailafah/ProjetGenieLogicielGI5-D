@@ -35,6 +35,10 @@ public class VoronoiEngineStub implements VoronoiEngine {
     public void removeHospital(Hospital h) {
         if (h != null) map.removeHospital(h);
     }
+    @Override
+    public void moveUser(User u , double newX,double newY){
+
+    }
 
     @Override
     public void moveHospital(Hospital h, double x, double y) {

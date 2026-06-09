@@ -10,7 +10,7 @@ import java.util.Scanner;
 public class CommandLineMain {
 
     public static VoronoiEngine engine;
-    public static Scanner       scanner;
+    public static Scanner scanner;
 
     /**
      * Entry point for the CLI version.
@@ -38,12 +38,14 @@ public class CommandLineMain {
                     case "list-hospital":     HospitalCommands.list(engine);         break;
                     case "stats":      HospitalCommands.stats(parts, engine); break;
                     case "nearest":    HospitalCommands.nearest(parts,engine);break;
+                    
                     case "add-user":      UserCommands.add(parts, engine);       break;
                     case "remove-user":   UserCommands.remove(parts, engine);    break;
                     case "move-user":     UserCommands.move(parts, engine);      break;
                     case "random-user":   UserCommands.random(parts, engine);    break;
                     case "list-user":     UserCommands.list(engine);             break;
                     case "triangles":  UserCommands.triangles(engine);        break;
+                    
                     case "import-csv": FileCommands.importCSV(parts, engine); break;
                     case "export":     FileCommands.export(parts, engine);    break;
                     case "import":     FileCommands.importBin(parts, engine); break;
