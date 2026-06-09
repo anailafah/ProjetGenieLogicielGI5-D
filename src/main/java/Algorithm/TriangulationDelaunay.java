@@ -136,11 +136,13 @@ public class TriangulationDelaunay implements VoronoiEngine {
         map.clearComputed();
         List<Hospital> hospitals = map.getHospitals();
         if (hospitals.size() < 3) {
-            if(hospitals.size()>0){
-                updatePatientLinks();  
-                return; 
+            if (hospitals.size() == 1) {
+                buildZonesForOneHospital(hospitals.get(0));
+            } else if (hospitals.size() == 2) {
+                buildZonesForTwoHospitals(hospitals.get(0), hospitals.get(1));
             }
-        return;
+            updatePatientLinks();
+            return;
         }
 
         Hospital stA = new Hospital(-1,"stA", -width * 10, -height * 10, 0);
@@ -191,6 +193,67 @@ public class TriangulationDelaunay implements VoronoiEngine {
         map.setTriangles(triangulation);
         buildVoronoiZones();
         updatePatientLinks();   
+    }
+
+    /**
+     * Manually builds a single Voronoi zone covering the whole map.
+     */
+    private void buildZonesForOneHospital(Hospital h) {
+        List<Point> vertices = new ArrayList<>();
+        vertices.add(new Point(-1, 0, 0));
+        vertices.add(new Point(-1, width, 0));
+        vertices.add(new Point(-1, width, height));
+        vertices.add(new Point(-1, 0, height));
+        
+        List<HospitalZone> zones = new ArrayList<>();
+        zones.add(new HospitalZone(vertices, h));
+        map.setZones(zones);
+    }
+
+    /**
+     * Builds two Voronoi zones by splitting the map with the perpendicular bisector.
+     */
+    private void buildZonesForTwoHospitals(Hospital h1, Hospital h2) {
+        double x1 = h1.getX(), y1 = h1.getY();
+        double x2 = h2.getX(), y2 = h2.getY();
+
+        // Perpendicular bisector equation: Ax + By + C = 0
+        double A = x2 - x1;
+        double B = y2 - y1;
+        double xm = (x1 + x2) / 2.0;
+        double ym = (y1 + y2) / 2.0;
+        double C = -(A * xm + B * ym);
+
+        List<Point> intersections = new ArrayList<>();
+        // Intersect with canvas boundaries
+        if (Math.abs(B) > 1e-9) {
+            double x_at_y0 = -C / A; // Logic for vertical edges
+            double y_at_x0 = -C / B;
+            if (y_at_x0 >= 0 && y_at_x0 <= height) intersections.add(new Point(-1, 0, y_at_x0));
+            double y_at_xW = -(A * width + C) / B;
+            if (y_at_xW >= 0 && y_at_xW <= height) intersections.add(new Point(-1, width, y_at_xW));
+        }
+        if (Math.abs(A) > 1e-9) {
+            double x_at_y0 = -C / A;
+            if (x_at_y0 >= 0 && x_at_y0 <= width) intersections.add(new Point(-1, x_at_y0, 0));
+            double x_at_yH = -(B * height + C) / A;
+            if (x_at_yH >= 0 && x_at_yH <= width) intersections.add(new Point(-1, x_at_yH, height));
+        }
+
+        Point[] corners = { new Point(-1,0,0), new Point(-1,width,0), new Point(-1,width,height), new Point(-1,0,height) };
+        List<HospitalZone> zones = new ArrayList<>();
+        Hospital[] duo = {h1, h2};
+
+        for (Hospital h : duo) {
+            List<Point> pts = new ArrayList<>(intersections);
+            for (Point p : corners) {
+                double d1 = GeometryFunc.distance(p, h);
+                double d2 = GeometryFunc.distance(p, h == h1 ? h2 : h1);
+                if (d1 <= d2) pts.add(p);
+            }
+            zones.add(new HospitalZone(sortPolygonVertices(pts, h), h));
+        }
+        map.setZones(zones);
     }
 
     /**
@@ -292,4 +355,3 @@ public class TriangulationDelaunay implements VoronoiEngine {
     return vertices;
     } 
 }
-
