@@ -1,0 +1,256 @@
+@startuml
+left to right direction
+skinparam packageStyle rectangle
+
+package "Model" {
+    class Point {
+        - id : int
+        - x : double
+        - y : double
+        + getId() : int
+        + getX() : double
+        + getY() : double
+        + setX(x : double) : void
+        + setY(y : double) : void
+    }
+
+    class Hospital {
+        - name : String
+        - maxCapacity : int
+        - users : List<User>
+        + isSaturated() : boolean
+        + getSaturationRate() : double
+        + getAvailableRoom() : int
+        + addUsers(u : User) : void
+        + removeUsers(u : User) : void
+        + getUsers() : List<User>
+    }
+
+    class User {
+        - closestSite : Hospital
+        - nextHospitals : List<Hospital>
+        - isRedirected : boolean
+        - redirectionRank : int
+        + getClosestSite() : Hospital
+        + setClosestSite(h : Hospital) : void
+        + getIsRedirected() : boolean
+        + setIsRedirected(b : boolean) : void
+        + getRedirectionRank() : int
+        + setNextHospitals(list : List) : void
+        + setRedirection() : int
+    }
+
+    class Triangle {
+        - a : Hospital
+        - b : Hospital
+        - c : Hospital
+        - circumcenter : Point
+        - circumradius : double
+        + isInCircumcircle(p : Point) : boolean
+        + getCircumcenter() : Point
+        + getCircumradius() : double
+        + getArea() : double
+        + getImbalance() : int
+        + getA() : Hospital
+        + getB() : Hospital
+        + getC() : Hospital
+    }
+
+    class HospitalZone {
+        - vertices : List<Point>
+        - area : double
+        - density : double
+        - minDistance : double
+        - maxDistance : double
+        - avgDistance : double
+        - redirectedCount : int
+        - centerHospital : Hospital
+        + getArea() : double
+        + getDensity() : double
+        + getVertices() : List<Point>
+        + getRedirectedCount() : int
+        + getCenterHospital() : Hospital
+    }
+
+    class VoronoiMap {
+        - hospitals : List<Hospital>
+        - userTot : List<User>
+        - triangles : List<Triangle>
+        - zones : List<HospitalZone>
+        - nextId : int
+        + generateId() : int
+        + addHospital(h : Hospital) : void
+        + removeHospital(h : Hospital) : void
+        + addUsertot(u : User) : void
+        + removeUsertot(u : User) : void
+        + getHospitals() : List<Hospital>
+        + getUserTot() : List<User>
+        + getTriangles() : List<Triangle>
+        + getZones() : List<HospitalZone>
+        + setTriangles(t : List) : void
+        + setZones(z : List) : void
+        + clearComputed() : void
+    }
+}
+
+package "Algorithm" {
+    interface VoronoiEngine {
+        + addHospital(x : double, y : double, name : String, maxCapacity : int) : Hospital
+        + removeHospital(h : Hospital) : void
+        + moveHospital(h : Hospital, x : double, y : double) : void
+        + addUser(x : double, y : double) : User
+        + removeUser(u : User) : void
+        + moveUser(u : User, x : double, y : double) : void
+        + getTriangles() : List<Triangle>
+        + getZones() : List<HospitalZone>
+        + getNearestHospital(x : double, y : double) : Hospital
+        + getMap() : VoronoiMap
+    }
+
+    class TriangulationDelaunay {
+        - map : VoronoiMap
+        - width : double
+        - height : double
+        + addHospital(x : double, y : double, name : String, maxCapacity : int) : Hospital
+        + removeHospital(h : Hospital) : void
+        + moveHospital(h : Hospital, x : double, y : double) : void
+        + addUser(x : double, y : double) : User
+        + removeUser(u : User) : void
+        + moveUser(u : User, x : double, y : double) : void
+        + recompute() : void
+        - updatePatientLinks() : void
+        - buildVoronoiZones() : void
+        - sortPolygonVertices(vertices : List, center : Hospital) : List
+        - triangleContainsEdge(t : Triangle, h1 : Hospital, h2 : Hospital) : boolean
+    }
+
+    class VoronoiEngineStub {
+        + getTriangles() : List<Triangle>
+        + getZones() : List<HospitalZone>
+    }
+
+    class ImportExportMap {
+        + {static} exportBinary(map : VoronoiMap, fileName : String) : void
+        + {static} importBinary(fileName : String) : VoronoiMap
+        + {static} importHospitalsCSV(fileName : String, map : VoronoiMap) : int
+    }
+
+    class GeometryFunc {
+        + {static} distance(p1 : Point, p2 : Point) : double
+        + {static} triangleArea(a : Point, b : Point, c : Point) : double
+    }
+}
+
+package "Interface" {
+    class MainApp {
+        + {static} CANVAS_WIDTH : double
+        + {static} CANVAS_HEIGHT : double
+        + start(stage : Stage) : void
+        + {static} main(args : String[]) : void
+    }
+
+    class MainController {
+        + engine : VoronoiEngine
+        + canvas : MapCanvas
+        + scale : double
+        + selectedHospital : Hospital
+        + setEngine(engine : VoronoiEngine) : void
+        + init(width : double, height : double) : void
+        + selectHospital(h : Hospital) : void
+        + clearSelection() : void
+        + updateSidePanel() : void
+        + updateStatusBar() : void
+        + showMessage(msg : String) : void
+        + getHospitalAt(wx : double, wy : double) : Hospital
+        + getUserAt(wx : double, wy : double) : User
+    }
+
+    class MapCanvas {
+        - engine : VoronoiEngine
+        - showDelaunay : boolean
+        - showZones : boolean
+        - showLinks : boolean
+        - offsetX : double
+        - offsetY : double
+        - scale : double
+        + redraw() : void
+        + toScreenX(wx : double) : double
+        + toScreenY(wy : double) : double
+        + toWorldX(sx : double) : double
+        + toWorldY(sy : double) : double
+        + setScale(scale : double) : void
+        + addOffset(dx : double, dy : double) : void
+    }
+}
+
+package "Cli" {
+    class HospitalCommands {
+        + {static} add(parts : String[], engine : VoronoiEngine) : void
+        + {static} remove(parts : String[], engine : VoronoiEngine) : void
+        + {static} move(parts : String[], engine : VoronoiEngine) : void
+        + {static} list(engine : VoronoiEngine) : void
+        + {static} stats(parts : String[], engine : VoronoiEngine) : void
+        + {static} nearest(parts : String[], engine : VoronoiEngine) : void
+    }
+
+    class UserCommands {
+        + {static} add(parts : String[], engine : VoronoiEngine) : void
+        + {static} remove(parts : String[], engine : VoronoiEngine) : void
+        + {static} move(parts : String[], engine : VoronoiEngine) : void
+        + {static} random(parts : String[], engine : VoronoiEngine) : void
+        + {static} list(engine : VoronoiEngine) : void
+        + {static} triangles(engine : VoronoiEngine) : void
+    }
+
+    class FileCommands {
+        + {static} importCSV(parts : String[], engine : VoronoiEngine) : void
+        + {static} export(parts : String[], engine : VoronoiEngine) : void
+        + {static} importBin(parts : String[], engine : VoronoiEngine) : void
+    }
+
+    class CLIUtils {
+        + {static} findHospitalById(id : int, engine : VoronoiEngine) : Hospital
+        + {static} findUserById(id : int, engine : VoronoiEngine) : User
+    }
+}
+
+class CommandLineMain {
+    + {static} engine : VoronoiEngine
+    + {static} scanner : Scanner
+    + {static} main(args : String[]) : void
+}
+
+' ═══ Relations Model ═══
+Hospital --|> Point
+User --|> Point
+HospitalZone --|> Hospital
+
+' ═══ Relations Algorithm ═══
+TriangulationDelaunay ..|> VoronoiEngine
+VoronoiEngineStub ..|> VoronoiEngine
+TriangulationDelaunay --> VoronoiMap
+VoronoiMap o-- Hospital
+VoronoiMap o-- User
+VoronoiMap o-- Triangle
+VoronoiMap o-- HospitalZone
+Triangle --> Hospital
+User --> Hospital
+
+' ═══ Relations Interface ═══
+MainApp ..> MainController
+MainApp ..> VoronoiEngine
+MainController *-- MapCanvas
+MainController ..> VoronoiEngine
+
+' ═══ Relations CLI ═══
+CommandLineMain ..> VoronoiEngine
+CommandLineMain ..> HospitalCommands
+CommandLineMain ..> UserCommands
+CommandLineMain ..> FileCommands
+HospitalCommands ..> VoronoiEngine
+HospitalCommands ..> CLIUtils
+UserCommands ..> VoronoiEngine
+UserCommands ..> CLIUtils
+FileCommands ..> VoronoiEngine
+
+@enduml
