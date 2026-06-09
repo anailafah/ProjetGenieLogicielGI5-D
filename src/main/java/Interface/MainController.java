@@ -71,7 +71,17 @@ public class MainController {
         canvas.widthProperty().addListener(e  -> canvas.redraw());
         canvas.heightProperty().addListener(e -> canvas.redraw());
 
+        updateEngineViewport();
         updateStatusBar();
+    }
+
+    private void updateEngineViewport() {
+        engine.updateViewport(
+            canvas.toWorldX(0),
+            canvas.toWorldY(0),
+            canvas.toWorldX(canvas.getWidth()),
+            canvas.toWorldY(canvas.getHeight())
+        );
     }
     /**
      * Handles mouse press — prepares drag detection.
@@ -120,6 +130,7 @@ public class MainController {
                             "Hospital name:",
                             "Hospital-" + (engine.getMap().getHospitals().size() + 1));
                         if (name == null || name.trim().isEmpty()) return;
+                        updateEngineViewport();
 
                         String capStr = showInputDialog("Max capacity :", "20");
                         if (capStr == null) return;
@@ -130,7 +141,7 @@ public class MainController {
                             return;
                         }
 
-                        Hospital h = engine.addHospital( name.trim(),wx, wy, capacity);
+                        Hospital h = engine.addHospital(wx, wy, name.trim(), capacity);
                         selectHospital(h);
                         showMessage("Hospital added : " + name);
                     }
@@ -175,6 +186,8 @@ public class MainController {
                 canvas.addOffset(dx, dy);
                 dragStartX = e.getX();
                 dragStartY = e.getY();
+                updateEngineViewport();
+                engine.recompute();
             }
         } catch (IllegalArgumentException ex) {
             showMessage("Displace Error : " + ex.getMessage());
@@ -193,6 +206,8 @@ public class MainController {
         scale *= factor;
         scale = Math.max(0.2, Math.min(5.0, scale));
         canvas.setScale(scale);
+        updateEngineViewport();
+        engine.recompute();
         canvas.redraw();
         labelZoom.setText("Zoom : " + (int)(scale * 100) + "%");
     }
@@ -260,7 +275,6 @@ public class MainController {
         try {
             int count = ImportExportMap.importHospitalsCSV(
                 file.getAbsolutePath(), engine.getMap());
-            ((TriangulationDelaunay) engine).recompute();
             canvas.redraw();
             updateStatusBar();
             showMessage(count + " Hospital imported from " + file.getName());
@@ -318,12 +332,11 @@ public class MainController {
             VoronoiMap loaded = ImportExportMap.importBinary(
                 file.getAbsolutePath());
 
-            TriangulationDelaunay engine = new TriangulationDelaunay(canvas.getWidth(), canvas.getHeight());
+            engine = new TriangulationDelaunay(canvas.getWidth(), canvas.getHeight());
             for (Hospital h : loaded.getHospitals())
                 engine.getMap().addHospital(h);
             for (User u : loaded.getUserTot())
                 engine.getMap().addUsertot(u);
-            engine.recompute();
 
             canvas.setEngine(engine);
             clearSelection();
@@ -364,31 +377,37 @@ public class MainController {
 
     /**
      * Toggles Delaunay triangulation display.
+     * Synchronizes CheckBox and CheckMenuItem.
      */
     @FXML
     private void onToggleDelaunay() {
         boolean show = checkDelaunay.isSelected();
         canvas.setShowDelaunay(show);
+        if (menuDelaunay != null) menuDelaunay.setSelected(show);
         canvas.redraw();
     }
 
     /**
      * Toggles Voronoi zones display.
+     * Synchronizes CheckBox and CheckMenuItem.
      */
     @FXML
     private void onToggleZones() {
         boolean show = checkZones.isSelected();
         canvas.setShowZones(show);
+        if (menuZones != null) menuZones.setSelected(show);
         canvas.redraw();
     }
 
     /**
      * Toggles user-to-hospital links display.
+     * Synchronizes CheckBox and CheckMenuItem.
      */
     @FXML
     private void onToggleLinks() {
         boolean show = checkLinks.isSelected();
         canvas.setShowLinks(show);
+        if (menuLinks != null) menuLinks.setSelected(show);
         canvas.redraw();
     }
 
