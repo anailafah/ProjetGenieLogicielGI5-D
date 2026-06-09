@@ -206,11 +206,11 @@ public class TriangulationDelaunay implements VoronoiEngine {
                 }
             }
             u.setNextHospitals(byDistance);
-
-            u.setRedirection();
+            u.setClosestSite(byDistance.get(0));
+            u.setRedirection();  // met à jour closestSite
 
             if (u.getClosestSite() != null) {
-                u.getClosestSite().addUsers(u);
+                 u.getClosestSite().addUsers(u);
             }
         }
     }

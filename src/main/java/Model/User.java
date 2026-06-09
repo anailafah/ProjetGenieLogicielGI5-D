@@ -28,7 +28,7 @@ public class User extends Point {
 	public int getRedirectionRank(){
 		return redirectionRank;
 	}
-	public void setRedirectionRank(int r){
+	private void setRedirectionRank(int r){
 		this.redirectionRank=r;
 	}
 	/**
@@ -42,7 +42,7 @@ public class User extends Point {
 	 * Sets whether this user has been redirected from their nearest hospital.
 	 * @param redirected true if redirected
 	 */
-	public void setIsRedirected(boolean redirected){
+	private void setIsRedirected(boolean redirected){
 		this.isRedirected = redirected;
 	}
 	/**
@@ -76,23 +76,15 @@ public class User extends Point {
 	}
 	public int setRedirection(){
 		int rank=0;
-		if(nextHospitals.isEmpty()){
-			this.isRedirected = false;
-			this.redirectionRank=0;
-			return 0;
-		}
-		for(Hospital h: nextHospitals){
+		for(Hospital h: this.nextHospitals){
 			if(h.isSaturated()!=true){
 				this.setClosestSite(h);
 				this.setRedirectionRank(rank);
-				h.addUsers(this);
+				this.setIsRedirected(rank!=0);
 				return rank;
 			}
 			rank++;
 		}
-		this.closestSite     = nextHospitals.get(0);
-    	this.redirectionRank = 0;
-    	this.isRedirected    = false;
     	return 0;
 	}
 }
