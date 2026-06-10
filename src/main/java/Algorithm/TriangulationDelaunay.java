@@ -27,6 +27,10 @@ public class TriangulationDelaunay implements VoronoiEngine {
         this.map = new VoronoiMap();
         this.width = width;
         this.height = height;
+        this.vX1 = 0;
+        this.vY1 = 0;
+        this.vX2 = width;
+        this.vY2 = height;
     }
 
     @Override
