@@ -19,31 +19,30 @@ import java.util.Random;
  */
 public class MainController {
 
-    @FXML private Pane         mapPane;
-    @FXML private CheckBox     checkDelaunay;
-    @FXML private CheckBox     checkZones;
-    @FXML private CheckBox     checkLinks;
-    @FXML private CheckMenuItem menuDelaunay;
-    @FXML private CheckMenuItem menuZones;
-    @FXML private CheckMenuItem menuLinks;
-    @FXML private Label         labelHospitalName;
-    @FXML private ProgressBar   progressSaturation;
-    @FXML private Label         labelStats;
-    @FXML private Label         labelNbHospitals;
-    @FXML private Label         labelNbUsers;
-    @FXML private Label         labelNbTriangles;
-    @FXML private Label         labelZoom;
-    @FXML private Label         labelMessage;
+    @FXML private Pane mapPane;
+    @FXML private CheckBox checkDelaunay;
+    @FXML private CheckBox checkZones;
+    @FXML private CheckBox checkLinks;
+
+    @FXML private Label labelHospitalName;
+    @FXML private ProgressBar progressSaturation;
+    @FXML private Label labelStats;
+    @FXML private Label labelNbHospitals;
+    @FXML private Label labelNbUsers;
+    @FXML private Label labelNbTriangles;
+    @FXML private Label labelZoom;
+    @FXML private Label labelMessage;
 
     
     private VoronoiEngine engine;
-    private MapCanvas     canvas;
+    private MapCanvas canvas;
 
+    private User draggedUser = null;
     private Hospital selectedHospital = null;
     private Hospital draggedHospital  = null;
-    private boolean  isDragging       = false;
-    private double   dragStartX, dragStartY;
-    private double   scale = 1.0;
+    private boolean isDragging = false;
+    private double dragStartX, dragStartY;
+    private double scale = 1.0;
 
     /**
      * Injects the Voronoi engine into the controller.
@@ -67,9 +66,9 @@ public class MainController {
 
         canvas.widthProperty().bind(mapPane.widthProperty());
         canvas.heightProperty().bind(mapPane.heightProperty());
-
-        canvas.widthProperty().addListener(e  -> canvas.redraw());
-        canvas.heightProperty().addListener(e -> canvas.redraw());
+        CanvasResizeListener resizeListener = new CanvasResizeListener(canvas);
+        canvas.widthProperty().addListener(resizeListener);
+        canvas.heightProperty().addListener(resizeListener);
 
         updateEngineViewport();
         updateStatusBar();
@@ -95,6 +94,12 @@ public class MainController {
         double wx       = canvas.toWorldX(e.getX());
         double wy       = canvas.toWorldY(e.getY());
         draggedHospital = getHospitalAt(wx, wy);
+        if(draggedHospital==null){
+            draggedUser = getUserAt(wx,wy);
+        }
+        else{
+            draggedUser=null;
+        }
     }
 
     /**
@@ -180,6 +185,8 @@ public class MainController {
             if (draggedHospital != null) {
                 engine.moveHospital(draggedHospital, wx, wy);
                 updateSidePanel();
+            } else if (draggedUser != null) {
+                engine.moveUser(draggedUser, wx, wy);
             } else {
                 double dx = e.getX() - dragStartX;
                 double dy = e.getY() - dragStartY;
@@ -190,7 +197,7 @@ public class MainController {
                 engine.recompute();
             }
         } catch (IllegalArgumentException ex) {
-            showMessage("Displace Error : " + ex.getMessage());
+            showMessage("move Error : " + ex.getMessage());
         }
 
         canvas.redraw();
@@ -230,8 +237,8 @@ public class MainController {
                 showMessage("number must be > 0");
                 return;
             }
-            if (count > 10000) {
-                showMessage("Max 10 000 users");
+            if (count > 100) {
+                showMessage("Max 100 users");
                 return;
             }
 
@@ -353,26 +360,23 @@ public class MainController {
         }
     }
 
-    /**
-     * Clears the entire map after confirmation.
-     */
-    @FXML
+   @FXML
     private void onClearAll() {
         Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
         confirm.setTitle("Clear all");
-        confirm.setHeaderText("Do you really want to clear this map ?");
+        confirm.setHeaderText("Clear the entire map ?");
         confirm.setContentText("This action is irreversible.");
 
-        confirm.showAndWait().ifPresent(response -> {
-            if (response == ButtonType.OK) {
-                engine = new TriangulationDelaunay(canvas.getWidth(), canvas.getHeight());
-                canvas.setEngine(engine);
-                clearSelection();
-                canvas.redraw();
-                updateStatusBar();
-                showMessage("Cleared map");
-            }
-        });
+        java.util.Optional<ButtonType> result = confirm.showAndWait();
+
+        if (result.isPresent() && result.get() == ButtonType.OK) {
+            engine = new TriangulationDelaunay( canvas.getWidth(), canvas.getHeight());
+            canvas.setEngine(engine);
+            clearSelection();
+            canvas.redraw();
+            updateStatusBar();
+            showMessage("Map cleared");
+        }
     }
 
     /**
@@ -383,7 +387,6 @@ public class MainController {
     private void onToggleDelaunay() {
         boolean show = checkDelaunay.isSelected();
         canvas.setShowDelaunay(show);
-        if (menuDelaunay != null) menuDelaunay.setSelected(show);
         canvas.redraw();
     }
 
@@ -395,7 +398,6 @@ public class MainController {
     private void onToggleZones() {
         boolean show = checkZones.isSelected();
         canvas.setShowZones(show);
-        if (menuZones != null) menuZones.setSelected(show);
         canvas.redraw();
     }
 
@@ -407,7 +409,6 @@ public class MainController {
     private void onToggleLinks() {
         boolean show = checkLinks.isSelected();
         canvas.setShowLinks(show);
-        if (menuLinks != null) menuLinks.setSelected(show);
         canvas.redraw();
     }
 
@@ -453,12 +454,12 @@ public class MainController {
 
         labelHospitalName.setText(selectedHospital.getName());
 
-        double rate = selectedHospital.getSaturationRate() / 100.0;
+        double rate = selectedHospital.getSaturationRate();
         progressSaturation.setProgress(rate);
 
-        if (rate >= 1.0)
+        if (rate >= 100)
             progressSaturation.setStyle("-fx-accent: #CC2200;");
-        else if (rate >= 0.75)
+        else if (rate >= 75)
             progressSaturation.setStyle("-fx-accent: #E07700;");
         else
             progressSaturation.setStyle("-fx-accent: #1D9E75;");
@@ -467,16 +468,15 @@ public class MainController {
             .filter(User::getIsRedirected).count();
 
         labelStats.setText(
-            "Users : " + selectedHospital.getUsers().size()
-                + " / " + selectedHospital.getMaxCapacity() + "\n" +
-            "Saturation : "
-                + String.format("%.1f", selectedHospital.getSaturationRate()) + "%\n" +
+            "Users : " + selectedHospital.getUsers().size()+ " / " + selectedHospital.getMaxCapacity() + "\n" +
+            "Saturation : " + String.format("%.1f", selectedHospital.getSaturationRate()) + "%\n" +
             "AvailableRoom : " + selectedHospital.getAvailableRoom() + "\n" +
             "Redirected : " + redirected
         );
     }
 
-    /** Updates the status bar labels at the bottom. */
+    /** 
+     * Updates the status bar labels at the bottom. */
     private void updateStatusBar() {
         labelNbHospitals.setText(
             "Hospital : " + engine.getMap().getHospitals().size());
@@ -521,6 +521,20 @@ public class MainController {
             double dy = h.getY() - wy;
             if (Math.sqrt(dx*dx + dy*dy) < 15.0 / scale)
                 return h;
+        }
+        return null;
+    }
+    /**
+     * Finds a user near the given world coordinates (within 15px).
+     * @param wx world x
+     * @param wy world y
+     * @return the hospital if found, null otherwise
+     */
+    private User getUserAt(double wx, double wy) {
+        for (User u : engine.getMap().getUserTot()) {
+            double dx = u.getX() - wx;
+            double dy = u.getY() - wy;
+            if (Math.sqrt(dx*dx + dy*dy) < 15.0 / scale) return u;
         }
         return null;
     }
