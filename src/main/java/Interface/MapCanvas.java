@@ -9,8 +9,7 @@ import javafx.scene.paint.Color;
 import java.util.List;
 
 /**
- * JavaFX Canvas responsible for rendering the Voronoi diagram,
- * Delaunay triangulation, hospitals and users.
+ * JavaFX Canvas responsible for drawing the Voronoi diagram, Delaunay triangulation, hospitals and users.
  */
 public class MapCanvas extends Canvas {
 
@@ -166,29 +165,34 @@ public class MapCanvas extends Canvas {
     }
 
     /**
-     * Draws pre-computed Voronoi zones.
-     * @param gc        graphics context
-     * @param zones     list of hospital zones
-     */
+    * Draws pre-computed Voronoi zones.
+    * @param gc    graphics context
+    * @param zones list of hospital zones
+    */
     private void drawZones(GraphicsContext gc, List<HospitalZone> zones) {
-    int colorIdx = 0;
-    for (HospitalZone zone : zones) {
-        gc.setFill(ZONE_COLORS[colorIdx % ZONE_COLORS.length]);
-        colorIdx++;
+        int colorIdx = 0;
 
-        List<Point> vertices = zone.getVertices();
-        if (vertices == null || vertices.isEmpty()) continue;
+        for (HospitalZone zone : zones) {
+            gc.setFill(ZONE_COLORS[colorIdx % ZONE_COLORS.length]);
+            colorIdx++;
 
-        double[] xs = vertices.stream().mapToDouble(v -> toScreenX(v.getX())).toArray();
-        double[] ys = vertices.stream().mapToDouble(v -> toScreenY(v.getY())).toArray();
+            List<Point> vertices = zone.getVertices();
+            if (vertices == null || vertices.isEmpty()) continue;
 
-        gc.fillPolygon(xs, ys, vertices.size());
+            double[] xs = new double[vertices.size()];
+            double[] ys = new double[vertices.size()];
 
-        gc.setStroke(Color.web("#19a09b", 0.6));
-        gc.setLineWidth(1.0);
-        gc.strokePolygon(xs, ys, vertices.size());
+            for (int i = 0; i < vertices.size(); i++) {
+                xs[i] = toScreenX(vertices.get(i).getX());
+                ys[i] = toScreenY(vertices.get(i).getY());
+            }
+
+            gc.fillPolygon(xs, ys, vertices.size());
+            gc.setStroke(Color.web("#19a09b", 0.6));
+            gc.setLineWidth(1.0);
+            gc.strokePolygon(xs, ys, vertices.size());
+        }
     }
-}
 
     /**
      * Draws the Delaunay triangulation edges.
