@@ -12,6 +12,11 @@ public class TriangulationDelaunay implements VoronoiEngine {
     private VoronoiMap map;
     private double width, height;
 
+    private double vX1 = 0;
+    private double vY1 = 0;
+    private double vX2 = 800;
+    private double vY2 = 600;
+
     /**
      * Construction : creates the engine with canvas dimensions.
      * @param width canvas width
@@ -22,6 +27,15 @@ public class TriangulationDelaunay implements VoronoiEngine {
         this.width = width;
         this.height = height;
     }
+
+    @Override
+    public void updateViewport(double x1, double y1, double x2, double y2) {
+        this.vX1 = x1;
+        this.vY1 = y1;
+        this.vX2 = x2;
+        this.vY2 = y2;
+    }
+
     @Override
     public User addUser(double x,double y){
         User u = new User(map.generateId(), x, y);
@@ -135,21 +149,31 @@ public class TriangulationDelaunay implements VoronoiEngine {
     public void recompute() {
         map.clearComputed();
         List<Hospital> hospitals = map.getHospitals();
-        if (hospitals.size() < 3) {
-            if(hospitals.size()>0){
-                updatePatientLinks();  
-                return; 
-            }
-        return;
-        }
+        if (hospitals.isEmpty()) return;
 
-        Hospital stA = new Hospital(-1,"stA", -width * 10, -height * 10, 0);
-        Hospital stB = new Hospital(-2,"stB" , width * 10, -height * 10, 0);
-        Hospital stC = new Hospital(-3, "stC" ,0.0,         height * 10, 0);
+        // 1. Création de 4 hôpitaux fantômes placés loin autour de la vue actuelle
+        // On utilise une marge (padding) pour que leurs zones n'empiètent pas sur le canvas
+        double paddingX = (vX2 - vX1);
+        double paddingY = (vY2 - vY1);
+
+        List<Hospital> ghosts = new ArrayList<>();
+        ghosts.add(new Hospital(-10, "G1", vX1 - paddingX, vY1 - paddingY, 0));
+        ghosts.add(new Hospital(-11, "G2", vX2 + paddingX, vY1 - paddingY, 0));
+        ghosts.add(new Hospital(-12, "G3", vX2 + paddingX, vY2 + paddingY, 0));
+        ghosts.add(new Hospital(-13, "G4", vX1 - paddingX, vY2 + paddingY, 0));
+
+        List<Hospital> allPoints = new ArrayList<>(hospitals);
+        allPoints.addAll(ghosts);
+
+        // 2. Super-triangle très large pour englober la vue
+        Hospital stA = new Hospital(-1,"stA", -width * 100, -height * 100, 0);
+        Hospital stB = new Hospital(-2,"stB" , width * 100, -height * 100, 0);
+        Hospital stC = new Hospital(-3, "stC" ,0.0,           height * 100, 0);
+
         List<Triangle> triangulation = new ArrayList<>();
         triangulation.add(new Triangle(stA, stB, stC));
 
-        for (Hospital hospital : hospitals) {
+        for (Hospital hospital : allPoints) {
 
             List<Triangle> badTriangles = new ArrayList<>();
             for (Triangle t : triangulation) {
@@ -178,18 +202,18 @@ public class TriangulationDelaunay implements VoronoiEngine {
                 triangulation.add(new Triangle(edge[0], edge[1], hospital));
             }
         }
-        List<Triangle> toRemoveSt = new ArrayList<>();
-        for(Triangle t : triangulation){
-            if( t.getA() == stA || t.getA() == stB || t.getA() == stC ||
-                t.getB() == stA || t.getB() == stB || t.getB() == stC ||
-                t.getC() == stA || t.getC() == stB || t.getC() == stC){
-                    
-                toRemoveSt.add(t);
+
+        // 3. Filtrage pour l'affichage Delaunay : on ne garde que les triangles "réels"
+        List<Triangle> realTriangles = new ArrayList<>();
+        for (Triangle t : triangulation) {
+            if (t.getA().getId() >= 0 && t.getB().getId() >= 0 && t.getC().getId() >= 0) {
+                realTriangles.add(t);
             }
         }
-        triangulation.removeAll(toRemoveSt);
-        map.setTriangles(triangulation);
-        buildVoronoiZones();
+        map.setTriangles(realTriangles);
+
+        // 4. Construction des zones de Voronoi (utilise tous les triangles incluant les ghosts)
+        buildVoronoiZones(triangulation, hospitals);
         updatePatientLinks();   
     }
 
@@ -248,16 +272,17 @@ public class TriangulationDelaunay implements VoronoiEngine {
     * For each hospital, collects the circumcenters of all triangles
     * that contain it as a vertex, then sorts them to form a polygon.
     */
-    private void buildVoronoiZones() {
+    private void buildVoronoiZones(List<Triangle> allTriangles, List<Hospital> realHospitals) {
         List<HospitalZone> zones = new ArrayList<>();
-        List<Triangle> triangles = map.getTriangles();
 
-        for (Hospital hospital : map.getHospitals()) {
+        for (Hospital hospital : realHospitals) {
             List<Triangle> adjacent = new ArrayList<>();
-            for (Triangle t : triangles) {
+            for (Triangle t : allTriangles) {
                 if (t.getA() == hospital ||
                     t.getB() == hospital ||
                     t.getC() == hospital) {
+                    // On prend tous les triangles adjacents pour garantir une zone fermée
+                    // qui s'étend jusqu'au Super-Triangle au delà des bords.
                     adjacent.add(t);
                 }
             }
@@ -292,4 +317,3 @@ public class TriangulationDelaunay implements VoronoiEngine {
     return vertices;
     } 
 }
-

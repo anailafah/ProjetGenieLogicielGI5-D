@@ -88,4 +88,14 @@ public class VoronoiEngineStub implements VoronoiEngine {
             map.getTriangles().add(new Triangle(hospitals.get(0), hospitals.get(1), hospitals.get(2)));
         }
     }
+
+    @Override
+    public void updateViewport(double x1, double y1, double x2, double y2) {
+        // Non implémenté dans le stub
+    }
+
+    @Override
+    public void recompute() {
+        // Non implémenté dans le stub
+    }
 }

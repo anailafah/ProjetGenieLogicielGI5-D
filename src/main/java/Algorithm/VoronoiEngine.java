@@ -74,5 +74,16 @@ public interface VoronoiEngine {
      * @param newY
      */
     void moveUser(User u, double newX,double newY);
-    
+
+    /**
+     * Updates the visible area boundaries.
+     * @param x1 top-left x
+     * @param y1 top-left y
+     * @param x2 bottom-right x
+     * @param y2 bottom-right y
+     */
+    void updateViewport(double x1, double y1, double x2, double y2);
+
+    /** Recomputes the geometry. */
+    void recompute();
 }
