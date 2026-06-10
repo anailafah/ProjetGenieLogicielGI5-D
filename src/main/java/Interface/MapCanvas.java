@@ -17,9 +17,9 @@ public class MapCanvas extends Canvas {
     private VoronoiEngine engine;
     private Hospital      selectedHospital;
 
-    private boolean showDelaunay = true;
-    private boolean showZones    = true;
-    private boolean showLinks    = true;
+    private boolean showDelaunay = false;
+    private boolean showZones    = false;
+    private boolean showLinks    = false;
 
     private double offsetX = 0;
     private double offsetY = 0;
@@ -227,9 +227,7 @@ public class MapCanvas extends Canvas {
             double uy = toScreenY(u.getY());
             double hx = toScreenX(u.getClosestSite().getX());
             double hy = toScreenY(u.getClosestSite().getY());
-            gc.setStroke(u.getIsRedirected()
-                ? Color.web("#D85A30", 0.4)
-                : Color.web("#1D9E75", 0.3));
+            gc.setStroke(u.getIsRedirected() ? Color.web("#D85A30", 0.4): Color.web("#1D9E75", 0.3));
             gc.strokeLine(ux, uy, hx, hy);
         }
     }
@@ -283,9 +281,7 @@ public class MapCanvas extends Canvas {
             double uy = toScreenY(u.getY());
             double r  = 4 * Math.max(0.5, Math.min(scale, 2.0));
 
-            gc.setFill(u.getIsRedirected()
-                ? Color.web("#D85A30")
-                : Color.web("#1D9E75"));
+            gc.setFill(u.getIsRedirected() ? Color.web("#D85A30") : Color.web("#1D9E75"));
             gc.fillOval(ux - r, uy - r, r*2, r*2);
         }
     }

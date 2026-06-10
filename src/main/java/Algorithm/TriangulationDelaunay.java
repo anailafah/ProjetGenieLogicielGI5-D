@@ -2,6 +2,8 @@ package Algorithm;
 
 import Model.*;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -151,8 +153,6 @@ public class TriangulationDelaunay implements VoronoiEngine {
         List<Hospital> hospitals = map.getHospitals();
         if (hospitals.isEmpty()) return;
 
-        // 1. Création de 4 hôpitaux fantômes placés loin autour de la vue actuelle
-        // On utilise une marge (padding) pour que leurs zones n'empiètent pas sur le canvas
         double paddingX = (vX2 - vX1);
         double paddingY = (vY2 - vY1);
 
@@ -165,7 +165,6 @@ public class TriangulationDelaunay implements VoronoiEngine {
         List<Hospital> allPoints = new ArrayList<>(hospitals);
         allPoints.addAll(ghosts);
 
-        // 2. Super-triangle très large pour englober la vue
         Hospital stA = new Hospital(-1,"stA", -width * 100, -height * 100, 0);
         Hospital stB = new Hospital(-2,"stB" , width * 100, -height * 100, 0);
         Hospital stC = new Hospital(-3, "stC" ,0.0,           height * 100, 0);
@@ -203,7 +202,6 @@ public class TriangulationDelaunay implements VoronoiEngine {
             }
         }
 
-        // 3. Filtrage pour l'affichage Delaunay : on ne garde que les triangles "réels"
         List<Triangle> realTriangles = new ArrayList<>();
         for (Triangle t : triangulation) {
             if (t.getA().getId() >= 0 && t.getB().getId() >= 0 && t.getC().getId() >= 0) {
@@ -211,8 +209,6 @@ public class TriangulationDelaunay implements VoronoiEngine {
             }
         }
         map.setTriangles(realTriangles);
-
-        // 4. Construction des zones de Voronoi (utilise tous les triangles incluant les ghosts)
         buildVoronoiZones(triangulation, hospitals);
         updatePatientLinks();   
     }
@@ -233,7 +229,7 @@ public class TriangulationDelaunay implements VoronoiEngine {
                 for(int j=0;j<byDistance.size()-1-i;j++){
                     double distA = GeometryFunc.distance(u, byDistance.get(j)); 
                     double distB = GeometryFunc.distance(u, byDistance.get(j+1)); 
-                    if (Double.compare(distA, distB)>0){
+                    if (distA > distB){
                         Hospital temp = byDistance.get(j);
                         byDistance.set(j,byDistance.get(j+1));
                         byDistance.set(j+1,temp);
@@ -242,7 +238,7 @@ public class TriangulationDelaunay implements VoronoiEngine {
             }
             u.setNextHospitals(byDistance);
             u.setClosestSite(byDistance.get(0));
-            u.setRedirection();  // met à jour closestSite
+            u.setRedirection(); 
 
             if (u.getClosestSite() != null) {
                  u.getClosestSite().addUsers(u);
@@ -281,8 +277,6 @@ public class TriangulationDelaunay implements VoronoiEngine {
                 if (t.getA() == hospital ||
                     t.getB() == hospital ||
                     t.getC() == hospital) {
-                    // On prend tous les triangles adjacents pour garantir une zone fermée
-                    // qui s'étend jusqu'au Super-Triangle au delà des bords.
                     adjacent.add(t);
                 }
             }
@@ -299,21 +293,19 @@ public class TriangulationDelaunay implements VoronoiEngine {
         map.setZones(zones);
     }
 
-    /**
+   /**
     * Sorts polygon vertices in clockwise order around a center point.
     * Necessary to draw a proper polygon from circumcenters.
     * @param vertices the unsorted list of vertices
-    * @param center the hospital around which to sort
+    * @param center   the hospital around which to sort
     * @return the sorted list of vertices
     */
     private List<Point> sortPolygonVertices(List<Point> vertices, Hospital center) {
-        if (vertices.size() <= 1) return vertices;
-        vertices.sort((p1, p2) -> {
-            double angle1 = Math.atan2(p1.getY() - center.getY(), p1.getX() - center.getX());
-            double angle2 = Math.atan2(p2.getY() - center.getY(),p2.getX() - center.getX()
-            );
-        return Double.compare(angle1, angle2);
-        });
+        if (vertices.size() <= 1) {
+        return vertices;
+    }
+    Collections.sort(vertices, new AngleComparator(center));
+
     return vertices;
-    } 
+}
 }
