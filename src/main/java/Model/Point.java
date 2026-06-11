@@ -7,16 +7,15 @@ import java.io.Serializable;
  */
 public class Point implements Serializable{
 	private static final long serialVersionUID = 1L;
-	
 	private final int id;
 	private double x;
 	private double y;
 	
 	/**
 	 * construction of a Point
-	 * @param id
-	 * @param x
-	 * @param y
+	 * @param id id of the point
+	 * @param x x coordinate
+	 * @param y y coordinate
 	 */
 	public Point(int id,double x,double y) {
 		this.id = id;
@@ -43,19 +42,21 @@ public class Point implements Serializable{
 	}
 	/**
 	 * set the new coordinate x
-	 * @param x
+	 * @param x x coordinate
 	 */
 	public void setX(double x) {
 		this.x=x;
 	}
 	/**
 	 * set the new coordinate y
-	 * @param y
+	 * @param y y coordinate
 	 */
 	public void setY(double y) {
 		this.y=y;
 	}
-	
+	/**
+	 * @return a string that contains the point
+	*/
 	@Override
 	public String toString() {
 		return "Point " + id + " (" + x +", "+y+ ")";

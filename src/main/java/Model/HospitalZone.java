@@ -2,6 +2,9 @@ package Model;
 
 import java.io.Serializable;
 import java.util.List;
+/**
+ * represent a voronoi zone
+*/
 
 public class HospitalZone implements Serializable{
     private static final long serialVersionUID = 5L;
@@ -16,7 +19,7 @@ public class HospitalZone implements Serializable{
     private int nbUser;
     /**
      * construction of a hospital zone
-     * @param hospital
+     * @param hospital 
      * @param vertices
      */
     public HospitalZone(List<Point> vertices,Hospital h) {
@@ -99,33 +102,59 @@ public class HospitalZone implements Serializable{
         }
         return Math.abs(sumRight-sumLeft) / 2.0;
     }
+    /**
+     * set an hospital as the center of the zone
+     * @param h hospital
+    */
     public void setCenterHospital(Hospital h){
         this.centerHospital=h;
     }
+    /**
+     * @return centerHospital
+    */
     public Hospital getCenterHospital(){
         return centerHospital;
     }
 
-    /** Refreshes statistics after modifications. */
+    /** 
+     * Refreshes statistics after modifications. 
+    */
     public void refresh() { 
         computeStats(); 
     }
-
+    /**
+     * @return list of vertices of the zone
+    */
     public List<Point> getVertices(){ 
         return vertices; 
     }
+    /**
+     * @return area of the zone
+    */
     public double getArea(){ 
         return area;
     }
+    /**
+     * @return minDistance
+    */
     public double getMinDistance(){
         return minDistance; 
     }
+    /**
+     * @return maxDistance
+    */
     public double getMaxDistance(){
         return maxDistance; 
     }
+    /**
+     * @return avgDistance
+    */
     public double getAvgDistance(){
         return avgDistance; 
     }
+    /**
+     * @return the count of user redirected in the zone
+    */
     public int getRedirectedCount(){ 
         return redirectedCount; 
     }

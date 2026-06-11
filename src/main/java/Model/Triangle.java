@@ -56,23 +56,39 @@ public class Triangle implements Serializable {
                 if (h == o) shared++;
         return shared == 2;
     }
-
+    /**
+     * @return one of the vertices of the triangle
+    */
     public Hospital getA(){ 
         return a; 
     }
+    /**
+     * @return one of the vertices of the triangle
+    */
     public Hospital getB(){ 
         return b; 
     }
+    /**
+     * @return one of the vertices of the triangle
+    */
     public Hospital getC(){
         return c; 
     }
+    /**
+     * @return the circumcenter of the triangle
+    */
     public Point getCircumcenter(){ 
         return circumcenter; 
     }
+    /**
+     * @return the circumradius of the triangle
+    */
     public double getCircumradius(){
         return circumradius; 
     }
-
+    /**
+     * @return a string that contains a triangle
+    */
      @Override
     public String toString() {
         return "Triangle[" + a.getId() + ", " + b.getId() + ", " + c.getId() + "]";

@@ -24,9 +24,16 @@ public class Hospital extends Point {
 		this.maxCapacity = maxCapacity;
 		this.name=name;
 	}
+	/**
+	 * @return  the name of the hospital
+	*/
 	public String getName(){
 		return name;
 	}
+	/**
+	 * set the name of the hospital
+	 * @param name name of the hospital
+	*/
 	public void setName(String name){
 		this.name=name;
 	}
@@ -42,6 +49,9 @@ public class Hospital extends Point {
 	public int getMaxCapacity() {
 		return maxCapacity;
 	}
+	/**
+	 * @return a string that contains a hospital
+	*/
 	@Override
 	public String toString() {
 		return "id ="+getId()+" name= "+getName() + " ("+getX()+" , "+getY()+") Capacity ="+ getMaxCapacity()+ " Users ="+users.size();
@@ -72,7 +82,7 @@ public class Hospital extends Point {
 	}
 	/**
 	 * add an user in the list of users
-	 * @param u
+	 * @param u user
 	 */
 	public void addUsers(User u){
 		if (u != null){

@@ -73,7 +73,9 @@ public class MainController {
         updateEngineViewport();
         updateStatusBar();
     }
-
+    /**
+     * update viewport
+    */
     private void updateEngineViewport() {
         engine.updateViewport(
             canvas.toWorldX(0),
