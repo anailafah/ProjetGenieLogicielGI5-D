@@ -18,7 +18,7 @@ public class UserCommands {
      */
     public static void add(String[] parts, VoronoiEngine engine) {
         if (parts.length < 3) {
-            System.out.println("Usage: add-u <x> <y>");
+            System.out.println("Usage: add-user <x> <y>");
             return;
         }
         try {
@@ -53,7 +53,7 @@ public class UserCommands {
      */
     public static void remove(String[] parts, VoronoiEngine engine) {
         if (parts.length < 2) {
-            System.out.println("Usage: remove-u <id>");
+            System.out.println("Usage: remove-user <id>");
             return;
         }
         try {
@@ -78,7 +78,7 @@ public class UserCommands {
      */
     public static void move(String[] parts, VoronoiEngine engine) {
         if (parts.length < 4) {
-            System.out.println("Usage: move-u <id> <newX> <newY>");
+            System.out.println("Usage: move-user <id> <newX> <newY>");
             return;
         }
         try {
@@ -108,7 +108,7 @@ public class UserCommands {
      */
     public static void random(String[] parts, VoronoiEngine engine) {
         if (parts.length < 2) {
-            System.out.println("Usage: random-u <count>");
+            System.out.println("Usage: random-user <count>");
             return;
         }
         try {

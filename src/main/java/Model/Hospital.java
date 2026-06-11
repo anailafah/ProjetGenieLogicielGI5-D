@@ -44,7 +44,7 @@ public class Hospital extends Point {
 	}
 	@Override
 	public String toString() {
-		return "Hospital "+getId() + " ("+getX()+" , "+getY()+") Users ="+users.size();
+		return "id ="+getId()+" name= "+getName() + " ("+getX()+" , "+getY()+") Capacity ="+ getMaxCapacity()+ " Users ="+users.size();
 	}
 	/**
 	 * @return true if the hospital is saturated 

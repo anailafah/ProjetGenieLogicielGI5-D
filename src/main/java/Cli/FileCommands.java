@@ -16,7 +16,7 @@ public class FileCommands {
      */
     public static void importCSV(String[] parts, VoronoiEngine engine) {
         if (parts.length < 2) {
-            System.out.println("Usage: import-csv <filename>");
+            System.out.println("Usage: import-csv <file>");
             System.out.println("Example: import-csv hospitals.csv");
             System.out.println("File must be in data/ folder");
             return;
@@ -37,9 +37,9 @@ public class FileCommands {
      * @param parts command parts
      * @param engine the Voronoi engine
      */
-    public static void export(String[] parts, VoronoiEngine engine) {
+    public static void exportBin(String[] parts, VoronoiEngine engine) {
         if (parts.length < 2) {
-            System.out.println("Usage: export <filename>");
+            System.out.println("Usage: export <file>");
             System.out.println("Example: export map.bin");
             return;
         }
@@ -60,7 +60,7 @@ public class FileCommands {
      */
     public static void importBin(String[] parts, VoronoiEngine engine) {
         if (parts.length < 2) {
-            System.out.println("Usage: import <filename>");
+            System.out.println("Usage: import <file>");
             System.out.println("Example: import map.bin");
             return;
         }

@@ -133,17 +133,11 @@ public class TriangulationDelaunay implements VoronoiEngine {
      */
     @Override
     public Hospital getNearestHospital(double x, double y) {
-        Hospital nearest = null;
-        double minDist = Double.MAX_VALUE;
-        Point p = new Point(-1, x, y);   
-        for (Hospital h : map.getHospitals()) {
-            double d = GeometryFunc.distance(h, p);
-            if (d < minDist) {
-                minDist = d;
-                nearest = h; 
-            }
-        }
-        return nearest;
+        if (map.getHospitals().isEmpty()) return null;
+        Point reference = new Point(-1, x, y);
+        List<Hospital> sorted = new ArrayList<Hospital>(map.getHospitals());
+        Collections.sort(sorted, new DistanceComparator(reference));
+        return sorted.get(0);
     }
 
     /**
@@ -227,18 +221,8 @@ public class TriangulationDelaunay implements VoronoiEngine {
         for (User u : map.getUserTot()) {
 
             List<Hospital> byDistance = new ArrayList<Hospital>(map.getHospitals());
+            Collections.sort(byDistance, new DistanceComparator(u));
             
-            for(int i=0;i<byDistance.size()-1;i++){
-                for(int j=0;j<byDistance.size()-1-i;j++){
-                    double distA = GeometryFunc.distance(u, byDistance.get(j)); 
-                    double distB = GeometryFunc.distance(u, byDistance.get(j+1)); 
-                    if (distA > distB){
-                        Hospital temp = byDistance.get(j);
-                        byDistance.set(j,byDistance.get(j+1));
-                        byDistance.set(j+1,temp);
-                    }
-                }
-            }
             u.setNextHospitals(byDistance);
             u.setClosestSite(byDistance.get(0));
             u.setRedirection(); 

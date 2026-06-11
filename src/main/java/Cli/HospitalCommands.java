@@ -11,13 +11,13 @@ import java.util.List;
 public class HospitalCommands {
 
     /**
-     * Adds a hospital. Usage: add-h <name> <x> <y> <capacity>
+     * Adds a hospital. Usage: add-hospital <name> <x> <y> <capacity>
      * @param parts command parts
      * @param engine the Voronoi engine
      */
     public static void add(String[] parts, VoronoiEngine engine) {
         if (parts.length < 5) {
-            System.out.println("Usage: add-h <name> <x> <y> <capacity>");
+            System.out.println("Usage: add-hospital <name> <x> <y> <capacity>");
             return;
         }
         try {
@@ -48,7 +48,7 @@ public class HospitalCommands {
      */
     public static void remove(String[] parts, VoronoiEngine engine) {
         if (parts.length < 2) {
-            System.out.println("Usage: remove-h <id>");
+            System.out.println("Usage: remove-hospital <id>");
             return;
         }
         try {
@@ -73,7 +73,7 @@ public class HospitalCommands {
      */
     public static void move(String[] parts, VoronoiEngine engine) {
         if (parts.length < 4) {
-            System.out.println("Usage: move-h <id> <newX> <newY>");
+            System.out.println("Usage: move-hospital <id> <newX> <newY>");
             return;
         }
         try {
