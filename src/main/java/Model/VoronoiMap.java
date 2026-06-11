@@ -3,7 +3,9 @@ package Model;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-
+/**
+ * represent the map
+*/
 public class VoronoiMap implements Serializable{
     private static final long serialVersionUID = 6L;
     private List<Hospital> hospitals;
@@ -21,6 +23,11 @@ public class VoronoiMap implements Serializable{
         zones     = new ArrayList<>();
         nextId    = 0;
     }
+    /**
+     * construct a map
+     * @param hospitals list of hospital
+     * @param userTot list of user
+    */
     public VoronoiMap(List<Hospital> hospitals, List<User> userTot){
         this.hospitals=hospitals;
         this.userTot=userTot;
@@ -52,7 +59,9 @@ public class VoronoiMap implements Serializable{
     public List<Triangle> getTriangles() { 
         return triangles;
      }
-     
+    /**
+     * @return list of zone
+    */
     public List<HospitalZone> getZones(){ 
         return zones; 
     }
@@ -92,6 +101,10 @@ public class VoronoiMap implements Serializable{
     public void setTriangles(List<Triangle> t){
         triangles = t; 
     }
+    /**
+     * set a list of the zones
+     * @param z list of zone
+    */
     public void setZones(List<HospitalZone> z){
         zones = z; 
     }
@@ -103,7 +116,9 @@ public class VoronoiMap implements Serializable{
         triangles.clear();
         zones.clear();
     }
-
+    /**
+     * @return a string that contains the map
+    */
     @Override
     public String toString() {
         return "VoronoiMap[hospitals=" + hospitals.size()

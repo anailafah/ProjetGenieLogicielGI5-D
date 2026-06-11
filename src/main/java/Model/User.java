@@ -14,9 +14,9 @@ public class User extends Point {
 	private int redirectionRank;
 	/**
 	 * creation of an user
-	 * @param id
-	 * @param x
-	 * @param y
+	 * @param id id of user
+	 * @param x x coordinate
+	 * @param y y coordinate
 	 */
 	public User(int id,double x,double y) {
 		super(id,x,y);
@@ -25,9 +25,17 @@ public class User extends Point {
 		this.isRedirected=false;
 		this.redirectionRank=-1;
 	}
+	/**
+	 * return the rank of the hospital in which user is redirectes
+	 * @return redirectionRank
+	*/
 	public int getRedirectionRank(){
 		return redirectionRank;
 	}
+	/**
+	 * set the rank of the hospital in which user is redirected
+	 * @param r rank
+	*/
 	private void setRedirectionRank(int r){
 		this.redirectionRank=r;
 	}
@@ -53,7 +61,7 @@ public class User extends Point {
 	}
 	/**
 	 * set the closest hospital to the user
-	 * @param site
+	 * @param site hospital
 	 */
 	public void setClosestSite(Hospital site) {
 		this.closestSite=site;
@@ -66,7 +74,7 @@ public class User extends Point {
 	}
 	/**
 	 * set the list of the closest hospitals 
-	 * @param listH
+	 * @param listH list of hospitals
 	 */
 	public void setNextHospitals(List<Hospital> listH){
 		if (listH == null) throw new IllegalArgumentException("Hospital list can't be empty");
@@ -74,6 +82,10 @@ public class User extends Point {
 		
 
 	}
+	/**
+	 * set the redirection of an user
+	 * @return rank if the user is redirected rank 0 if not
+	*/
 	public int setRedirection(){
 		int rank=0;
 		for(Hospital h: this.nextHospitals){
@@ -87,6 +99,9 @@ public class User extends Point {
 		}
     	return 0;
 	}
+	/**
+	 * @return a string that contains user
+	*/
 	@Override
 	public String toString() {
 		if (this.getIsRedirected()==true){

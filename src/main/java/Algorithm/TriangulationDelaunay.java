@@ -32,7 +32,14 @@ public class TriangulationDelaunay implements VoronoiEngine {
         this.vX2 = width;
         this.vY2 = height;
     }
-
+    /**
+     * update the view port
+     * @param x1
+     * @param y
+     * @param x2
+     * @param y2
+     * 
+    */
     @Override
     public void updateViewport(double x1, double y1, double x2, double y2) {
         this.vX1 = x1;
@@ -40,7 +47,9 @@ public class TriangulationDelaunay implements VoronoiEngine {
         this.vX2 = x2;
         this.vY2 = y2;
     }
-
+    /**
+     * add an user
+    */
     @Override
     public User addUser(double x,double y){
         User u = new User(map.generateId(), x, y);
@@ -48,11 +57,18 @@ public class TriangulationDelaunay implements VoronoiEngine {
         recompute();
         return u;
     }
+    /**
+     * remove an user
+    */
     @Override
     public void removeUser(User u){
         map.removeUsertot(u);
         recompute();
     }
+    /**
+     * move an user to a new coordinates
+    */
+   @Override
     public void moveUser(User u,double newX,double newY){
         u.setX(newX);
         u.setY(newY);
