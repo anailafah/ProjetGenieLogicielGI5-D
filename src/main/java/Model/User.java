@@ -87,4 +87,12 @@ public class User extends Point {
 		}
     	return 0;
 	}
+	@Override
+	public String toString() {
+		if (this.getIsRedirected()==true){
+			return "userId: "+getId()+"("+getX()+","+getY()+")"+ "hospital : "+getClosestSite() + "redirerction:"+getRedirectionRank();
+			
+		}
+		return "userId: "+getId()+"("+getX()+","+getY()+")"+ "hospital : "+getClosestSite();
+	}
 }
