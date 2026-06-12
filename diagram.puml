@@ -12,18 +12,26 @@ package "Model" {
         + getY() : double
         + setX(x : double) : void
         + setY(y : double) : void
+        + toString() : String
+        + isInCircumcircle(a: Point, b : Point, c : Point) : boolean
     }
 
     class Hospital {
         - name : String
         - maxCapacity : int
         - users : List<User>
+        + Hospital(name : String, x : double, y : double, maxCapacity : int)
+        + getName() : String
+        + setName(name : String) : void
+        + getMaxCapacity() : int
         + isSaturated() : boolean
         + getSaturationRate() : double
         + getAvailableRoom() : int
         + addUsers(u : User) : void
         + removeUsers(u : User) : void
         + getUsers() : List<User>
+        + toString() : String
+
     }
 
     class User {
@@ -31,6 +39,13 @@ package "Model" {
         - nextHospitals : List<Hospital>
         - isRedirected : boolean
         - redirectionRank : int
+        + User(id : int, x : double, y : double)
+        + getX() : double
+        + getY() : double
+        + getId() : int
+        + setX(x : double) : void
+        + setY(y : double) : void
+        + setId(id : int) : void
         + getClosestSite() : Hospital
         + setClosestSite(h : Hospital) : void
         + getIsRedirected() : boolean
@@ -38,6 +53,8 @@ package "Model" {
         + getRedirectionRank() : int
         + setNextHospitals(list : List) : void
         + setRedirection() : int
+        + toString() : String
+
     }
 
     class Triangle {
@@ -46,14 +63,16 @@ package "Model" {
         - c : Hospital
         - circumcenter : Point
         - circumradius : double
+        + Triangle(a : Hospital, b : Hospital, c : Hospital)
+        + computeCircumcenter() : void
+        + sharesEdge(other : Triangle) : boolean
         + isInCircumcircle(p : Point) : boolean
         + getCircumcenter() : Point
         + getCircumradius() : double
-        + getArea() : double
-        + getImbalance() : int
         + getA() : Hospital
         + getB() : Hospital
         + getC() : Hospital
+        + toString() : String
     }
 
     class HospitalZone {
@@ -65,11 +84,22 @@ package "Model" {
         - avgDistance : double
         - redirectedCount : int
         - centerHospital : Hospital
+        - nbUsers : int
+        - computStats() : void
+        - dist(u:User) : double
+        + HospitalZone(vertices : List<Point>, h : Hospital)
+        - computePolygonArea() : double
+        + getNbUsers() : int
         + getArea() : double
         + getDensity() : double
         + getVertices() : List<Point>
         + getRedirectedCount() : int
         + getCenterHospital() : Hospital
+        + setCenterHospital(h : Hospital) : void
+        + getMinDistance() : double
+        + getMaxDistance() : double
+        + getAvgDistance() : double
+        + toString() : String
     }
 
     class VoronoiMap {
@@ -78,6 +108,8 @@ package "Model" {
         - triangles : List<Triangle>
         - zones : List<HospitalZone>
         - nextId : int
+        + VoronoiMap()
+        + VoronoiMap(hospitals : List<Hospital>, userTot : List<User>)
         + generateId() : int
         + addHospital(h : Hospital) : void
         + removeHospital(h : Hospital) : void
@@ -90,6 +122,7 @@ package "Model" {
         + setTriangles(t : List) : void
         + setZones(z : List) : void
         + clearComputed() : void
+        + toString() : String
     }
 }
 
@@ -105,18 +138,39 @@ package "Algorithm" {
         + getZones() : List<HospitalZone>
         + getNearestHospital(x : double, y : double) : Hospital
         + getMap() : VoronoiMap
+        + updateViewPort(x1 : double, y1 : double, x2 : double, y2 : double) : void
+    }
+    class AngleComparator {
+        - center : Hospital
+        + AngleComparator(center : Hospital)
+        + compare(p1 : Point, p2 : Point) : int
+    }
+    class DistanceComparator {
+        - center : Point
+        + DistanceComparator(center : Point)
+        + compare(p1 : Point, p2 : Point) : int
     }
 
     class TriangulationDelaunay {
         - map : VoronoiMap
         - width : double
         - height : double
-        + addHospital(x : double, y : double, name : String, maxCapacity : int) : Hospital
+        - vX1 : double
+        - vY1 : double
+        - vX2 : double
+        - vY2 : double
+        + TriangulationDelaunay( width : double, height : double)
+        + updateViewPort(x1 : double, y1 : double, x2 : double, y2 : double) : void
+        + addHospital(name : String,x : double, y : double, maxCapacity : int) : Hospital
         + removeHospital(h : Hospital) : void
         + moveHospital(h : Hospital, x : double, y : double) : void
         + addUser(x : double, y : double) : User
         + removeUser(u : User) : void
         + moveUser(u : User, x : double, y : double) : void
+        + getTriangles() : List<Triangle>
+        + getZones() : List<HospitalZone>
+        + getNearestHospital(x : double, y : double) : Hospital
+        + getMap() : VoronoiMap
         + recompute() : void
         - updatePatientLinks() : void
         - buildVoronoiZones() : void
@@ -124,12 +178,8 @@ package "Algorithm" {
         - triangleContainsEdge(t : Triangle, h1 : Hospital, h2 : Hospital) : boolean
     }
 
-    class VoronoiEngineStub {
-        + getTriangles() : List<Triangle>
-        + getZones() : List<HospitalZone>
-    }
-
     class ImportExportMap {
+        - {static} buildPath(fileName : String) : String
         + {static} exportBinary(map : VoronoiMap, fileName : String) : void
         + {static} importBinary(fileName : String) : VoronoiMap
         + {static} importHospitalsCSV(fileName : String, map : VoronoiMap) : int
@@ -137,7 +187,6 @@ package "Algorithm" {
 
     class GeometryFunc {
         + {static} distance(p1 : Point, p2 : Point) : double
-        + {static} triangleArea(a : Point, b : Point, c : Point) : double
     }
 }
 
@@ -150,19 +199,54 @@ package "Interface" {
     }
 
     class MainController {
-        + engine : VoronoiEngine
-        + canvas : MapCanvas
-        + scale : double
-        + selectedHospital : Hospital
+        - mapPane : Pane
+        - checkDelaunay : CheckBox
+        - checkZones : CheckBox
+        - checkLinks : CheckBox
+        - labelHospitalName : Label
+        - labelStats : Label
+        - progressSaturation : ProgressBar
+        - labelNbUsers : Label
+        - labelNbHospitals : Label
+        - labelNbTriangles : Label
+        - labelZoom : Label
+        - labelMessage : Label
+        - engine : VoronoiEngine
+        - canvas : MapCanvas
+        - scale : double
+        - selectedHospital : Hospital
+        - selectedUser : User
+        - draggedUser : User
+        - draggedHospital : Hospital
+        - isDragging : boolean
+        - dragStartX : double
+        - dragStartY : double
         + setEngine(engine : VoronoiEngine) : void
         + init(width : double, height : double) : void
+        - updateEngineViewport() : void
+        - onMapClick(event : MouseEvent) : void
+        - onMapDragged(event : MouseEvent) : void
+        - onMapPressed(event : MouseEvent) : void
+        - onMapScroll(event : ScrollEvent) : void
+        - onRandomUsers() : void
+        - onImportCSV() : void
+        - onExportBin() : void
+        - onImportBin() : void
+        - onClearAll() : void
+        - onToggleDelaunay() : void
+        - onToggleZones() : void
+        - onToggleLinks() : void
+        - onAbout() : void
         + selectHospital(h : Hospital) : void
         + clearSelection() : void
         + updateSidePanel() : void
         + updateStatusBar() : void
         + showMessage(msg : String) : void
+        + showInputDialog( prompt : String,defaultValue : String) : String
         + getHospitalAt(wx : double, wy : double) : Hospital
         + getUserAt(wx : double, wy : double) : User
+        + clearUserSelection() : void
+        + updateUserPanel(): void
     }
 
     class MapCanvas {
@@ -173,6 +257,10 @@ package "Interface" {
         - offsetX : double
         - offsetY : double
         - scale : double
+        - selectedHospital : Hospital
+        - selectedUser : User
+        - ZONE_COLOR : List<Color>
+        + MapCanvas(width : double, height : double, engine : VoronoiEngine)
         + redraw() : void
         + toScreenX(wx : double) : double
         + toScreenY(wy : double) : double
@@ -180,6 +268,16 @@ package "Interface" {
         + toWorldY(sy : double) : double
         + setScale(scale : double) : void
         + addOffset(dx : double, dy : double) : void
+        + drawZones(gc : GraphicsContext, zones : List<HospitalZone>) : void
+        + drawDelaunay(gc : GraphicsContext, triangles : List<Triangle>) : void
+        + drawHospitals(gc : GraphicsContext, hospitals : List<Hospital>) : void
+        + drawUsers(gc : GraphicsContext, users : List<User>) : void
+        + set()
+        + get()
+    }
+    class CanvasResizeListener{
+        - canvas : MapCanvas;
+        + CanvasResizeListener(canvas : MapCanvas)
     }
 }
 
@@ -191,6 +289,7 @@ package "Cli" {
         + {static} list(engine : VoronoiEngine) : void
         + {static} stats(parts : String[], engine : VoronoiEngine) : void
         + {static} nearest(parts : String[], engine : VoronoiEngine) : void
+
     }
 
     class UserCommands {
@@ -204,7 +303,7 @@ package "Cli" {
 
     class FileCommands {
         + {static} importCSV(parts : String[], engine : VoronoiEngine) : void
-        + {static} export(parts : String[], engine : VoronoiEngine) : void
+        + {static} exportBin(parts : String[], engine : VoronoiEngine) : void
         + {static} importBin(parts : String[], engine : VoronoiEngine) : void
     }
 
@@ -218,31 +317,44 @@ class CommandLineMain {
     + {static} engine : VoronoiEngine
     + {static} scanner : Scanner
     + {static} main(args : String[]) : void
+    + {static} printHelp() : void
+    + {static} cmdClear() : void
 }
 
-' ═══ Relations Model ═══
 Hospital --|> Point
 User --|> Point
-HospitalZone --|> Hospital
+User --> Hospital
+HospitalZone --> Hospital
+Hospital "1" --> "0..*" User
+User "1" --> "1..*" Hospital
 
-' ═══ Relations Algorithm ═══
-TriangulationDelaunay ..|> VoronoiEngine
-VoronoiEngineStub ..|> VoronoiEngine
-TriangulationDelaunay --> VoronoiMap
+HospitalZone *-- Point
+Triangle *-- Point
+
 VoronoiMap o-- Hospital
 VoronoiMap o-- User
 VoronoiMap o-- Triangle
 VoronoiMap o-- HospitalZone
+
+TriangulationDelaunay ..|> VoronoiEngine
+VoronoiEngineStub ..|> VoronoiEngine
+TriangulationDelaunay --> VoronoiMap
+
 Triangle --> Hospital
 User --> Hospital
 
-' ═══ Relations Interface ═══
+TriangulationDelaunay ..> DistanceComparator : <<uses>>
+TriangulationDelaunay ..> AngleComparator    : <<uses>>
+DistanceComparator ..> Point    : <<compares>>
+AngleComparator    ..> Point    : <<compares>>
+DistanceComparator ..|> "Comparator<Point>"
+AngleComparator    ..|> "Comparator<Point>"
+
 MainApp ..> MainController
 MainApp ..> VoronoiEngine
 MainController *-- MapCanvas
 MainController ..> VoronoiEngine
 
-' ═══ Relations CLI ═══
 CommandLineMain ..> VoronoiEngine
 CommandLineMain ..> HospitalCommands
 CommandLineMain ..> UserCommands

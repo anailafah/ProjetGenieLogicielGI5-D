@@ -15,7 +15,7 @@ public class MapCanvas extends Canvas {
 
     private VoronoiEngine engine;
     private Hospital selectedHospital;
-    private User selectedUser = null;
+    private User selectedUser;
 
 
     private boolean showDelaunay = false;
