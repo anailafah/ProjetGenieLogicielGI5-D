@@ -6,14 +6,22 @@ import Model.*;
 import java.util.List;
 
 /**
- * CLI commands related to hospitals.
+ * Utility class that contains command line actions related to hospitals.
  */
 public class HospitalCommands {
 
     /**
-     * Adds a hospital. Usage: add-hospital <name> <x> <y> <capacity>
-     * @param parts command parts
-     * @param engine the Voronoi engine
+     * Private constructor to prevent instantiation of this utility class.
+     */
+    private HospitalCommands() {
+    }
+
+    /**
+     * Adds a hospital to the map.
+     * Usage: {@code add-hospital <name> <x> <y> <capacity>}.
+     *
+     * @param parts command parts entered by the user
+     * @param engine the Voronoi engine used by the application
      */
     public static void add(String[] parts, VoronoiEngine engine) {
         if (parts.length < 5) {
@@ -21,9 +29,9 @@ public class HospitalCommands {
             return;
         }
         try {
-            String name  = parts[1];
-            double x     = Double.parseDouble(parts[2]);
-            double y     = Double.parseDouble(parts[3]);
+            String name = parts[1];
+            double x = Double.parseDouble(parts[2]);
+            double y = Double.parseDouble(parts[3]);
             int capacity = Integer.parseInt(parts[4]);
 
             if (capacity <= 0) {
@@ -31,7 +39,8 @@ public class HospitalCommands {
                 return;
             }
 
-            Hospital h = engine.addHospital(name,x, y, capacity);
+            Hospital h = engine.addHospital(x, y, capacity);
+            h.setName(name);
             System.out.println("Hospital added: " + h);
 
         } catch (NumberFormatException e) {
@@ -42,9 +51,11 @@ public class HospitalCommands {
     }
 
     /**
-     * Removes a hospital by ID. Usage: remove-h <id>
-     * @param parts command parts
-     * @param engine the Voronoi engine
+     * Removes a hospital by its identifier.
+     * Usage: {@code remove-hospital <id>}.
+     *
+     * @param parts command parts entered by the user
+     * @param engine the Voronoi engine used by the application
      */
     public static void remove(String[] parts, VoronoiEngine engine) {
         if (parts.length < 2) {
@@ -67,9 +78,11 @@ public class HospitalCommands {
     }
 
     /**
-     * Moves a hospital. Usage: move-h <id> <newX> <newY>
-     * @param parts command parts
-     * @param engine the Voronoi engine
+     * Moves a hospital to a new position.
+     * Usage: {@code move-hospital <id> <newX> <newY>}.
+     *
+     * @param parts command parts entered by the user
+     * @param engine the Voronoi engine used by the application
      */
     public static void move(String[] parts, VoronoiEngine engine) {
         if (parts.length < 4) {
@@ -77,7 +90,7 @@ public class HospitalCommands {
             return;
         }
         try {
-            int    id   = Integer.parseInt(parts[1]);
+            int id = Integer.parseInt(parts[1]);
             double newX = Double.parseDouble(parts[2]);
             double newY = Double.parseDouble(parts[3]);
 
@@ -97,8 +110,9 @@ public class HospitalCommands {
     }
 
     /**
-     * Lists all hospitals.
-     * @param engine the Voronoi engine
+     * Lists all hospitals currently stored in the map.
+     *
+     * @param engine the Voronoi engine used by the application
      */
     public static void list(VoronoiEngine engine) {
         List<Hospital> hospitals = engine.getMap().getHospitals();
@@ -114,10 +128,16 @@ public class HospitalCommands {
         for (Hospital h : hospitals) {
             String status;
             double rate = h.getSaturationRate();
-            if (rate >= 100)      status = "FULL";
-            else if (rate >= 75)  status = "ALMOST FULL";
-            else if (rate >= 50)  status = "HALF FULL";
-            else                  status = "AVAILABLE";
+
+            if (rate >= 100) {
+                status = "FULL";
+            } else if (rate >= 75) {
+                status = "ALMOST FULL";
+            } else if (rate >= 50) {
+                status = "HALF FULL";
+            } else {
+                status = "AVAILABLE";
+            }
 
             System.out.printf("  [id=%-2d] %-20s pos=(%-6.1f, %-6.1f)  %d/%d  [%s]%n",
                 h.getId(),
@@ -131,9 +151,11 @@ public class HospitalCommands {
     }
 
     /**
-     * Shows statistics for a hospital. Usage: stats <id>
-     * @param parts command parts
-     * @param engine the Voronoi engine
+     * Shows statistics for a hospital.
+     * Usage: {@code stats <id>}.
+     *
+     * @param parts command parts entered by the user
+     * @param engine the Voronoi engine used by the application
      */
     public static void stats(String[] parts, VoronoiEngine engine) {
         if (parts.length < 2) {
@@ -150,7 +172,9 @@ public class HospitalCommands {
 
             int redirected = 0;
             for (User u : h.getUsers()) {
-                if (u.getIsRedirected()) redirected++;
+                if (u.getIsRedirected()) {
+                    redirected++;
+                }
             }
 
             System.out.println("Stats for: " + h.getName());
@@ -186,9 +210,11 @@ public class HospitalCommands {
     }
 
     /**
-     * Finds the nearest hospital to a point. Usage: nearest <x> <y>
-     * @param parts command parts
-     * @param engine the Voronoi engine
+     * Finds the nearest hospital to a given point.
+     * Usage: {@code nearest <x> <y>}.
+     *
+     * @param parts command parts entered by the user
+     * @param engine the Voronoi engine used by the application
      */
     public static void nearest(String[] parts, VoronoiEngine engine) {
         if (parts.length < 3) {
