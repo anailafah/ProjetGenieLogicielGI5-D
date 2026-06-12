@@ -1,0 +1,10 @@
+def f1(n):
+
+    for i in range(n):
+        compteur += 1
+    return compteur
+
+# Hypothèse : valeur initiale de compteur = 0
+print(f1(5))
+compteur = 90
+print(f1(5))

@@ -91,11 +91,11 @@ public class VoronoiEngineStub implements VoronoiEngine {
 
     @Override
     public void updateViewport(double x1, double y1, double x2, double y2) {
-        // Non implémenté dans le stub
+        // Not implemented in the stub
     }
 
     @Override
     public void recompute() {
-        // Non implémenté dans le stub
+        // Not implemented in the stub
     }
 }

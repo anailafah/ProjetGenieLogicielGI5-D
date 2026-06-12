@@ -194,7 +194,7 @@ public class TriangulationDelaunay implements VoronoiEngine {
 
             List<Hospital[]> polygon = new ArrayList<>();
             for (Triangle t : badTriangles) {
-                Hospital[][] edges = { {t.getA(), t.getB()}, {t.getB(), t.getC()}, {t.getC(), t.getA()} }; //liste des 
+                Hospital[][] edges = { {t.getA(), t.getB()}, {t.getB(), t.getC()}, {t.getC(), t.getA()} }; // List of edges
                 for (Hospital[] edge : edges) {
                     boolean shared = false; 
                     for (Triangle other : badTriangles) {
