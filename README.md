@@ -10,14 +10,14 @@ If a hospital is saturated, the patient is redirected to the next closest availa
 git clone https://github.com/anailafah/ProjetGenieLogicielGI5-D.git
 cd ProjetGenieLogicielGI5-D
 ```
-to run the application :
-### Graphical interface
+## to run the application :
+Graphical interface
 
 ```bash
 mvn compile
 mvn javafx:run
 ```
-### Command line interface
+Command line interface
 
 ```bash
 mvn compile
