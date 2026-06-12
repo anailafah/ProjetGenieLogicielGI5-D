@@ -2,13 +2,15 @@ package Model;
 
 import java.io.Serializable;
 import java.util.List;
-/**
- * represent a voronoi zone
-*/
 
-public class HospitalZone implements Serializable{
+/**
+ * Represents a Voronoi zone associated with a hospital.
+ */
+public class HospitalZone implements Serializable {
+
     private static final long serialVersionUID = 5L;
-	private List<Point> vertices;
+
+    private List<Point> vertices;
     private double area;
     private double density;
     private double minDistance;
@@ -17,22 +19,29 @@ public class HospitalZone implements Serializable{
     private int redirectedCount;
     private Hospital centerHospital;
     private int nbUser;
-    /**
-     * construction of a hospital zone
-     * @param hospital 
-     * @param vertices
-     */
-    public HospitalZone(List<Point> vertices,Hospital h) {
-        this.vertices = vertices;
-        this.redirectedCount=0;
-        this.centerHospital=h;
-        this.nbUser=h.getUsers().size();
-        computeStats();
-        this.density=nbUser/area;
 
-    }
     /**
-     * computes all statistics for this zone
+     * Creates a hospital zone with its vertices and center hospital.
+     *
+     * @param vertices the list of vertices that define the zone
+     * @param h the hospital associated with the zone
+     */
+    public HospitalZone(List<Point> vertices, Hospital h) {
+        this.vertices = vertices;
+        this.redirectedCount = 0;
+        this.centerHospital = h;
+        this.nbUser = h.getUsers().size();
+        computeStats();
+
+        if (area == 0) {
+            this.density = 0;
+        } else {
+            this.density = nbUser / area;
+        }
+    }
+
+    /**
+     * Computes all statistics for this zone.
      */
     private void computeStats() {
         List<User> users = this.centerHospital.getUsers();
@@ -43,121 +52,171 @@ public class HospitalZone implements Serializable{
             maxDistance = 0;
             avgDistance = 0;
         } else {
-            double min = Double.MAX_VALUE, max = 0, sum = 0;
+            double min = Double.MAX_VALUE;
+            double max = 0;
+            double sum = 0;
+
             for (User u : users) {
                 double d = dist(u);
-                if (d < min) min = d;
-                if (d > max) max = d;
+
+                if (d < min) {
+                    min = d;
+                }
+
+                if (d > max) {
+                    max = d;
+                }
+
                 sum += d;
-                if (u.getIsRedirected()) redirectedCount++;
+
+                if (u.getIsRedirected()) {
+                    redirectedCount++;
+                }
             }
+
             this.minDistance = min;
             this.maxDistance = max;
             this.avgDistance = sum / users.size();
         }
+
         this.area = computePolygonArea();
     }
+
     /**
-     * @return nbUser
+     * Returns the number of users assigned to the zone.
+     *
+     * @return the number of users
      */
-    public int getNbUser(){
+    public int getNbUser() {
         return nbUser;
     }
 
     /**
-     * @return density
+     * Returns the density of users in the zone.
+     *
+     * @return the user density
      */
-    public double getDensity(){
+    public double getDensity() {
         return density;
     }
-        
+
     /**
-     * @param u users
-     * @return distance between an user and hospital
+     * Computes the distance between a user and the center hospital.
+     *
+     * @param u the user used for the distance computation
+     * @return the distance between the user and the center hospital
      */
-     private double dist(User u) {
+    private double dist(User u) {
         double dx = this.centerHospital.getX() - u.getX();
         double dy = this.centerHospital.getY() - u.getY();
         return Math.sqrt(dx * dx + dy * dy);
     }
-    
+
     /**
      * Computes the polygon area using the shoelace formula.
-     * @return the area
-    */
+     *
+     * @return the area of the polygon
+     */
     private double computePolygonArea() {
-        if (vertices == null || vertices.size() < 3) return 0;
+        if (vertices == null || vertices.size() < 3) {
+            return 0;
+        }
+
         double sumRight = 0;
         double sumLeft = 0;
         int n = vertices.size();
+
         for (int i = 0; i < n; i++) {
             Point p1 = vertices.get(i);
             Point p2 = vertices.get((i + 1) % n);
-            sumRight += p1.getX() * p2.getY(); 
+            sumRight += p1.getX() * p2.getY();
         }
+
         for (int i = 0; i < n; i++) {
             Point p1 = vertices.get(i);
             Point p2 = vertices.get((i + 1) % n);
             sumLeft += p2.getX() * p1.getY();
         }
-        return Math.abs(sumRight-sumLeft) / 2.0;
+
+        return Math.abs(sumRight - sumLeft) / 2.0;
     }
+
     /**
-     * set an hospital as the center of the zone
-     * @param h hospital
-    */
-    public void setCenterHospital(Hospital h){
-        this.centerHospital=h;
+     * Updates the center hospital of the zone.
+     *
+     * @param h the new center hospital
+     */
+    public void setCenterHospital(Hospital h) {
+        this.centerHospital = h;
     }
+
     /**
-     * @return centerHospital
-    */
-    public Hospital getCenterHospital(){
+     * Returns the center hospital of the zone.
+     *
+     * @return the center hospital
+     */
+    public Hospital getCenterHospital() {
         return centerHospital;
     }
 
-    /** 
-     * Refreshes statistics after modifications. 
-    */
-    public void refresh() { 
-        computeStats(); 
-    }
     /**
-     * @return list of vertices of the zone
-    */
-    public List<Point> getVertices(){ 
-        return vertices; 
+     * Refreshes statistics after modifications.
+     */
+    public void refresh() {
+        computeStats();
     }
+
     /**
-     * @return area of the zone
-    */
-    public double getArea(){ 
+     * Returns the vertices of the zone.
+     *
+     * @return the list of vertices of the zone
+     */
+    public List<Point> getVertices() {
+        return vertices;
+    }
+
+    /**
+     * Returns the area of the zone.
+     *
+     * @return the area of the zone
+     */
+    public double getArea() {
         return area;
     }
+
     /**
-     * @return minDistance
-    */
-    public double getMinDistance(){
-        return minDistance; 
+     * Returns the minimum distance between the center hospital and users.
+     *
+     * @return the minimum distance
+     */
+    public double getMinDistance() {
+        return minDistance;
     }
+
     /**
-     * @return maxDistance
-    */
-    public double getMaxDistance(){
-        return maxDistance; 
+     * Returns the maximum distance between the center hospital and users.
+     *
+     * @return the maximum distance
+     */
+    public double getMaxDistance() {
+        return maxDistance;
     }
+
     /**
-     * @return avgDistance
-    */
-    public double getAvgDistance(){
-        return avgDistance; 
+     * Returns the average distance between the center hospital and users.
+     *
+     * @return the average distance
+     */
+    public double getAvgDistance() {
+        return avgDistance;
     }
+
     /**
-     * @return the count of user redirected in the zone
-    */
-    public int getRedirectedCount(){ 
-        return redirectedCount; 
+     * Returns the number of redirected users in the zone.
+     *
+     * @return the count of redirected users in the zone
+     */
+    public int getRedirectedCount() {
+        return redirectedCount;
     }
 }
-
-
