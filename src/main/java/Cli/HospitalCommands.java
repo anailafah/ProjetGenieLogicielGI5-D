@@ -39,8 +39,7 @@ public class HospitalCommands {
                 return;
             }
 
-            Hospital h = engine.addHospital(x, y, capacity);
-            h.setName(name);
+            Hospital h = engine.addHospital(name, x, y, capacity);
             System.out.println("Hospital added: " + h);
 
         } catch (NumberFormatException e) {
