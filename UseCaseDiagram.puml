@@ -1,0 +1,101 @@
+@startuml Use Case Diagram - Voronoi Hospital
+
+left to right direction
+
+    package "Hospital Management" {
+        usecase "Add a hospital" as UC1
+        usecase "Remove a hospital" as UC2
+        usecase "Move a hospital" as UC3
+        usecase "Import hospitals CSV" as UC4
+        usecase "Select a hospital" as UC5
+        usecase "View hospital stats" as UC6
+    }
+
+    package "User Management" {
+        usecase "Add an user (Ctrl+click)" as UC7
+        usecase "Remove an user" as UC8
+        usecase "Move an user" as UC9
+        usecase "Add random users" as UC10
+        usecase "Select a user" as UC11
+        usecase "View user info" as UC12
+        usecase "View redirection" as UC13
+    }
+
+    package "Visualization" {
+        usecase "Display Voronoi zones" as UC14
+        usecase "Display Delaunay triangulation" as UC15
+        usecase "Display users links" as UC16
+        usecase "Zoom in / out" as UC17
+        usecase "Pan the view" as UC18
+        usecase "Highlight selected zone" as UC19
+    }
+
+    package "Files" {
+        usecase "Export full map (.bin)" as UC20
+        usecase "Import full map (.bin)" as UC21
+        usecase "Import hospital as csv" as UC22
+    }
+
+    package "Command Line Interface" {
+        usecase "Add hospital (CLI)" as UC23
+        usecase "Remove hospital (CLI)" as UC24
+        usecase "Move hospital (CLI)" as UC25
+        usecase "List hospitals (CLI)" as UC26
+        usecase "Show stats (CLI)" as UC27
+        usecase "Find nearest hospital (CLI)" as UC28
+        usecase "Add user (CLI)" as UC29
+        usecase "Remove user (CLI)" as UC30
+        usecase "Move user (CLI)" as UC31
+        usecase "Add random users (CLI)" as UC32
+        usecase "List users (CLI)" as UC33
+        usecase "Show triangles (CLI)" as UC34
+        usecase "Import CSV (CLI)" as UC35
+        usecase "Export map (CLI)" as UC36
+        usecase "Import map (CLI)" as UC37
+    }
+
+
+actor "User" as U
+
+U --> UC1
+U --> UC2
+U --> UC3
+U --> UC4
+U --> UC5
+U --> UC7
+U --> UC8
+U --> UC9
+U --> UC10
+U --> UC11
+U --> UC14
+U --> UC15
+U --> UC16
+U --> UC17
+U --> UC18
+U --> UC20
+U --> UC21
+U --> UC22
+U --> UC23
+U --> UC24
+U --> UC25
+U --> UC26
+U --> UC27
+U --> UC28
+U --> UC29
+U --> UC30
+U --> UC31
+U --> UC32
+U --> UC33
+U --> UC34
+U --> UC35
+U --> UC36
+U --> UC37
+
+UC5  ..> UC6  : <<include>>
+UC11 ..> UC12 : <<include>>
+UC11 ..> UC13 : <<include>>
+UC19 ..> UC5  : <<include>>
+UC15 ..> UC14 : <<extend>>
+UC16 ..> UC14 : <<extend>>
+
+@enduml
