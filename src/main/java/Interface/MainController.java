@@ -456,24 +456,34 @@ public class MainController {
 
         labelHospitalName.setText(selectedHospital.getName());
 
-        double rate = selectedHospital.getSaturationRate();
+        double rate = selectedHospital.getSaturationRate()/100;
+        progressSaturation.setProgress(0);
         progressSaturation.setProgress(rate);
 
-        if (rate >= 100)
+        if (rate >= 1)
             progressSaturation.setStyle("-fx-accent: #CC2200;");
-        else if (rate >= 75)
+        else if (rate >= 0.75)
             progressSaturation.setStyle("-fx-accent: #E07700;");
         else
             progressSaturation.setStyle("-fx-accent: #1D9E75;");
 
-        long redirected = selectedHospital.getUsers().stream()
-            .filter(User::getIsRedirected).count();
-
+        int redirected = 0;
+        for (User u : selectedHospital.getUsers()) {
+            if (u.getIsRedirected()) redirected++;
+        }
+        double area = 0;
+        for (HospitalZone zone : engine.getZones()) {
+            if (zone.getCenterHospital() == selectedHospital) {
+                area = zone.getArea();
+                break;
+            }
+        }
         labelStats.setText(
             "Users : " + selectedHospital.getUsers().size()+ " / " + selectedHospital.getMaxCapacity() + "\n" +
             "Saturation : " + String.format("%.1f", selectedHospital.getSaturationRate()) + "%\n" +
             "AvailableRoom : " + selectedHospital.getAvailableRoom() + "\n" +
-            "Redirected : " + redirected
+            "Redirected : " + redirected + "\n"+
+            "Zone area : " + String.format("%.1f", area) + " px²"
         );
     }
 

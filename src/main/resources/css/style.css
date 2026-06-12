@@ -1,0 +1,180 @@
+.root {
+    -fx-font-family: "Arial";
+    -fx-font-size: 13px;
+    -fx-background-color: #F5F4F0;
+}
+
+.menu-bar {
+    -fx-background-color: #E8E6E0;
+    -fx-border-color: #D3D1C7;
+    -fx-border-width: 0 0 1 0;
+    -fx-padding: 2px 0;
+}
+
+.menu {
+    -fx-text-fill: #333333;
+}
+
+.menu:hover {
+    -fx-background-color: #D3D1C7;
+}
+
+.menu:showing {
+    -fx-background-color: #D3D1C7;
+}
+
+.menu-item {
+    -fx-background-color: white;
+    -fx-text-fill: #333333;
+    -fx-padding: 6px 16px;
+}
+
+.menu-item:hover {
+    -fx-background-color: #E6F1FB;
+    -fx-text-fill: #0C447C;
+}
+
+.context-menu {
+    -fx-background-color: white;
+    -fx-border-color: #D3D1C7;
+    -fx-border-radius: 6px;
+    -fx-background-radius: 6px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 8, 0, 0, 2);
+}
+
+.border-pane > .split-pane > .split-pane-divider {
+    -fx-background-color: #D3D1C7;
+}
+
+#labelHospitalName {
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1D1C1A;
+    -fx-wrap-text: true;
+}
+
+#labelStats {
+    -fx-font-size: 12px;
+    -fx-text-fill: #5F5E5A;
+    -fx-wrap-text: true;
+}
+
+#labelMessage {
+    -fx-font-size: 11px;
+    -fx-text-fill: #993C1D;
+}
+
+#labelNbHospitals,
+#labelNbUsers,
+#labelNbTriangles,
+#labelZoom {
+    -fx-font-size: 11px;
+    -fx-text-fill: #5F5E5A;
+}
+
+.label {
+    -fx-text-fill: #333333;
+}
+
+.button {
+    -fx-background-color: #E8E6E0;
+    -fx-border-color: #D3D1C7;
+    -fx-border-radius: 6px;
+    -fx-background-radius: 6px;
+    -fx-cursor: hand;
+    -fx-text-fill: #333333;
+    -fx-padding: 6px 12px;
+}
+
+.button:hover {
+    -fx-background-color: #D3D1C7;
+}
+
+.button:pressed {
+    -fx-background-color: #B4B2A9;
+}
+
+.check-box {
+    -fx-font-size: 12px;
+    -fx-text-fill: #333333;
+}
+
+.check-box .box {
+    -fx-background-color: white;
+    -fx-border-color: #D3D1C7;
+    -fx-border-radius: 4px;
+    -fx-background-radius: 4px;
+}
+
+.check-box:selected .box {
+    -fx-background-color: #1D9E75;
+    -fx-border-color: #0F6E56;
+}
+
+.check-box:selected .mark {
+    -fx-background-color: white;
+}
+
+.separator .line {
+    -fx-border-color: #D3D1C7;
+}
+
+.dialog-pane {
+    -fx-background-color: #F5F4F0;
+    -fx-font-family: "Arial";
+    -fx-font-size: 13px;
+}
+
+.dialog-pane .button {
+    -fx-background-color: #E8E6E0;
+    -fx-border-color: #D3D1C7;
+    -fx-border-radius: 6px;
+    -fx-background-radius: 6px;
+}
+
+.dialog-pane .button:hover {
+    -fx-background-color: #D3D1C7;
+}
+
+.text-field {
+    -fx-background-color: white;
+    -fx-border-color: #D3D1C7;
+    -fx-border-radius: 4px;
+    -fx-background-radius: 4px;
+    -fx-padding: 4px 8px;
+}
+
+.text-field:focused {
+    -fx-border-color: #1D9E75;
+}
+
+.scroll-bar {
+    -fx-background-color: #F0EEE8;
+}
+
+.scroll-bar .thumb {
+    -fx-background-color: #D3D1C7;
+    -fx-background-radius: 4px;
+}
+
+.scroll-bar .thumb:hover {
+    -fx-background-color: #B4B2A9;
+}
+#sidePanel {
+    -fx-background-color: #F0EEE8;
+    -fx-border-color: #D3D1C7;
+    -fx-border-width: 0 0 0 1;
+    -fx-padding: 12px;
+}
+
+#statusBar {
+    -fx-background-color: #E8E6E0;
+    -fx-border-color: #D3D1C7;
+    -fx-border-width: 1 0 0 0;
+    -fx-padding: 5px 12px;
+}
+
+#statusBar .label {
+    -fx-font-size: 11px;
+    -fx-text-fill: #5F5E5A;
+}

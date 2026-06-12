@@ -39,7 +39,7 @@
    </top>
 
    <right>
-      <VBox prefHeight="448.0" prefWidth="220.0" spacing="8.0" styleClass="side-panel" BorderPane.alignment="CENTER">
+      <VBox fx:id="sidePanel" prefHeight="448.0" prefWidth="220.0" spacing="8.0" styleClass="side-panel" BorderPane.alignment="CENTER">
 
          <children>
             <Label styleClass="title-label" text="Hospital Voronoi diagram">
@@ -104,7 +104,7 @@
    </right>
 
    <bottom>
-      <HBox prefHeight="30.0" prefWidth="800.0" spacing="20.0" styleClass="status-bar" BorderPane.alignment="CENTER">
+      <HBox fx:id="statusBar" prefHeight="30.0" prefWidth="800.0" spacing="20.0" styleClass="status-bar" BorderPane.alignment="CENTER">
 
          <children>
             <Label fx:id="labelNbHospitals" text="Hospital : 0" />
