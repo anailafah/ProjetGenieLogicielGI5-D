@@ -38,6 +38,7 @@ public class MainController {
     private MapCanvas canvas;
 
     private User draggedUser = null;
+    public User selectedUser = null;
     private Hospital selectedHospital = null;
     private Hospital draggedHospital  = null;
     private boolean isDragging = false;
@@ -131,35 +132,50 @@ public class MainController {
                 } else {
                     Hospital clicked = getHospitalAt(wx, wy);
                     if (clicked != null) {
+                        clearUserSelection();
                         selectHospital(clicked);
                     } else {
-                        String name = showInputDialog(
-                            "Hospital name:",
+                        User clickedUser = getUserAt(wx, wy);
+                        if (clickedUser != null) {
+                            clearSelection();
+                            selectUser(clickedUser);
+                        } else {
+                            String name = showInputDialog("Hospital name:",
                             "Hospital-" + (engine.getMap().getHospitals().size() + 1));
-                        if (name == null || name.trim().isEmpty()) return;
-                        updateEngineViewport();
+                            if (name == null || name.trim().isEmpty()) return;
+                            updateEngineViewport();
 
-                        String capStr = showInputDialog("Max capacity :", "20");
-                        if (capStr == null) return;
+                            String capStr = showInputDialog("Max capacity :", "20");
+                            if (capStr == null) return;
 
-                        int capacity = Integer.parseInt(capStr.trim());
-                        if (capacity <= 0) {
-                            showMessage("Capacity must be >0");
-                            return;
+                            int capacity = Integer.parseInt(capStr.trim());
+                            if (capacity <= 0) {
+                                showMessage("Capacity must be > 0");
+                                return;
+                            }
+
+                            Hospital h = engine.addHospital(name.trim(), wx, wy, capacity);
+                            clearUserSelection();
+                            selectHospital(h);
+                            showMessage("Hospital added : " + name);
                         }
-
-                        Hospital h = engine.addHospital(name.trim(), wx, wy, capacity);
-                        selectHospital(h);
-                        showMessage("Hospital added : " + name);
                     }
                 }
 
             } else if (e.getButton() == MouseButton.SECONDARY) {
-                Hospital clicked = getHospitalAt(wx, wy);
-                if (clicked != null) {
-                    engine.removeHospital(clicked);
-                    if (selectedHospital == clicked) clearSelection();
-                    showMessage("deleted hospital");
+                User clickedUser = getUserAt(wx, wy);
+                if (clickedUser != null) {
+                    if (selectedUser == clickedUser) clearUserSelection();
+                    engine.removeUser(clickedUser);
+                    showMessage("User removed");
+
+                } else {
+                    Hospital clicked = getHospitalAt(wx, wy);
+                    if (clicked != null) {
+                        engine.removeHospital(clicked);
+                        if (selectedHospital == clicked) clearSelection();
+                        showMessage("deleted hospital");
+                    }
                 }
             }
 
@@ -549,5 +565,60 @@ public class MainController {
             if (Math.sqrt(dx*dx + dy*dy) < 15.0 / scale) return u;
         }
         return null;
+    }
+    /**
+    * Selects a user and updates the side panel.
+    * @param u the user to select
+    */
+    public void selectUser(User u) {
+        selectedUser     = u;
+        selectedHospital = null;
+        canvas.setSelectedUser(u);
+        canvas.setSelectedHospital(null);
+        updateUserPanel();
+        canvas.redraw();
+    }
+
+    /**
+     * Clears the current user selection.
+     */
+    public void clearUserSelection() {
+        selectedUser = null;
+        canvas.setSelectedUser(null);
+    }
+    /**
+    * Updates the side panel with selected user stats.
+     */
+    public void updateUserPanel() {
+        if (selectedUser == null) return;
+
+        labelHospitalName.setText("User id=" + selectedUser.getId());
+        progressSaturation.setProgress(0);
+        progressSaturation.setStyle("");
+
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("Position : (")
+        .append(String.format("%.1f", selectedUser.getX()))
+        .append(", ")
+        .append(String.format("%.1f", selectedUser.getY()))
+        .append(")\n\n");
+
+        Hospital nearest  = engine.getNearestHospital(selectedUser.getX(), selectedUser.getY());
+        Hospital assigned = selectedUser.getClosestSite();
+
+        sb.append("Nearest  : ")
+        .append(nearest != null ? nearest.getName() : "none")
+        .append("\n");
+
+        sb.append("Assigned : ")
+        .append(assigned != null ? assigned.getName() : "none")
+        .append("\n");
+
+        sb.append("Redirected : ")
+        .append(selectedUser.getIsRedirected() ? "Yes (rank=" + selectedUser.getRedirectionRank() + ")" : "No")
+        .append("\n");
+
+        labelStats.setText(sb.toString());
     }
 }

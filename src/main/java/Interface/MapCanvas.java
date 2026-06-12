@@ -14,7 +14,9 @@ import java.util.List;
 public class MapCanvas extends Canvas {
 
     private VoronoiEngine engine;
-    private Hospital      selectedHospital;
+    private Hospital selectedHospital;
+    private User selectedUser = null;
+
 
     private boolean showDelaunay = false;
     private boolean showZones    = false;
@@ -288,5 +290,12 @@ public class MapCanvas extends Canvas {
             gc.setFill(u.getIsRedirected() ? Color.web("#D85A30") : Color.web("#1D9E75"));
             gc.fillOval(ux - r, uy - r, r*2, r*2);
         }
+    }
+    /**
+     * set the selected user
+     * @param u user
+     */
+    public void setSelectedUser(User u) {
+        this.selectedUser = u;
     }
 }
