@@ -193,6 +193,11 @@ public class MapCanvas extends Canvas {
             gc.setStroke(Color.web("#19a09b", 0.6));
             gc.setLineWidth(1.0);
             gc.strokePolygon(xs, ys, vertices.size());
+            if (selectedHospital != null && zone.getCenterHospital() == selectedHospital) {
+                gc.setStroke(Color.web("#e2a03c", 1.0));
+                gc.setLineWidth(3.0);
+                gc.strokePolygon(xs, ys, vertices.size());
+            }
         }
     }
 
